@@ -1,4 +1,4 @@
-package org.example.backend;
+package org.dgu.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
