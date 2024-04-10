@@ -16,7 +16,6 @@
 - 각자의 feature branch에서 작업한 후, develop branch로 merge합니다.
 - {브랜치 종류}/{이슈 번호}/{내용} 순으로 작명합니다.
 - `ex) feature/#3/login`
-- PR시 최소 1명의 Approve가 있어야 merge가 가능합니다.
 
 ## 💬 Commit Convention
 |작업 태그|설명|
@@ -32,3 +31,19 @@
 
 - 이슈 번호를 붙여서 commit
 - `ex) #4 [feat] : 로그인 기능 구현`
+
+<br>
+
+# 🏰 프로젝트 아키텍처
+
+<img width="1154" alt="owl_프로젝트_아키텍처" src="https://github.com/CSID-DGU/2024-1-SCS4031-01-owl-4/assets/113084292/e4b49fea-5b68-4657-82a0-4f0990e20868">
+
+<br>
+
+# 🌲 프로젝트 패키지 구조
+
+## 백엔드
+
+<img width="632" alt="image" src="https://github.com/CSID-DGU/2024-1-SCS4031-01-owl-4/assets/113084292/af6a9ccd-39b9-4f00-aad5-9ed0aeff4951">
+
+- 도메인형 디렉토리 구조로 설계하였습니다.
