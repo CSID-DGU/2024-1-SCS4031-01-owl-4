@@ -35,8 +35,11 @@ public class MarketServiceImpl implements MarketService {
         MarketResponse[] responseBody = responseEntity.getBody();
         if (responseBody != null) {
             for (MarketResponse marketResponse : responseBody) {
-                Market market = Market.toEntity(marketResponse);
-                marketRepository.save(market);
+                // "KRW-"로 시작하는 가상화폐만 저장
+                if (marketResponse.getName().startsWith("KRW-")) {
+                    Market market = Market.toEntity(marketResponse);
+                    marketRepository.save(market);
+                }
             }
         } else {
             log.error("Failed to receive market info");
