@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_HOST}
+    password: ${DATABASE_PW}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+      dialect: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+upbit-open-api:
+  access-key: ${UPBIT_ACCESS_KEY}
+  secret-key: ${UPBIT_SECRET_KEY}
