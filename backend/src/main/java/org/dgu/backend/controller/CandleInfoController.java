@@ -17,7 +17,8 @@ public class CandleInfoController {
     public void getCandleInfo(
             @RequestParam("market") String koreanName,
             @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to,
-            @RequestParam("count") int count) {
-        candleInfoService.getCandleInfo(koreanName, to, count);
+            @RequestParam("count") int count,
+            @RequestParam("candle_type") String candleType) {
+        candleInfoService.getCandleInfo(koreanName, to, count, candleType);
     }
 }
