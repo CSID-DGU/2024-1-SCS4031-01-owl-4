@@ -20,8 +20,8 @@ public class CandleInfo {
     @JoinColumn(name = "markets_id", foreignKey = @ForeignKey(name = "candle_infos_fk_markets_id"))
     private Market market;
 
-    @Column(name = "markets_name")
-    private String marketName;
+    @Column(name = "markets_korean_name")
+    private String marketKoreanName;
 
     @Column(name = "date_time_kst")
     private String dateTime;
@@ -56,9 +56,10 @@ public class CandleInfo {
     @Column(name = "change_rate")
     private Double changeRate;
 
-    public static CandleInfo toEntity(CandleInfoResponse response) {
+    public static CandleInfo toEntity(Market market, CandleInfoResponse response) {
         return CandleInfo.builder()
-                .marketName(response.getMarketName())
+                .market(market)
+                .marketKoreanName(market.getKoreanName())
                 .dateTime(response.getDateTime())
                 .openingPrice(response.getOpeningPrice())
                 .highPrice(response.getHighPrice())
