@@ -16,7 +16,11 @@ public class CandleInfo {
     @Column(name = "candle_infos_id")
     private Long id;
 
-    @Column(name = "market_name")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "markets_id", foreignKey = @ForeignKey(name = "candle_infos_fk_markets_id"))
+    private Market market;
+
+    @Column(name = "markets_name")
     private String marketName;
 
     @Column(name = "date_time_kst")
