@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -28,10 +29,10 @@ public class CandleInfoServiceImpl implements CandleInfoService {
         Market market = marketRepository.findByKoreanName(marketKoreanName);
         String marketName = market.getName();
 
-
         String url = String.format("https://api.upbit.com/v1/candles/days?market=%s&count=%d", marketName, count);
         if (to != null) {
-            url += ("&to=" + to);
+            String formattedTo = to.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+            url += ("&to=" + formattedTo);
         }
 
         HttpHeaders headers = new HttpHeaders();
