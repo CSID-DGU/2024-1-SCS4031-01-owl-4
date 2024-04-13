@@ -2,6 +2,7 @@ package org.dgu.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.service.CandleInfoService;
+import org.dgu.backend.util.CandleDataCollector;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class CandleInfoController {
     private final CandleInfoService candleInfoService;
+    private final CandleDataCollector candleDataCollector;
 
     @GetMapping("/candle/info")
     public void getCandleInfo(
@@ -20,5 +22,10 @@ public class CandleInfoController {
             @RequestParam("count") int count,
             @RequestParam("candle_type") String candleType) {
         candleInfoService.getCandleInfo(koreanName, to, count, candleType);
+    }
+
+    @GetMapping("/candle/info/bitcoin/all")
+    public void collectBitcoinCandleData() {
+        candleDataCollector.collectData();
     }
 }
