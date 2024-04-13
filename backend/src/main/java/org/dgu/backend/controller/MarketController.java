@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MarketController {
     private final MarketService marketService;
 
-    @GetMapping("/market")
+    @GetMapping("/market/all")
     public void getCandleInfo() {
         marketService.getAllMarkets();
     }
