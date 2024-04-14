@@ -1,9 +1,11 @@
 package org.dgu.backend.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
-@Data
+@Builder
+@Getter
 public class MarketResponse {
     @JsonProperty("market")
     private String name;

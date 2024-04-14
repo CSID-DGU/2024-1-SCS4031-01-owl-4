@@ -8,7 +8,7 @@ import org.dgu.backend.dto.response.CandleInfoResponse;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-@Data
+@Getter
 @Table(name = "candle_infos")
 public class CandleInfo {
     @Id
