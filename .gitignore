@@ -36,8 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-*.yml
-
 frontend/node_modules
 
 # Logs
