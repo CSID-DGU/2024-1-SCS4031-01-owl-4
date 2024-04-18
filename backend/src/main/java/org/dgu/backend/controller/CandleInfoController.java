@@ -1,6 +1,5 @@
 package org.dgu.backend.controller;
 
-import com.google.common.util.concurrent.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.service.CandleInfoService;
 import org.dgu.backend.util.CandleDataCollector;
