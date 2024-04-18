@@ -85,6 +85,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         } else {
             // 기존 유저인 경우
             log.info("기존 유저입니다.");
+            refreshTokenRepository.deleteByUserId(existUser.getUserId());
             user = existUser;
         }
 
@@ -96,9 +97,9 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         String refreshToken = jwtUtil.generateRefreshToken(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
 
         RefreshToken newRefreshToken = RefreshToken.builder()
-                                        .userId(user.getUserId())
-                                        .token(refreshToken)
-                                        .build();
+                .userId(user.getUserId())
+                .token(refreshToken)
+                .build();
         refreshTokenRepository.save(newRefreshToken);
 
         // 액세스 토큰 발급
