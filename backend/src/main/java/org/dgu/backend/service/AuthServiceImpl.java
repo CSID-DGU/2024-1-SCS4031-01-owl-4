@@ -20,6 +20,7 @@ public class AuthServiceImpl implements AuthService{
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
+
     @Override
     public TokenResponse reissueAccessToken(String authorizationHeader) {
         String refreshToken = jwtUtil.getTokenFromHeader(authorizationHeader);
