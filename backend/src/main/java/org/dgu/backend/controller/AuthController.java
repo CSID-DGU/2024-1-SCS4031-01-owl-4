@@ -1,5 +1,7 @@
 package org.dgu.backend.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.common.ApiResponse;
 import org.dgu.backend.common.constant.SuccessStatus;
@@ -17,9 +19,10 @@ public class AuthController {
     // 액세스 토큰을 재발행하는 API
     @GetMapping("/reissue/access-token")
     public ResponseEntity<ApiResponse<Object>> reissueAccessToken(
-            @RequestHeader("Authorization") String authorizationHeader) {
+            HttpServletRequest request,
+            HttpServletResponse response) {
 
-        TokenResponse accessToken = authService.reissueAccessToken(authorizationHeader);
+        TokenResponse accessToken = authService.reissueAccessToken(request, response);
         return ApiResponse.onSuccess(SuccessStatus._CREATED_ACCESS_TOKEN, accessToken);
     }
 }
