@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.UUID;
 
@@ -88,7 +89,6 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         } else {
             // 기존 유저인 경우
             log.info("기존 유저입니다.");
-            refreshTokenRepository.deleteByUserId(existUser.getUserId());
             user = existUser;
         }
 
@@ -100,18 +100,15 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         Cookie cookie = cookieUtil.createCookie(user.getUserId(), REFRESH_TOKEN_EXPIRATION_TIME);
         response.addCookie(cookie);
 
-        // 새로운 리프레쉬 토큰 DB 저장
-        RefreshToken newRefreshToken = RefreshToken.builder()
-                .userId(user.getUserId())
-                .token(cookie.getValue())
-                .build();
+        // 새로운 리프레쉬 토큰 Redis 저장
+        RefreshToken newRefreshToken = new RefreshToken(user.getUserId(), cookie.getValue());
         refreshTokenRepository.save(newRefreshToken);
 
         // 액세스 토큰 발급
         String accessToken = jwtUtil.generateAccessToken(user.getUserId(), ACCESS_TOKEN_EXPIRATION_TIME);
 
-        // 이름, 액세스 토큰, 리프레쉬 토큰을 담아 리다이렉트
-        String encodedName = URLEncoder.encode(name, "UTF-8");
+        // 이름, 액세스 토큰을 담아 리다이렉트
+        String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
         String redirectUri = String.format(REDIRECT_URI, encodedName, accessToken);
         getRedirectStrategy().sendRedirect(request, response, redirectUri);
     }
