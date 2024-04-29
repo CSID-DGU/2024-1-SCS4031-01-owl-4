@@ -10,8 +10,6 @@ import java.util.UUID;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @Getter
 @Table(name = "users")
 public class User {
@@ -39,4 +37,12 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at", length = 20)
     private LocalDateTime updatedAt;
+
+    @Builder
+    public User(UUID userId, String name, String provider, String providerId) {
+        this.userId = userId;
+        this.name = name;
+        this.provider = provider;
+        this.providerId = providerId;
+    }
 }
