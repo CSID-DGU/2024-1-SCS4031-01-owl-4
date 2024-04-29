@@ -1,6 +1,7 @@
 package org.dgu.backend.auth.info;
 
 import lombok.AllArgsConstructor;
+import org.dgu.backend.common.constant.Provider;
 
 import java.util.Map;
 
@@ -16,7 +17,7 @@ public class NaverUserInfo implements OAuth2UserInfo {
 
     @Override
     public String getProvider() {
-        return "naver";
+        return Provider.NAVER_PROVIDER.getProvider();
     }
 
     @Override

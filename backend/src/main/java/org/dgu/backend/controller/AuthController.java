@@ -23,6 +23,6 @@ public class AuthController {
             HttpServletResponse response) {
 
         TokenResponse accessToken = authService.reissueAccessToken(request, response);
-        return ApiResponse.onSuccess(SuccessStatus._CREATED_ACCESS_TOKEN, accessToken);
+        return ApiResponse.onSuccess(SuccessStatus.CREATED_ACCESS_TOKEN, accessToken);
     }
 }

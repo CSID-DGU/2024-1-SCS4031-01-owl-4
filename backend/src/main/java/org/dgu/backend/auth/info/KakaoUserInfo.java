@@ -1,6 +1,7 @@
 package org.dgu.backend.auth.info;
 
 import lombok.AllArgsConstructor;
+import org.dgu.backend.common.constant.Provider;
 
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class KakaoUserInfo implements OAuth2UserInfo {
 
     @Override
     public String getProvider() {
-        return "kakao";
+        return Provider.KAKAO_PROVIDER.getProvider();
     }
 
     @Override
