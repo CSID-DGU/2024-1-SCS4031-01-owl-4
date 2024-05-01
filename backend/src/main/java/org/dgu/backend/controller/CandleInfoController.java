@@ -15,7 +15,7 @@ public class CandleInfoController {
     private final CandleInfoService candleInfoService;
     private final CandleDataCollector candleDataCollector;
 
-    // 업비트에서 데이터를 가져오는 메서드
+    // 업비트에서 데이터를 가져오는 API
     @GetMapping("/candle/info")
     public void getCandleInfo(
             @RequestParam("market") String koreanName,
@@ -26,7 +26,7 @@ public class CandleInfoController {
         candleInfoService.getCandleInfo(koreanName, to, count, candleType);
     }
 
-    // 원하는 가상화폐 & 기간 & 캔들 종류에 따른 데이터를 가져오는 메서드
+    // 원하는 가상화폐 & 기간 & 캔들 종류에 따른 데이터를 가져오는 API
     @GetMapping("/candle/info/all")
     public void collectBitcoinCandleData(
             @RequestParam("market") String koreanName,
