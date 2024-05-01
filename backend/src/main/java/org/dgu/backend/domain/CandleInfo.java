@@ -2,7 +2,7 @@ package org.dgu.backend.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.dgu.backend.dto.response.CandleInfoResponse;
+import org.dgu.backend.dto.UpbitDto;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -63,7 +63,7 @@ public class CandleInfo {
     @Column(name = "change_rate")
     private Double changeRate;
 
-    public static CandleInfo toEntity(CandleInfoResponse response, Market market, Candle candle) {
+    public static CandleInfo toEntity(UpbitDto.CandleInfoResponse response, Market market, Candle candle) {
         return CandleInfo.builder()
                 .market(market)
                 .candle(candle)

@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 import org.dgu.backend.domain.RefreshToken;
-import org.dgu.backend.dto.response.TokenResponse;
+import org.dgu.backend.dto.TokenDto;
 import org.dgu.backend.exception.TokenErrorResult;
 import org.dgu.backend.exception.TokenException;
 import org.dgu.backend.repository.RefreshTokenRepository;
@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     private final CookieUtil cookieUtil;
 
     @Override
-    public TokenResponse reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public TokenDto.TokenResponse reissueAccessToken(HttpServletRequest request, HttpServletResponse response) {
         Cookie cookie = cookieUtil.getCookie(request);
         String refreshToken = cookie.getValue();
         UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(refreshToken));
@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.save(newRefreshToken);
 
         // 새로운 액세스 토큰을 담아 반환
-        return TokenResponse.builder()
+        return TokenDto.TokenResponse.builder()
                 .accessToken(newAccessToken)
                 .build();
     }
