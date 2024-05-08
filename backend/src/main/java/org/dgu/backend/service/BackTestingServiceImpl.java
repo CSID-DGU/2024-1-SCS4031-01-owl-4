@@ -9,6 +9,7 @@ import org.dgu.backend.repository.CandleRepository;
 import org.dgu.backend.util.BackTestingUtil;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -33,6 +34,9 @@ public class BackTestingServiceImpl implements BackTestingService {
         List<BackTestingDto.EMAInfo> nDateEMAs = backTestingUtil.calculateEMA(filteredCandleInfoList, stepInfo.getNDate());
         // M일 EMA 계산
         List<BackTestingDto.EMAInfo> mDateEMAs = backTestingUtil.calculateEMA(filteredCandleInfoList, stepInfo.getMDate());
+
+        // 골든 크로스 지점 찾기
+        List<LocalDate> goldenCrossPoints = backTestingUtil.findGoldenCrossPoints(nDateEMAs, mDateEMAs);
 
         return null;
     }

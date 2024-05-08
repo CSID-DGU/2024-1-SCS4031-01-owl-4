@@ -68,4 +68,28 @@ public class BackTestingUtil {
 
         return result;
     }
+
+    // 골든 크로스 지점을 찾아 반환하는 메서드
+    public List<LocalDate> findGoldenCrossPoints(List<BackTestingDto.EMAInfo> nDateEMAs, List<BackTestingDto.EMAInfo> mDateEMAs) {
+        int diff = nDateEMAs.size() - mDateEMAs.size();
+        boolean possible = true;
+        List<LocalDate> goldenCrossPoints = new ArrayList<>();
+
+        for (int i = 0; i < mDateEMAs.size(); i++) {
+            LocalDate curDate = mDateEMAs.get(i).getDate();
+            Long nPrice = nDateEMAs.get(i + diff).getPrice();
+            Long mPrice = mDateEMAs.get(i).getPrice();
+
+            if (possible && nPrice > mPrice) {
+                goldenCrossPoints.add(curDate);
+                possible = false;
+            }
+
+            else if (nPrice < mPrice) {
+                possible = true;
+            }
+        }
+
+        return goldenCrossPoints;
+    }
 }
