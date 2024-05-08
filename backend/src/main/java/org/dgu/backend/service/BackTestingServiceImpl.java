@@ -29,8 +29,11 @@ public class BackTestingServiceImpl implements BackTestingService {
         // 설정한 기간에 맞는 차트만 필터링
         List<CandleInfo> filteredCandleInfoList = backTestingUtil.getFilteredCandleInfoList(allCandleInfoList, stepInfo.getStartDate(), stepInfo.getEndDate());
 
-        // 백테스팅 실행
-        //backTestingUtil.run(filteredCandleInfoList);
+        // N일 EMA 계산
+        List<BackTestingDto.EMAInfo> nDateEMAs = backTestingUtil.calculateEMA(filteredCandleInfoList, stepInfo.getNDate());
+        // M일 EMA 계산
+        List<BackTestingDto.EMAInfo> mDateEMAs = backTestingUtil.calculateEMA(filteredCandleInfoList, stepInfo.getMDate());
+
         return null;
     }
 }
