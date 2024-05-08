@@ -14,6 +14,7 @@ import org.dgu.backend.repository.RefreshTokenRepository;
 import org.dgu.backend.util.CookieUtil;
 import org.dgu.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -49,8 +50,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // 리프레쉬 토큰이 담긴 쿠키 생성 후 설정
-        Cookie newCookie = cookieUtil.createCookie(userId, REFRESH_TOKEN_EXPIRATION_TIME);
-        response.addCookie(newCookie);
+        ResponseCookie newCookie = cookieUtil.createCookie(userId, REFRESH_TOKEN_EXPIRATION_TIME);
+        response.addHeader("Set-Cookie", newCookie.toString());
 
         // 새로운 리프레쉬 토큰 Redis 저장
         RefreshToken newRefreshToken = new RefreshToken(userId, newCookie.getValue());
