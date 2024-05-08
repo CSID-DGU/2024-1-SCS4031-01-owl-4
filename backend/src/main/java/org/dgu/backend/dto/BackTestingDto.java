@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class BackTestingDto {
     @Builder
@@ -42,7 +42,11 @@ public class BackTestingDto {
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class BackTestingResult {
-        private String accessToken;
+        private LocalDateTime date;
+        private String action;
+        private Double price;
+        private Long capital;
+        private Double coin;
     }
 
     @Builder
@@ -52,7 +56,7 @@ public class BackTestingDto {
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class EMAInfo {
-        private LocalDate date;
+        private LocalDateTime date;
         private Long price;
     }
 }

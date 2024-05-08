@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.dgu.backend.dto.UpbitDto;
 
-import java.time.LocalDate;
-
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,7 +31,7 @@ public class CandleInfo {
     private String candleKoreanName;
 
     @Column(name = "date_time_kst")
-    private LocalDate dateTime;
+    private String dateTime;
 
     @Column(name = "opening_price")
     private Double openingPrice;
@@ -71,7 +69,7 @@ public class CandleInfo {
                 .candle(candle)
                 .marketKoreanName(market.getKoreanName())
                 .candleKoreanName(candle.getKoreanName())
-                .dateTime(LocalDate.parse(response.getDateTime().substring(0, 10)))
+                .dateTime(response.getDateTime())
                 .openingPrice(response.getOpeningPrice())
                 .highPrice(response.getHighPrice())
                 .lowPrice(response.getLowPrice())
