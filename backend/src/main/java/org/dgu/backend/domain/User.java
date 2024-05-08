@@ -42,11 +42,8 @@ public class User {
     @Column(name = "updated_at", length = 20)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "portfolios", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Portfolio> portfolios;
-
-    @OneToMany(mappedBy = "temp_portfolios", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TempPortfolio> tempPortfolios;
 
     @Builder
     public User(UUID userId, String name, String provider, String providerId) {
