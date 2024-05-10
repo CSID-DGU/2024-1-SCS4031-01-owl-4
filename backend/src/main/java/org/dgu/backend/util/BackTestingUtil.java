@@ -217,7 +217,7 @@ public class BackTestingUtil {
         Double negativeRatioSum = 0.0;
         Long highValueStrategy = 0L;
         Long lowValueStrategy = 1_000_000_000L;
-        Long maxLossValue = 0L;
+        Long highLossValueStrategy = 0L;
 
         for (BackTestingDto.BackTestingResult backTestingResult : backTestingResults) {
             if (!backTestingResult.getAction().equals("BUY")) {
@@ -233,7 +233,7 @@ public class BackTestingUtil {
                 else {
                     negativeTradeCount++;
                     negativeRatioSum += backTestingResult.getRate();
-                    maxLossValue = Math.min(maxLossValue, income);
+                    highLossValueStrategy = Math.min(highLossValueStrategy, income);
                 }
                 tradingPeriodSum += backTestingResult.getTradingPeriod();
             }
@@ -277,7 +277,7 @@ public class BackTestingUtil {
                 .winLossRatio(winLossRatio)
                 .highValueStrategy(highValueStrategy)
                 .lowValueStrategy(lowValueStrategy)
-                .maxLossValue(maxLossValue)
+                .highLossValueStrategy(highLossValueStrategy)
                 .build();
 
         return BackTestingDto.BackTestingResponse.builder()
