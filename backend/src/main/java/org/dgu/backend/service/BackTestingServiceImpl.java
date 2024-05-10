@@ -21,7 +21,7 @@ public class BackTestingServiceImpl implements BackTestingService {
 
     // 백테스팅 실행
     @Override
-    public BackTestingDto.BackTestingResult runBackTesting(String authorizationHeader, BackTestingDto.StepInfo stepInfo) {
+    public BackTestingDto.BackTestingResponse runBackTesting(String authorizationHeader, BackTestingDto.StepInfo stepInfo) {
         Candle candle = candleRepository.findByName(stepInfo.getCandleName());
 
         // 캔들 ID에 해당하는 모든 CandleInfo 가져옴
@@ -41,6 +41,9 @@ public class BackTestingServiceImpl implements BackTestingService {
         // 백테스팅 시작
         List<BackTestingDto.BackTestingResult> backTestingResults = backTestingUtil.run(filteredCandleInfoList, stepInfo, goldenCrossPoints);
 
-        return null;
+        // 백테스팅 결과 도출
+        BackTestingDto.BackTestingResponse backTestingResponse = backTestingUtil.collectResults(backTestingResults, stepInfo.getInitialCapital());
+
+        return backTestingResponse;
     }
 }

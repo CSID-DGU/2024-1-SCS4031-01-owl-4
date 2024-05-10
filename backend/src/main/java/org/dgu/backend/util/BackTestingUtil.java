@@ -5,6 +5,8 @@ import org.dgu.backend.domain.CandleInfo;
 import org.dgu.backend.dto.BackTestingDto;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -119,6 +121,7 @@ public class BackTestingUtil {
 
             // 골든 포인트 지점인 경우
             if (infoDate.equals(goldenCrossPoint)) {
+                LocalDateTime startDate = LocalDateTime.parse(allCandleInfoList.get(infoIndex).getDateTime()); // 매수 시작일
                 // 초기 매수 횟수와 평단가 설정
                 int buyingCnt = 1;
                 Double avgPrice = allCandleInfoList.get(infoIndex).getTradePrice();
@@ -134,11 +137,11 @@ public class BackTestingUtil {
                     if (currentPrice < avgPrice * (100 - buyingPoint) / 100) {
                         // 매수 처리
                         if (buyingCnt < stepInfo.getTradingUnit()) {
-                            buyingCnt++;
                             coin += tradingUnit / currentPrice;
                             capital -= tradingUnit;
+                            buyingCnt++;
 
-                            BackTestingDto.BackTestingResult result = createResult(currentDate, "Buy", currentPrice, capital, coin);
+                            BackTestingDto.BackTestingResult result = createResult(currentDate, "BUY", currentPrice, coin, capital, null, null, null);
                             backTestingResults.add(result);
 
                             // 평단가 업데이트
@@ -148,20 +151,30 @@ public class BackTestingUtil {
                     // 평단가에서 sellingPoint 만큼 올라가면 익절
                     else if (currentPrice > avgPrice * (100 + sellingPoint) / 100) {
                         // 익절 처리
+                        Long orgCapital = capital + tradingUnit * buyingCnt;
                         capital = (long) (capital + (currentPrice * coin));
                         coin = 0.0;
+                        Long income = capital - orgCapital;
+                        Double rate = (Double.parseDouble(String.valueOf(income))) / (Double.parseDouble(String.valueOf(orgCapital))) * 100;
+                        rate = round(rate, 2);
+                        Integer tradingPeriod = currentDate.compareTo(startDate);
 
-                        BackTestingDto.BackTestingResult result = createResult(currentDate, "Sell", currentPrice, capital, coin);
+                        BackTestingDto.BackTestingResult result = createResult(currentDate, "SELL", currentPrice, coin, capital, rate, income, tradingPeriod);
                         backTestingResults.add(result);
                         break; // 익절 시 거래 종료
                     }
                     // 평단가에서 stopLossPoint 만큼 떨어지면 손절
                     else if (currentPrice < avgPrice * (100 - stopLossPoint) / 100) {
                         // 손절 처리
+                        Long orgCapital = capital + tradingUnit * buyingCnt;
                         capital = (long) (capital + (currentPrice * coin));
                         coin = 0.0;
+                        Long income = capital - orgCapital;
+                        Double rate = (Double.parseDouble(String.valueOf(income))) / (Double.parseDouble(String.valueOf(orgCapital))) * 100;
+                        rate = round(rate, 2);
+                        Integer tradingPeriod = currentDate.compareTo(startDate);
 
-                        BackTestingDto.BackTestingResult result = createResult(currentDate, "Stop Loss", currentPrice, capital, coin);
+                        BackTestingDto.BackTestingResult result = createResult(currentDate, "STOP_LOSS", currentPrice, coin, capital, rate, income, tradingPeriod);
                         backTestingResults.add(result);
                         break; // 손절 시 거래 종료
                     }
@@ -179,13 +192,105 @@ public class BackTestingUtil {
     }
 
     // 거래 결과 생성 메서드
-    private BackTestingDto.BackTestingResult createResult(LocalDateTime date, String action, Double price, Long capital, Double coin) {
+    private BackTestingDto.BackTestingResult createResult(LocalDateTime date, String action, Double coinPrice, Double coin, Long capital, Double rate, Long income, Integer tradingPeriod) {
         return BackTestingDto.BackTestingResult.builder()
                 .date(date)
                 .action(action)
-                .price(price)
-                .capital(capital)
+                .coinPrice(coinPrice)
                 .coin(coin)
+                .capital(capital)
+                .rate(rate)
+                .income(income)
+                .tradingPeriod(tradingPeriod)
                 .build();
+    }
+
+    // 백테스팅 결과를 집계하는 메서드
+    public BackTestingDto.BackTestingResponse collectResults(List<BackTestingDto.BackTestingResult> backTestingResults, Long capital) {
+        Double initialCapital = Double.parseDouble(String.valueOf(capital));
+        List<BackTestingDto.TradingLog> tradingLogs = new ArrayList<>();
+        Long finalCapital = backTestingResults.get(backTestingResults.size() - 1).getCapital();
+        int positiveTradeCount = 0;
+        int negativeTradeCount = 0;
+        int tradingPeriodSum = 0;
+        Double positiveRatioSum = 0.0;
+        Double negativeRatioSum = 0.0;
+        Long highValueStrategy = 0L;
+        Long lowValueStrategy = 1_000_000_000L;
+        Long maxLossValue = 0L;
+
+        for (BackTestingDto.BackTestingResult backTestingResult : backTestingResults) {
+            if (!backTestingResult.getAction().equals("BUY")) {
+                Long income = backTestingResult.getIncome();
+                // 이익인 경우
+                if (income > 0) {
+                    positiveTradeCount++;
+                    positiveRatioSum += backTestingResult.getRate();
+                    highValueStrategy = Math.max(highValueStrategy, income);
+                    lowValueStrategy = Math.min(lowValueStrategy, income);
+                }
+                // 손해인 경우
+                else {
+                    negativeTradeCount++;
+                    negativeRatioSum += backTestingResult.getRate();
+                    maxLossValue = Math.min(maxLossValue, income);
+                }
+                tradingPeriodSum += backTestingResult.getTradingPeriod();
+            }
+
+            // 거래 로그 생성
+            tradingLogs.add(BackTestingDto.TradingLog.builder()
+                            .type(!backTestingResult.getAction().equals("BUY") ? "매도" : "매수")
+                            .date(backTestingResult.getDate())
+                            .coinPrice(backTestingResult.getCoinPrice().longValue())
+                            .rate(backTestingResult.getRate())
+                            .build());
+        }
+
+        int totalTradeCount = positiveTradeCount + negativeTradeCount;
+        int averageTradePeriod = tradingPeriodSum / totalTradeCount;
+        Double averagePositiveTrade = round(positiveRatioSum / positiveTradeCount, 2);
+        Double averageNegativeTrade = round(negativeRatioSum / negativeTradeCount, 2);
+
+        // 거래 파트 생성
+        BackTestingDto.Trading trading = BackTestingDto.Trading.builder()
+                .initialCapital(capital)
+                .finalCapital(finalCapital)
+                .totalTradeCount(totalTradeCount)
+                .positiveTradeCount(positiveTradeCount)
+                .negativeTradeCount(negativeTradeCount)
+                .averageTradePeriod(averageTradePeriod)
+                .averagePositiveTrade(averagePositiveTrade)
+                .averageNegativeTrade(averageNegativeTrade)
+                .build();
+
+        // 성능 파트 생성
+        Double totalRate = round(((finalCapital - initialCapital) / initialCapital) * 100, 2);
+        Double winRate = round((double) positiveTradeCount / totalTradeCount * 100, 2);
+        Double lossRate = round((double) negativeTradeCount / totalTradeCount * 100, 2);
+        Double winLossRatio = round((double) positiveTradeCount / negativeTradeCount * 100, 2);
+
+        BackTestingDto.Performance performance = BackTestingDto.Performance.builder()
+                .totalRate(totalRate)
+                .winRate(winRate)
+                .lossRate(lossRate)
+                .winLossRatio(winLossRatio)
+                .highValueStrategy(highValueStrategy)
+                .lowValueStrategy(lowValueStrategy)
+                .maxLossValue(maxLossValue)
+                .build();
+
+        return BackTestingDto.BackTestingResponse.builder()
+                .trading(trading)
+                .performance(performance)
+                .tradingLogs(tradingLogs)
+                .build();
+    }
+
+    private Double round(Double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

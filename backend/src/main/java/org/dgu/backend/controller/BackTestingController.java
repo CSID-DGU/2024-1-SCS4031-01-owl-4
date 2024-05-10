@@ -20,7 +20,7 @@ public class BackTestingController {
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody BackTestingDto.StepInfo stepInfo) {
 
-        BackTestingDto.BackTestingResult backTestingResult  = backTestingService.runBackTesting(authorizationHeader, stepInfo);
+        BackTestingDto.BackTestingResponse backTestingResult  = backTestingService.runBackTesting(authorizationHeader, stepInfo);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_BACKTESTING_RUN, backTestingResult);
     }
 
