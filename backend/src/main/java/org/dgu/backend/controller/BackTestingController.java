@@ -17,7 +17,7 @@ public class BackTestingController {
     // 백테스팅 Step1,2 입력 후 백테스팅 실행 API
     @PostMapping("/run")
     public ResponseEntity<ApiResponse<Object>> reissueAccessToken(
-            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @RequestBody BackTestingDto.StepInfo stepInfo) {
 
         BackTestingDto.BackTestingResponse backTestingResult  = backTestingService.runBackTesting(authorizationHeader, stepInfo);
