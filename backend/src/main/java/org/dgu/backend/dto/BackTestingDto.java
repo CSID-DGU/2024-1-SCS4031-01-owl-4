@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class BackTestingDto {
     @Builder
@@ -44,9 +45,12 @@ public class BackTestingDto {
     public static class BackTestingResult {
         private LocalDateTime date;
         private String action;
-        private Double price;
-        private Long capital;
+        private Double coinPrice;
         private Double coin;
+        private Long capital;
+        private Double rate;
+        private Long income;
+        private Integer tradingPeriod;
     }
 
     @Builder
@@ -58,5 +62,63 @@ public class BackTestingDto {
     public static class EMAInfo {
         private LocalDateTime date;
         private Long price;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class BackTestingResponse {
+        private Trading trading;
+        private Performance performance;
+        private List<TradingLog> tradingLogs;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class Trading {
+        private Long initialCapital;
+        private Long finalCapital;
+        private int totalTradeCount;
+        private int positiveTradeCount;
+        private int negativeTradeCount;
+        private int averageTradePeriod;
+        private Double averagePositiveTrade;
+        private Double averageNegativeTrade;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class Performance {
+        private Double totalRate;
+        private Double winRate;
+        private Double lossRate;
+        private Double winLossRatio;
+        private Long highValueStrategy;
+        private Long lowValueStrategy;
+        private Long maxLossValue;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class TradingLog {
+        private String type;
+        private LocalDateTime date;
+        private Long coinPrice;
+        private Double rate;
     }
 }
