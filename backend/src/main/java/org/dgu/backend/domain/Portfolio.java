@@ -58,13 +58,17 @@ public class Portfolio {
     private PortfolioOption portfolioOption;
 
     @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private PortfolioResult portfolioResult;
+    private TradingResult tradingResult;
+
+    @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PerformanceResult performanceResult;
 
     @Builder
-    public Portfolio(User user, UUID portfolioId, String title, String description) {
+    public Portfolio(User user, String title, String description) {
         this.user = user;
-        this.portfolioId = portfolioId;
+        this.portfolioId = UUID.randomUUID();
         this.title = title;
         this.description = description;
+        this.isSaved = 0;
     }
 }

@@ -22,9 +22,6 @@ public class PortfolioOption {
     @JoinColumn(name = "portfolios_id", foreignKey = @ForeignKey(name = "portfolios_options_fk_portfolios_id"))
     private Portfolio portfolio;
 
-    @Column(name = "initial_capital", nullable = false)
-    private Long initialCapital;
-
     @Column(name = "candle_name", nullable = false, length = 20)
     private String candleName;
 
@@ -41,7 +38,7 @@ public class PortfolioOption {
     private int mDate;
 
     @Column(name = "trading_unit", nullable = false)
-    private Long tradingUnit;
+    private int tradingUnit;
 
     @Column(name = "buying_point", nullable = false, length = 10)
     private Double buyingPoint;
@@ -53,10 +50,9 @@ public class PortfolioOption {
     private Double stopLossPoint;
 
     @Builder
-    public PortfolioOption(Portfolio portfolio, Long initialCapital, String candleName, LocalDateTime startDate, LocalDateTime endDate,
-                           int nDate, int mDate, Long tradingUnit, Double buyingPoint, Double sellingPoint, Double stopLossPoint){
+    public PortfolioOption(Portfolio portfolio, String candleName, LocalDateTime startDate, LocalDateTime endDate,
+                           int nDate, int mDate, int tradingUnit, Double buyingPoint, Double sellingPoint, Double stopLossPoint){
         this.portfolio = portfolio;
-        this.initialCapital = initialCapital;
         this.candleName = candleName;
         this.startDate = startDate;
         this.endDate = endDate;
