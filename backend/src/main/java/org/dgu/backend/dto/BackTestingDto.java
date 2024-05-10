@@ -106,7 +106,7 @@ public class BackTestingDto {
         private Double winLossRatio;
         private Long highValueStrategy;
         private Long lowValueStrategy;
-        private Long maxLossValue;
+        private Long highLossValueStrategy;
     }
 
     @Builder
