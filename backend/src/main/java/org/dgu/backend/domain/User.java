@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -30,6 +31,9 @@ public class User {
     @Column(name = "provider_id", nullable = false, length = 50)
     private String providerId;
 
+    @Column(name = "current_portfolios_uuid", columnDefinition = "BINARY(16)")
+    private UUID currentPortfolioId;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, length = 20)
     private LocalDateTime createdAt;
@@ -37,6 +41,9 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at", length = 20)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Portfolio> portfolios;
 
     @Builder
     public User(UUID userId, String name, String provider, String providerId) {

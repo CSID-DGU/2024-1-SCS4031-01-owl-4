@@ -3,7 +3,7 @@ package org.dgu.backend.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dgu.backend.domain.Market;
-import org.dgu.backend.dto.response.MarketResponse;
+import org.dgu.backend.dto.UpbitDto;
 import org.dgu.backend.repository.MarketRepository;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -25,16 +25,16 @@ public class MarketServiceImpl implements MarketService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("accept", MediaType.APPLICATION_JSON_VALUE);
 
-        ResponseEntity<MarketResponse[]> responseEntity = restTemplate.exchange(
+        ResponseEntity<UpbitDto.MarketResponse[]> responseEntity = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                MarketResponse[].class
+                UpbitDto.MarketResponse[].class
         );
 
-        MarketResponse[] responseBody = responseEntity.getBody();
+        UpbitDto.MarketResponse[] responseBody = responseEntity.getBody();
         if (responseBody != null) {
-            for (MarketResponse marketResponse : responseBody) {
+            for (UpbitDto.MarketResponse marketResponse : responseBody) {
                 // "KRW-"로 시작하는 가상화폐만 저장
                 if (marketResponse.getName().startsWith("KRW-")) {
                     Market market = Market.toEntity(marketResponse);

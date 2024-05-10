@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.dgu.backend.domain.Candle;
 import org.dgu.backend.domain.CandleInfo;
 import org.dgu.backend.domain.Market;
-import org.dgu.backend.dto.response.CandleInfoResponse;
+import org.dgu.backend.dto.UpbitDto;
 import org.dgu.backend.repository.CandleInfoRepository;
 import org.dgu.backend.repository.CandleRepository;
 import org.dgu.backend.repository.MarketRepository;
@@ -51,16 +51,16 @@ public class CandleInfoServiceImpl implements CandleInfoService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("accept", MediaType.APPLICATION_JSON_VALUE);
 
-        ResponseEntity<CandleInfoResponse[]> responseEntity = restTemplate.exchange(
+        ResponseEntity<UpbitDto.CandleInfoResponse[]> responseEntity = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                CandleInfoResponse[].class
+                UpbitDto.CandleInfoResponse[].class
         );
 
-        CandleInfoResponse[] responseBody = responseEntity.getBody();
+        UpbitDto.CandleInfoResponse[] responseBody = responseEntity.getBody();
         if (responseBody != null) {
-            for (CandleInfoResponse candleInfoResponse : responseBody) {
+            for (UpbitDto.CandleInfoResponse candleInfoResponse : responseBody) {
                 CandleInfo candleInfo = CandleInfo.toEntity(candleInfoResponse, market, candle);
                 candleInfoRepository.save(candleInfo);
             }
