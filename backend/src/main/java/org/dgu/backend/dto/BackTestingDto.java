@@ -127,4 +127,15 @@ public class BackTestingDto {
         private Long coinPrice;
         private Double rate;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class SavingRequest {
+        private UUID portfolioId;
+        private String comment;
+    }
 }
