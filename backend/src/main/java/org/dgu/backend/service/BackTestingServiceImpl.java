@@ -3,6 +3,8 @@ package org.dgu.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.domain.*;
 import org.dgu.backend.dto.BackTestingDto;
+import org.dgu.backend.exception.PortfolioErrorResult;
+import org.dgu.backend.exception.PortfolioException;
 import org.dgu.backend.exception.UserErrorResult;
 import org.dgu.backend.exception.UserException;
 import org.dgu.backend.repository.*;
@@ -66,6 +68,8 @@ public class BackTestingServiceImpl implements BackTestingService {
                     .build();
             portfolioRepository.save(portfolio);
 
+            backTestingResponse.addId(portfolio.getPortfolioId()); // 응답에 포트폴리오 ID 추가
+
             // 포트폴리오 지표 임시 저장
             PortfolioOption portfolioOption = PortfolioOption.builder()
                     .portfolio(portfolio)
@@ -110,5 +114,25 @@ public class BackTestingServiceImpl implements BackTestingService {
         }
 
         return backTestingResponse;
+    }
+
+    @Override
+    public void saveBackTestingResult(String authorizationHeader, BackTestingDto.SavingRequest savingRequest) {
+        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+
+        Portfolio portfolio = portfolioRepository.findByPortfolioId(savingRequest.getPortfolioId())
+                .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
+
+        // 이미 저장된 포트폴리오인 경우
+        if (portfolio.getIsSaved() != 0) {
+            throw new PortfolioException(PortfolioErrorResult.IS_ALREADY_SAVED);
+        }
+
+        // 포트폴리오 저장 처리
+        portfolio.savePortfolio(savingRequest.getComment());
+        portfolioRepository.save(portfolio);
     }
 }

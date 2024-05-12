@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public class BackTestingDto {
     @Builder
@@ -71,9 +72,14 @@ public class BackTestingDto {
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class BackTestingResponse {
+        private UUID portfolioId;
         private Trading trading;
         private Performance performance;
         private List<TradingLog> tradingLogs;
+
+        public void addId(UUID portfolioId) {
+            this.portfolioId = portfolioId;
+        }
     }
 
     @Builder
@@ -120,5 +126,16 @@ public class BackTestingDto {
         private LocalDateTime date;
         private Long coinPrice;
         private Double rate;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class SavingRequest {
+        private UUID portfolioId;
+        private String comment;
     }
 }

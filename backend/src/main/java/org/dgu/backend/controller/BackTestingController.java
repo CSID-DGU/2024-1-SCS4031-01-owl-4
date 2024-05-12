@@ -24,13 +24,13 @@ public class BackTestingController {
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_BACKTESTING_RUN, backTestingResult);
     }
 
-    /* 백테스팅 결과 저장
+    // 백테스팅 결과 저장 API
     @PostMapping("/save")
     public ResponseEntity<ApiResponse<Object>> reissueAccessToken(
             @RequestHeader("Authorization") String authorizationHeader,
-            @RequestBody BackTestingDto.StepOneInfo stepOneInfo) {
+            @RequestBody BackTestingDto.SavingRequest savingRequest) {
 
-        BackTestingDto.StepOneInfo StepOneInfoResponse = backTestingService.reissueAccessToken(request, response);
-        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_BACKTESTING_RUN, accessToken);
-    } */
+        backTestingService.saveBackTestingResult(authorizationHeader, savingRequest);
+        return ApiResponse.onSuccess(SuccessStatus.CREATED_BACKTESTING_RESULT);
+    }
 }

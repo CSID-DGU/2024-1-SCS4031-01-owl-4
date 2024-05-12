@@ -12,15 +12,22 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    // Token
     @ExceptionHandler(TokenException.class)
     public ResponseEntity<ApiResponse<BaseErrorCode>> handleTokenException(TokenException e) {
         TokenErrorResult errorResult = e.getTokenErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
-
+    // User
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ApiResponse<BaseErrorCode>> handleUserException(UserException e) {
         UserErrorResult errorResult = e.getUserErrorResult();
+        return ApiResponse.onFailure(errorResult);
+    }
+    // Portfolio
+    @ExceptionHandler(PortfolioException.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handlePortfolioException(PortfolioException e) {
+        PortfolioErrorResult errorResult = e.getPortfolioErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
 }
