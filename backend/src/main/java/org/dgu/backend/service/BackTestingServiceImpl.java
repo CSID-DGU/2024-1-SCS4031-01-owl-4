@@ -66,6 +66,8 @@ public class BackTestingServiceImpl implements BackTestingService {
                     .build();
             portfolioRepository.save(portfolio);
 
+            backTestingResponse.addId(portfolio.getPortfolioId()); // 응답에 포트폴리오 ID 추가
+
             // 포트폴리오 지표 임시 저장
             PortfolioOption portfolioOption = PortfolioOption.builder()
                     .portfolio(portfolio)
