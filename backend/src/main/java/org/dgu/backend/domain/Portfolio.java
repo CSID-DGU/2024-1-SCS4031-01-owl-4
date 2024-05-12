@@ -34,6 +34,9 @@ public class Portfolio {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "comment", length = 50)
+    private String comment;
+
     @Column(name = "trading_start_date", length = 20)
     private LocalDateTime tradingStartDate;
 
@@ -70,5 +73,11 @@ public class Portfolio {
         this.title = title;
         this.description = description;
         this.isSaved = 0;
+    }
+
+    public void savePortfolio(String comment) {
+        this.comment = comment;
+        isSaved = 1;
+        savedAt = LocalDateTime.now();
     }
 }
