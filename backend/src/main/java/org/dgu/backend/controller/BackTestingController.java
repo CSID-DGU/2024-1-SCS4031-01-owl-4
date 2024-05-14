@@ -16,17 +16,17 @@ public class BackTestingController {
 
     // 백테스팅 Step1,2 입력 후 백테스팅 실행 API
     @PostMapping("/run")
-    public ResponseEntity<ApiResponse<Object>> reissueAccessToken(
+    public ResponseEntity<ApiResponse<Object>> getBackTestingResult(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @RequestBody BackTestingDto.StepInfo stepInfo) {
 
-        BackTestingDto.BackTestingResponse backTestingResult  = backTestingService.runBackTesting(authorizationHeader, stepInfo);
+        BackTestingDto.BackTestingResponse backTestingResult  = backTestingService.createBackTestingResult(authorizationHeader, stepInfo);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_BACKTESTING_RUN, backTestingResult);
     }
 
     // 백테스팅 결과 저장 API
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse<Object>> reissueAccessToken(
+    public ResponseEntity<ApiResponse<Object>> saveBackTestingResult(
             @RequestHeader("Authorization") String authorizationHeader,
             @RequestBody BackTestingDto.SavingRequest savingRequest) {
 
