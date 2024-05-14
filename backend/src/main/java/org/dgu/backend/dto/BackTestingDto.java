@@ -124,6 +124,8 @@ public class BackTestingDto {
     public static class TradingLog {
         private String type;
         private LocalDateTime date;
+        private Long capital;
+        private Double coin;
         private Long coinPrice;
         private Double rate;
     }
