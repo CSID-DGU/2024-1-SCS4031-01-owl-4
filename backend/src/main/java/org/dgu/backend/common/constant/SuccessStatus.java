@@ -21,7 +21,9 @@ public enum SuccessStatus implements BaseCode {
     SUCCESS_BACKTESTING_RUN(HttpStatus.OK, "200", "백테스팅 실행에 성공했습니다."),
     CREATED_BACKTESTING_RESULT(HttpStatus.CREATED, "201", "백테스팅 결과 저장에 성공했습니다."),
     // User
-    SUCCESS_LOGOUT(HttpStatus.OK, "200", "유저 로그아웃에 성공했습니다.");
+    SUCCESS_LOGOUT(HttpStatus.OK, "200", "유저 로그아웃에 성공했습니다."),
+    // Portfolio
+    SUCCESS_GET_PORTFOLIOS(HttpStatus.OK, "200", "포트폴리오 조회에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
