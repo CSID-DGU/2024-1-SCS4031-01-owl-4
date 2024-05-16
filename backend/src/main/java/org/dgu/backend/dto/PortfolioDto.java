@@ -22,4 +22,17 @@ public class PortfolioDto {
         private String candleName;
         private boolean isTrade;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class PortfolioDetailInfos {
+        private String description;
+        private String comment;
+        private BackTestingDto.Trading trading;
+        private BackTestingDto.Performance performance;
+    }
 }
