@@ -16,12 +16,22 @@ import java.util.List;
 public class PortfolioController {
     private final PortfolioService portfolioService;
 
-    // 포트폴리오 목록을 가져오는 API
+    // 포트폴리오 전체 조회 API
     @GetMapping
     public ResponseEntity<ApiResponse<Object>> getPortfolios(
             @RequestHeader("Authorization") String authorizationHeader) {
 
         List<PortfolioDto.PortfolioInfos> portfolioInfoGroups = portfolioService.getPortfolios(authorizationHeader);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_PORTFOLIOS, portfolioInfoGroups);
+    }
+
+    // 포트폴리오 상세 조회 API
+    @GetMapping("/detail")
+    public ResponseEntity<ApiResponse<Object>> getPortfolioDetails(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam("portfolio_id") String portfolioId) {
+
+        PortfolioDto.PortfolioDetailInfos portfolioDetailInfos = portfolioService.getPortfolioDetails(authorizationHeader, portfolioId);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_PORTFOLIO_DETAILS, portfolioDetailInfos);
     }
 }
