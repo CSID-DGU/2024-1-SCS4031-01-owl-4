@@ -6,4 +6,5 @@ import org.dgu.backend.dto.TokenDto;
 
 public interface AuthService {
     TokenDto.TokenResponse reissueAccessToken(HttpServletRequest request, HttpServletResponse response);
+    void logout(HttpServletResponse response);
 }

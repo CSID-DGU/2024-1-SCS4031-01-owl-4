@@ -40,4 +40,12 @@ public class CookieUtil {
 
         return null; // 해당하는 쿠키를 찾지 못한 경우 null 반환
     }
+
+    // 쿠키를 삭제하는 메서드
+    public Cookie deleteCookie() {
+        Cookie cookie = new Cookie(COOKIE_NAME, "");
+        cookie.setMaxAge(0); // 만료시간을 0으로 설정하여 삭제
+        cookie.setPath("/"); // 삭제되는 쿠키의 경로 설정
+        return cookie;
+    }
 }

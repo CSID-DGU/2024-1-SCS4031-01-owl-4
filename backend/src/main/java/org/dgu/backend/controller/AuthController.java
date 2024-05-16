@@ -25,4 +25,14 @@ public class AuthController {
         TokenDto.TokenResponse accessToken = authService.reissueAccessToken(request, response);
         return ApiResponse.onSuccess(SuccessStatus.CREATED_ACCESS_TOKEN, accessToken);
     }
+
+    // 유저 로그아웃 API
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Object>> logout(
+            HttpServletResponse response) {
+
+        authService.logout(response);
+
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_LOGOUT);
+    }
 }
