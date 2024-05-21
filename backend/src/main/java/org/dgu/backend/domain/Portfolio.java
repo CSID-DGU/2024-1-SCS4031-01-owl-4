@@ -5,8 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.dgu.backend.common.BaseEntity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Table(name = "portfolios")
-public class Portfolio {
+public class Portfolio extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "portfolios_id")
@@ -42,14 +41,6 @@ public class Portfolio {
 
     @Column(name = "trading_end_date", length = 20)
     private LocalDateTime tradingEndDate;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, length = 20)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", length = 20)
-    private LocalDateTime updatedAt;
 
     @Column(name = "saved_at", length = 20)
     private LocalDateTime savedAt;
