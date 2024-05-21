@@ -37,20 +37,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: 🦉 gradle build를 위한 권한을 부여합니다.
-        run: chmod +x backend/gradlew
+      - name: 🦉 Change directory to 'backend'
+        run: cd backend
 
-      - name: 🦉 gradle wrapper를 통한 Gradle 버전 지정
-        run: backend/./gradlew wrapper --gradle-version 8.7
+      - name: 🦉 Set execution permission for Gradle Wrapper
+        run: chmod +x gradlew
 
-      - name: 🦉 gradle 캐시 삭제
-        run: backend/./gradlew clean
+      - name: 🦉 Run Gradle Wrapper to specify Gradle version
+        run: ./gradlew wrapper --gradle-version 8.7
 
-      - name: 🦉 gradle build 중입니다.
-        run: backend/./gradlew build -x test --stacktrace
+      - name: 🦉 Clean Gradle cache
+        run: ./gradlew clean
 
-      - name: 🦉 Docker Hub에 로그인 후, docker image build 후 Docker Hub에 push합니다.
+      - name: 🦉 Build with Gradle
+        run: ./gradlew build -x test --stacktrace
+
+      - name: 🦉 Docker login and build Docker image
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          docker build -f backend/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:latest backend
+          docker build -f Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:latest
