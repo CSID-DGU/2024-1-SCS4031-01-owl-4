@@ -22,13 +22,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           path: backend
-      - name: 🧁 Set up JDK 17
+      - name: 🦉 Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: 🧁 Gradle Caching - 빌드 시간 향상
+      - name: 🦉 Gradle Caching - 빌드 시간 향상
         uses: actions/cache@v3
         with:
           path: |
@@ -38,15 +38,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: 🧁 gradle build를 위한 권한을 부여합니다.
+      - name: 🦉 gradle build를 위한 권한을 부여합니다.
         run: chmod +x gradlew
         working-directory: backend
 
-      - name: 🧁 gradle build 중입니다.
+      - name: 🦉 gradle build 중입니다.
         run: ./gradlew build -x test
         working-directory: backend
 
-      - name: 🧁 Docker Hub에 로그인 후, docker image build 후 Docker Hub에 push합니다.
+      - name: 🦉 Docker Hub에 로그인 후, docker image build 후 Docker Hub에 push합니다.
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
           docker build -f Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:latest .
