@@ -1,7 +1,7 @@
 
 const Table = () => {
   return (
-    <div className=" text-white">Table</div>
+    <div className="w-full bg-slate-200">Table</div>
   )
 }
 

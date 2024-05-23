@@ -1,7 +1,7 @@
 
 const Chart = () => {
   return (
-    <div className="text-white">Chart</div>
+    <div className="w-full bg-slate-200">Chart</div>
   )
 }
 

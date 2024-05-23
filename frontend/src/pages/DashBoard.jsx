@@ -1,29 +1,16 @@
-import { Link } from 'react-router-dom'
-import {Portfolio, Chart, Table, Run, Strategy} from './Side/index'
+import {Outlet } from 'react-router-dom'
+import NavBar from '../layouts/DashBoard/NavBar'
+import SideBar from '../layouts/DashBoard/SideBar'
 
 const DashBoard = () => {
   return (
-    <div>
-      <Link to=".">
-      <div className=" bg-red-300 text-white">DashBoard</div>
-      </Link>      
-      <Link to='chart'>
-        <Chart />
-      </Link>
-      <Link to='table'>
-        <Table />
-      </Link>
-      <Link to='strategy'>
-        <Strategy />
-      </Link>
-      <Link to='run'>
-        <Run />
-      </Link>
-      <Link to='portfolio'>
-        <Portfolio />
-      </Link>
-    </div>
-    
+    <main className='h-screen flex flex-col'>
+      <NavBar />
+      <div className='h-full bg-slate-200 flex'>
+      <SideBar />
+      <Outlet />
+      </div>
+    </main>
   )
 }
 

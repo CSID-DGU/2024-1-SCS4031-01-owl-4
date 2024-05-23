@@ -5,7 +5,19 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      customForms: theme => ({
+        'no-arrows': {
+          '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+            '-webkit-appearance': 'none',
+            margin: '0',
+          },
+          '&': {
+            '-moz-appearance': 'textfield',
+          },
+        },
+      }),
+    },
   },
   plugins: [],
 }

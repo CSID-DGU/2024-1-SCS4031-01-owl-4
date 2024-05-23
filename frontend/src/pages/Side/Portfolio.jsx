@@ -1,6 +1,6 @@
 const Portfolio = () => {
   return (
-    <div className="text-white">Portfolio</div>
+    <div className="w-full bg-slate-200">Portfolio</div>
   )
 }
 
