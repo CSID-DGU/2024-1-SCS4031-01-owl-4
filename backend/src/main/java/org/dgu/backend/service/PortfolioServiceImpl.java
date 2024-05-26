@@ -44,6 +44,7 @@ public class PortfolioServiceImpl implements PortfolioService {
             PortfolioOption portfolioOption = portfolioOptionRepository.findByPortfolio(portfolio);
 
             portfolioInfoGroups.add(PortfolioDto.PortfolioInfos.builder()
+                            .portfolioId(portfolio.getPortfolioId())
                             .title(portfolio.getTitle())
                             .startDate(String.valueOf(portfolioOption.getStartDate()))
                             .endDate(String.valueOf(portfolioOption.getEndDate()))

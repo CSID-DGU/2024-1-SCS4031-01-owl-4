@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 public class PortfolioDto {
     @Builder
     @Getter
@@ -16,6 +18,7 @@ public class PortfolioDto {
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class PortfolioInfos {
+        private UUID portfolioId;
         private String title;
         private String startDate;
         private String endDate;
