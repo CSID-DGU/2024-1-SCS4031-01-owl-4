@@ -1,8 +1,12 @@
 import {Outlet } from 'react-router-dom'
 import NavBar from '../layouts/DashBoard/NavBar'
 import SideBar from '../layouts/DashBoard/SideBar'
+import useTokenStore from '../utils/token'
 
 const DashBoard = () => {
+
+  const {token} = useTokenStore();
+
   return (
     <main className='h-screen flex flex-col'>
       <NavBar />

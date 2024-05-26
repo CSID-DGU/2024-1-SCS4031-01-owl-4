@@ -8,6 +8,7 @@ import { useMultistepForm } from "../../../utils/useMultistepForm.jsx"
 import { useMutation } from '@tanstack/react-query';
 import useResponseStore from '../../../utils/useResponseStore.js'
 import { useNavigate } from "react-router-dom";
+import useTokenStore from '../../../utils/token.js';
 
 const formSchema = z.object({
   title: z.string().nonempty({ message: "Title is required" }),
@@ -54,6 +55,9 @@ const formSchema = z.object({
 const StrategySetting = () => {
   const navigate = useNavigate();
   const {setResponseBackTest} = useResponseStore();
+  const token = 'eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOiIxNTlmNDU0Mi1lYmZmLTRhY2QtYTYwMy1hNGZiNGM5NDUyNmMiLCJpYXQiOjE3MTYzMDAyOTEsImV4cCI6MTcyMTEwMDI5MX0.Vyf48RAXt3Eoxg5iTN3oON_hcYnEHB4octStoJlrE5Y0owYoz7OL0Nv4RlrnNe4q'
+
+  console.log(token)
 
   const methods = useForm({
     resolver: zodResolver(formSchema),
@@ -65,12 +69,20 @@ const StrategySetting = () => {
   const mutation = useMutation({
     mutationFn: async (data) => {
       console.log(data)
-      const response = await axios.post('http://localhost:8081/api/v1/backtesting/run', data)
+      const response = await axios.post('http://localhost:8081/api/v1/backtesting/run', data, {
+        headers : {
+          'Content-Type' : 'application/json',
+          'Authorization' : `Bearer ${token}`
+        }
+      })
       console.log(response.data)
       setResponseBackTest(response.data)
     },
     onSuccess: () => {
       navigate('/dashboard/run');
+    },
+    onError: () => {
+      console.log('에러')
     }
   })
 
