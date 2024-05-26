@@ -39,24 +39,22 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: 🦉 gradle build를 위한 권한을 부여합니다.
-        run: |
-          cd backend
-          chmod +x gradlew
+        run: sudo chmod +x backend/gradlew
 
       - name: 🦉 gradle wrapper를 통한 Gradle 버전 지정
         run: |
           cd backend
-          ./gradlew wrapper --gradle-version 8.7
+          sudo ./gradlew wrapper --gradle-version 8.7
 
       - name: 🦉 gradle 캐시 삭제
         run: |
           cd backend
-          ./gradlew clean
+          sudo ./gradlew clean
 
       - name: 🦉 gradle build 중입니다.
         run: |
           cd backend
-          ./gradlew build -x test --stacktrace
+          sudo ./gradlew build -x test --stacktrace
 
       - name: 🦉 Docker Hub에 로그인 후, docker image build 후 Docker Hub에 push합니다.
         env:
@@ -65,6 +63,6 @@ jobs:
           DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
         run: |
           cd backend
-          docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
-          docker build -t $DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY:latest .
-          docker push $DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY:latest
+          sudo docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+          sudo docker build -t $DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY:latest .
+          sudo docker push $DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY:latest
