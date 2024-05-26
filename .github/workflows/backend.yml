@@ -47,10 +47,12 @@ jobs:
         run: ./gradlew wrapper --gradle-version 8.7
 
       - name: 🦉 Clean Gradle cache
-        run: ./gradlew clean
+        run: ./gradlew clea
 
       - name: 🦉 Build with Gradle
-        run: ./gradlew build -x test --stacktrace
+        run: |
+          cd backend
+          ./gradlew build -x test --stacktrace
 
       - name: 🦉 Docker login and build Docker image
         run: |
