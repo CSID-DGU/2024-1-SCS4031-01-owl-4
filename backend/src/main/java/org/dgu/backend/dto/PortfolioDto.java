@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.dgu.backend.domain.Portfolio;
 
 import java.util.UUID;
 
@@ -37,5 +38,38 @@ public class PortfolioDto {
         private String comment;
         private BackTestingDto.Trading trading;
         private BackTestingDto.Performance performance;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class EditPortfolioRequest {
+        private String portfolioId;
+        private String title;
+        private String description;
+        private String comment;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class EditPortfolioResponse {
+        private String title;
+        private String description;
+        private String comment;
+
+        public static PortfolioDto.EditPortfolioResponse of(Portfolio portfolio) {
+            return EditPortfolioResponse.builder()
+                    .title(portfolio.getTitle())
+                    .description(portfolio.getDescription())
+                    .comment(portfolio.getComment())
+                    .build();
+        }
     }
 }
