@@ -44,4 +44,14 @@ public class PortfolioController {
         portfolioService.removePortfolio(authorizationHeader, portfolioId);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_DELETE_PORTFOLIO);
     }
+
+    // 포트폴리오 정보 수정 API
+    @PatchMapping
+    public ResponseEntity<ApiResponse<PortfolioDto.EditPortfolioResponse>> editPortfolio(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestBody PortfolioDto.EditPortfolioRequest editPortfolioRequest) {
+
+        PortfolioDto.EditPortfolioResponse editPortfolioResponse = portfolioService.editPortfolio(authorizationHeader, editPortfolioRequest);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_EDIT_PORTFOLIO, editPortfolioResponse);
+    }
 }
