@@ -6,8 +6,6 @@ import org.dgu.backend.dto.BackTestingDto;
 import org.dgu.backend.dto.PortfolioDto;
 import org.dgu.backend.exception.PortfolioErrorResult;
 import org.dgu.backend.exception.PortfolioException;
-import org.dgu.backend.exception.UserErrorResult;
-import org.dgu.backend.exception.UserException;
 import org.dgu.backend.repository.*;
 import org.dgu.backend.util.JwtUtil;
 import org.springframework.stereotype.Service;
@@ -21,7 +19,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PortfolioServiceImpl implements PortfolioService {
     private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
     private final PortfolioRepository portfolioRepository;
     private final PortfolioOptionRepository portfolioOptionRepository;
     private final TradingResultRepository tradingResultRepository;
@@ -30,10 +27,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     // 포트폴리오 전체 목록을 가져오는 메서드
     @Override
     public List<PortfolioDto.PortfolioInfos> getPortfolios(String authorizationHeader) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         List<Portfolio> portfolios = portfolioRepository.findAllSavedByUser(user); // 저장된 포트폴리오만 가져옴
 
@@ -59,10 +53,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     // 특정 포트폴리오 상세 정보를 가져오는 메서드
     @Override
     public PortfolioDto.PortfolioDetailInfos getPortfolioDetails(String authorizationHeader, String portfolioId) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         Portfolio portfolio = portfolioRepository.findByPortfolioId(UUID.fromString(portfolioId))
                 .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
@@ -76,6 +67,16 @@ public class PortfolioServiceImpl implements PortfolioService {
                 .trading(createTradingResultResponse(tradingResult))
                 .performance(createPerformanceResultResponse(performanceResult))
                 .build();
+    }
+
+    // 포트폴리오를 삭제하는 메서드
+    @Override
+    public void removePortfolio(String authorizationHeader, String portfolioId) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+
+        Portfolio portfolio = portfolioRepository.findByUserAndPortfolioId(user, UUID.fromString(portfolioId))
+                .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
+        portfolioRepository.delete(portfolio);
     }
 
     // 거래 결과 응답 객체를 만드는 메서드

@@ -15,4 +15,5 @@ public interface PortfolioRepository extends JpaRepository<Portfolio,Long> {
     Optional<Portfolio> findByPortfolioId(UUID portfolioId);
     @Query("SELECT p FROM Portfolio p WHERE p.user = :user AND p.isSaved = 1")
     List<Portfolio> findAllSavedByUser(User user);
+    Optional<Portfolio> findByUserAndPortfolioId(User user, UUID portfolioId);
 }
