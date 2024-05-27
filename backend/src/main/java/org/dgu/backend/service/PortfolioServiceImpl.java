@@ -1,5 +1,6 @@
 package org.dgu.backend.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.domain.*;
 import org.dgu.backend.dto.BackTestingDto;
@@ -16,6 +17,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PortfolioServiceImpl implements PortfolioService {
     private final JwtUtil jwtUtil;

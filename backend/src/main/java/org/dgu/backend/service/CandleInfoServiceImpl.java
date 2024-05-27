@@ -1,5 +1,6 @@
 package org.dgu.backend.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dgu.backend.domain.Candle;
@@ -17,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class CandleInfoServiceImpl implements CandleInfoService {

@@ -1,5 +1,6 @@
 package org.dgu.backend.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.domain.*;
 import org.dgu.backend.dto.BackTestingDto;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BackTestingServiceImpl implements BackTestingService {
     private final JwtUtil jwtUtil;

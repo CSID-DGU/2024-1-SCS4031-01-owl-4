@@ -1,5 +1,6 @@
 package org.dgu.backend.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dgu.backend.domain.Market;
@@ -9,9 +10,10 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class MarketServiceImpl implements MarketService {
 
     private final RestTemplate restTemplate;
