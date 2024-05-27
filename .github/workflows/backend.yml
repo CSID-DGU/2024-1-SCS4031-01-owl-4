@@ -39,17 +39,12 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: 🦉 gradle build를 위한 권한을 부여합니다.
-        run: sudo chmod +x backend/gradlew
-
-      - name: 🦉 gradle 캐시 삭제
-        run: |
-          cd backend
-          sudo ./gradlew clean
+        run: chmod +x backend/gradlew
 
       - name: 🦉 gradle build 중입니다.
         run: |
           cd backend
-          sudo ./gradlew build -x test --stacktrace
+          ./gradlew build -x test --stacktrace
 
       - name: 🦉 Docker Hub에 로그인 후, docker image build 후 Docker Hub에 push합니다.
         env:
