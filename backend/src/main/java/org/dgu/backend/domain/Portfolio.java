@@ -71,4 +71,16 @@ public class Portfolio extends BaseEntity {
         isSaved = 1;
         savedAt = LocalDateTime.now();
     }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateComment(String comment) {
+        this.comment = comment;
+    }
 }

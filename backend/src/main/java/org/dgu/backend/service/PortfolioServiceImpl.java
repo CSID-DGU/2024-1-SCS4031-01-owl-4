@@ -81,6 +81,31 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolioRepository.delete(portfolio);
     }
 
+    // 포트폴리오 정보를 수정하는 메서드
+    @Override
+    public PortfolioDto.EditPortfolioResponse editPortfolio(String authorizationHeader, PortfolioDto.EditPortfolioRequest editPortfolioRequest) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+
+        Portfolio portfolio = portfolioRepository.findByUserAndPortfolioId(user, UUID.fromString(editPortfolioRequest.getPortfolioId()))
+                .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
+
+        if (!Objects.isNull(editPortfolioRequest.getTitle())) {
+            portfolio.updateTitle(editPortfolioRequest.getTitle());
+        }
+
+        if (!Objects.isNull(editPortfolioRequest.getDescription())) {
+            portfolio.updateDescription(editPortfolioRequest.getDescription());
+        }
+
+        if (!Objects.isNull(editPortfolioRequest.getComment())) {
+            portfolio.updateComment(editPortfolioRequest.getComment());
+        }
+
+        portfolioRepository.save(portfolio);
+
+        return PortfolioDto.EditPortfolioResponse.of(portfolio);
+    }
+
     // 거래 결과 응답 객체를 만드는 메서드
     private BackTestingDto.Trading createTradingResultResponse(TradingResult tradingResult) {
         return BackTestingDto.Trading.builder()
