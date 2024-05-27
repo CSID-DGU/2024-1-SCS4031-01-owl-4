@@ -1,12 +1,11 @@
 package org.dgu.backend.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.domain.*;
 import org.dgu.backend.dto.BackTestingDto;
 import org.dgu.backend.exception.PortfolioErrorResult;
 import org.dgu.backend.exception.PortfolioException;
-import org.dgu.backend.exception.UserErrorResult;
-import org.dgu.backend.exception.UserException;
 import org.dgu.backend.repository.*;
 import org.dgu.backend.util.BackTestingCalculator;
 import org.dgu.backend.util.DateUtil;
@@ -17,12 +16,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BackTestingServiceImpl implements BackTestingService {
     private final JwtUtil jwtUtil;
     private final DateUtil dateUtil;
     private final BackTestingCalculator backTestingUtil;
-    private final UserRepository userRepository;
     private final CandleInfoRepository candleInfoRepository;
     private final CandleRepository candleRepository;
     private final PortfolioRepository portfolioRepository;
@@ -60,10 +59,7 @@ public class BackTestingServiceImpl implements BackTestingService {
     // 백테스팅 결과를 저장하는 메서드
     @Override
     public void saveBackTestingResult(String authorizationHeader, BackTestingDto.SavingRequest savingRequest) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         Portfolio portfolio = portfolioRepository.findByPortfolioId(savingRequest.getPortfolioId())
                 .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
@@ -80,10 +76,7 @@ public class BackTestingServiceImpl implements BackTestingService {
 
     // 백테스팅 결과를 임시 저장하는 메서드
     private void saveTempBackTestingResult(String authorizationHeader, BackTestingDto.StepInfo stepInfo, BackTestingDto.BackTestingResponse backTestingResponse) {
-        String token = jwtUtil.getTokenFromHeader(authorizationHeader);
-        UUID userId = UUID.fromString(jwtUtil.getUserIdFromToken(token));
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         // 포트폴리오 임시 저장
         Portfolio savedTempPortfolio = saveTempPortfolio(user, stepInfo);

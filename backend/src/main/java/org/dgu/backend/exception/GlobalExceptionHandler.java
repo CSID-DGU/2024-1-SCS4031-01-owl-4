@@ -3,7 +3,9 @@ package org.dgu.backend.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.dgu.backend.common.ApiResponse;
 import org.dgu.backend.common.code.BaseErrorCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -29,5 +31,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ApiResponse<BaseErrorCode>> handlePortfolioException(PortfolioException e) {
         PortfolioErrorResult errorResult = e.getPortfolioErrorResult();
         return ApiResponse.onFailure(errorResult);
+    }
+    // Header
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<String> handleMissingHeaderException(MissingRequestHeaderException ex) {
+        String errorMessage = "Required header '" + ex.getHeaderName() + "' is missing";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
     }
 }

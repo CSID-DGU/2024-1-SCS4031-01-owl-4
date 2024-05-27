@@ -3,9 +3,14 @@ package org.dgu.backend.util;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dgu.backend.domain.User;
 import org.dgu.backend.exception.TokenErrorResult;
 import org.dgu.backend.exception.TokenException;
+import org.dgu.backend.exception.UserErrorResult;
+import org.dgu.backend.exception.UserException;
+import org.dgu.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +20,11 @@ import java.util.UUID;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtUtil {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
+    private final UserRepository userRepository;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.SECRET_KEY);
@@ -51,6 +58,15 @@ public class JwtUtil {
     // 응답 헤더에서 액세스 토큰을 반환하는 메서드
     public String getTokenFromHeader(String authorizationHeader) {
         return authorizationHeader.substring(7);
+    }
+
+    // 토큰에서 유저를 반환하는 메서드
+    public User getUserFromHeader(String authorizationHeader) {
+        String token = getTokenFromHeader(authorizationHeader);
+        UUID userId = UUID.fromString(getUserIdFromToken(token));
+
+        return userRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserException(UserErrorResult.NOT_FOUND_USER));
     }
 
     // 토큰에서 유저 id를 반환하는 메서드
