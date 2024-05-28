@@ -6,15 +6,17 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.dgu.backend.domain.PerformanceResult;
 import org.dgu.backend.domain.Portfolio;
+import org.dgu.backend.domain.PortfolioOption;
+import org.dgu.backend.domain.TradingResult;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class PortfolioDto {
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,11 +27,21 @@ public class PortfolioDto {
         private String endDate;
         private String candleName;
         private boolean isTrade;
+
+        public static PortfolioDto.PortfolioInfos of(Portfolio portfolio, PortfolioOption portfolioOption, UUID currentPortfolioId) {
+            return PortfolioDto.PortfolioInfos.builder()
+                    .portfolioId(portfolio.getPortfolioId())
+                    .title(portfolio.getTitle())
+                    .startDate(String.valueOf(portfolioOption.getStartDate()))
+                    .endDate(String.valueOf(portfolioOption.getEndDate()))
+                    .candleName(portfolioOption.getCandleName())
+                    .isTrade(Objects.equals(portfolio.getPortfolioId(), currentPortfolioId))
+                    .build();
+        }
     }
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -38,11 +50,19 @@ public class PortfolioDto {
         private String comment;
         private BackTestingDto.Trading trading;
         private BackTestingDto.Performance performance;
+
+        public static PortfolioDto.PortfolioDetailInfos of(Portfolio portfolio, TradingResult tradingResult, PerformanceResult performanceResult) {
+            return PortfolioDto.PortfolioDetailInfos.builder()
+                    .description(portfolio.getDescription())
+                    .comment(portfolio.getComment())
+                    .trading(BackTestingDto.Trading.of(tradingResult))
+                    .performance(BackTestingDto.Performance.of(performanceResult))
+                    .build();
+        }
     }
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -55,7 +75,6 @@ public class PortfolioDto {
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)

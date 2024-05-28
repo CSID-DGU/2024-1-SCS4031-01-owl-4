@@ -60,9 +60,7 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.save(newRefreshToken);
 
         // 새로운 액세스 토큰을 담아 반환
-        return TokenDto.TokenResponse.builder()
-                .accessToken(newAccessToken)
-                .build();
+        return TokenDto.TokenResponse.of(newAccessToken);
     }
 
     // 쿠키를 삭제하는 메서드

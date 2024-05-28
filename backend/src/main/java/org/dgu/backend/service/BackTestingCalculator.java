@@ -1,8 +1,9 @@
-package org.dgu.backend.util;
+package org.dgu.backend.service;
 
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.domain.CandleInfo;
 import org.dgu.backend.dto.BackTestingDto;
+import org.dgu.backend.util.NumberUtil;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -97,7 +98,6 @@ public class BackTestingCalculator {
 
         for (LocalDateTime goldenCrossPoint : goldenCrossPoints) {
             int startIndex = findStartIndex(candles, goldenCrossPoint);
-            Double avgPrice = candles.get(startIndex).getTradePrice();
 
             executeTrade(candles, startIndex, backTestingResults);
         }
@@ -108,9 +108,9 @@ public class BackTestingCalculator {
     // 거래를 실행하는 메서드
     private void executeTrade(List<CandleInfo> candles, int startIndex, List<BackTestingDto.BackTestingResult> backTestingResults) {
         // 초기 세팅
-        coin = tradingUnit / candles.get(startIndex).getTradePrice();
+        coin = 0.0;
+        executeBuy(candles.get(startIndex).getDateTime(), candles.get(startIndex).getTradePrice(), backTestingResults);
         buyingCnt = 1;
-        capital -= tradingUnit;
         List<Double> tradePrices = new ArrayList<>();
         tradePrices.add(candles.get(startIndex).getTradePrice());
         Double avgPrice = candles.get(startIndex).getTradePrice();
@@ -153,7 +153,7 @@ public class BackTestingCalculator {
         coin += tradingUnit / currentPrice;
         capital -= tradingUnit;
 
-        backTestingResults.add(createResult(currentDate, "BUY", currentPrice, coin, capital, null, null, null));
+        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "BUY", currentPrice, coin, capital, null, null, null));
     }
 
     // 익절 처리 메서드
@@ -164,7 +164,7 @@ public class BackTestingCalculator {
         Long income = capital - orgCapital;
         Double rate = ((double) income / orgCapital) * 100;
 
-        backTestingResults.add(createResult(currentDate, "SELL", currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
+        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "SELL", currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
     }
 
     // 손절 처리 메서드
@@ -175,7 +175,7 @@ public class BackTestingCalculator {
         Long income = capital - orgCapital;
         Double rate = ((double) income / orgCapital) * 100;
 
-        backTestingResults.add(createResult(currentDate, "STOP_LOSS", currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
+        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "STOP_LOSS", currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
     }
 
     // 시작 인덱스를 찾는 메서드
@@ -186,20 +186,6 @@ public class BackTestingCalculator {
             }
         }
         return -1;
-    }
-
-    // 거래 결과 생성 메서드
-    private BackTestingDto.BackTestingResult createResult(LocalDateTime date, String action, Double coinPrice, Double coin, Long capital, Double rate, Long income, Integer tradingPeriod) {
-        return BackTestingDto.BackTestingResult.builder()
-                .date(date)
-                .action(action)
-                .coinPrice(coinPrice)
-                .coin(coin)
-                .capital(capital)
-                .rate(rate)
-                .income(income)
-                .tradingPeriod(tradingPeriod)
-                .build();
     }
 
     // 백테스팅 결과를 집계하는 메서드
@@ -262,8 +248,8 @@ public class BackTestingCalculator {
     private BackTestingDto.Trading createTradingPart(Long capital, Long finalCapital) {
         int totalTradeCount = positiveTradeCount + negativeTradeCount;
         int averageTradePeriod = tradingPeriodSum / totalTradeCount;
-        Double averagePositiveTrade = numberUtil.round(positiveRatioSum / positiveTradeCount, 2);
-        Double averageNegativeTrade = numberUtil.round(negativeRatioSum / negativeTradeCount, 2);
+        Double averagePositiveTrade = positiveTradeCount != 0 ? numberUtil.round(positiveRatioSum / positiveTradeCount, 2) : 0.0;
+        Double averageNegativeTrade = negativeTradeCount != 0 ? numberUtil.round(negativeRatioSum / negativeTradeCount, 2) : 0.0;
 
         return BackTestingDto.Trading.builder()
                 .initialCapital(capital)
@@ -304,7 +290,7 @@ public class BackTestingCalculator {
                 .capital(backTestingResult.getCapital())
                 .coinPrice(backTestingResult.getCoinPrice().longValue())
                 .coin(backTestingResult.getCoin())
-                .rate(backTestingResult.getRate() != null ? (numberUtil.round(backTestingResult.getRate(), 2)) : 0.0)
+                .rate(backTestingResult.getRate() != null && !backTestingResult.getRate().isNaN() ? (numberUtil.round(backTestingResult.getRate(), 2)) : 0.0)
                 .build();
     }
 }

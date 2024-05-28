@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.dgu.backend.domain.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +16,6 @@ import java.util.UUID;
 public class BackTestingDto {
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -35,11 +34,33 @@ public class BackTestingDto {
         private Double buyingPoint;
         private Double sellingPoint;
         private Double stopLossPoint;
+
+        public Portfolio toPortfolio(User user) {
+            return Portfolio.builder()
+                    .user(user)
+                    .title(title)
+                    .description(description)
+                    .build();
+        }
+
+        public PortfolioOption toPortfolioOption(Portfolio portfolio) { // 추가된 메서드
+            return PortfolioOption.builder()
+                    .portfolio(portfolio)
+                    .candleName(candleName)
+                    .startDate(LocalDateTime.parse(startDate))
+                    .endDate(LocalDateTime.parse(endDate))
+                    .nDate(nDate)
+                    .mDate(mDate)
+                    .tradingUnit(tradingUnit)
+                    .buyingPoint(buyingPoint)
+                    .sellingPoint(sellingPoint)
+                    .stopLossPoint(stopLossPoint)
+                    .build();
+        }
     }
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -52,11 +73,23 @@ public class BackTestingDto {
         private Double rate;
         private Long income;
         private Integer tradingPeriod;
+
+        public static BackTestingDto.BackTestingResult of(LocalDateTime date, String action, Double coinPrice, Double coin, Long capital, Double rate, Long income, Integer tradingPeriod) {
+            return BackTestingDto.BackTestingResult.builder()
+                    .date(date)
+                    .action(action)
+                    .coinPrice(coinPrice)
+                    .coin(coin)
+                    .capital(capital)
+                    .rate(rate)
+                    .income(income)
+                    .tradingPeriod(tradingPeriod)
+                    .build();
+        }
     }
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -67,7 +100,6 @@ public class BackTestingDto {
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -80,11 +112,37 @@ public class BackTestingDto {
         public void addId(UUID portfolioId) {
             this.portfolioId = portfolioId;
         }
+
+        public TradingResult toTradingResult(Portfolio portfolio) {
+            return TradingResult.builder()
+                    .portfolio(portfolio)
+                    .initialCapital(trading.getInitialCapital())
+                    .finalCapital(trading.getFinalCapital())
+                    .totalTradeCount(trading.getTotalTradeCount())
+                    .positiveTradeCount(trading.getPositiveTradeCount())
+                    .negativeTradeCount(trading.getNegativeTradeCount())
+                    .averageTradePeriod(trading.getAverageTradePeriod())
+                    .averagePositiveTrade(trading.getAveragePositiveTrade())
+                    .averageNegativeTrade(trading.getAverageNegativeTrade())
+                    .build();
+        }
+
+        public PerformanceResult toPerformanceResult(Portfolio portfolio) {
+            return PerformanceResult.builder()
+                    .portfolio(portfolio)
+                    .totalRate(performance.getTotalRate())
+                    .winRate(performance.getWinRate())
+                    .lossRate(performance.getLossRate())
+                    .winLossRatio(performance.getWinLossRatio())
+                    .highValueStrategy(performance.getHighValueStrategy())
+                    .lowValueStrategy(performance.getLowValueStrategy())
+                    .highLossValueStrategy(performance.getHighLossValueStrategy())
+                    .build();
+        }
     }
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -97,11 +155,23 @@ public class BackTestingDto {
         private int averageTradePeriod;
         private Double averagePositiveTrade;
         private Double averageNegativeTrade;
+
+        public static BackTestingDto.Trading of(TradingResult tradingResult) {
+            return BackTestingDto.Trading.builder()
+                    .initialCapital(tradingResult.getInitialCapital())
+                    .finalCapital(tradingResult.getFinalCapital())
+                    .totalTradeCount(tradingResult.getTotalTradeCount())
+                    .positiveTradeCount(tradingResult.getPositiveTradeCount())
+                    .negativeTradeCount(tradingResult.getNegativeTradeCount())
+                    .averageTradePeriod(tradingResult.getAverageTradePeriod())
+                    .averagePositiveTrade(tradingResult.getAveragePositiveTrade())
+                    .averageNegativeTrade(tradingResult.getAverageNegativeTrade())
+                    .build();
+        }
     }
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -113,11 +183,22 @@ public class BackTestingDto {
         private Long highValueStrategy;
         private Long lowValueStrategy;
         private Long highLossValueStrategy;
+
+        public static BackTestingDto.Performance of(PerformanceResult performanceResult) {
+            return BackTestingDto.Performance.builder()
+                    .totalRate(performanceResult.getTotalRate())
+                    .winRate(performanceResult.getWinRate())
+                    .lossRate(performanceResult.getLossRate())
+                    .winLossRatio(performanceResult.getWinLossRatio())
+                    .highValueStrategy(performanceResult.getHighValueStrategy())
+                    .lowValueStrategy(performanceResult.getLowValueStrategy())
+                    .highLossValueStrategy(performanceResult.getHighLossValueStrategy())
+                    .build();
+        }
     }
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -132,7 +213,6 @@ public class BackTestingDto {
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
