@@ -55,10 +55,7 @@ const CoinPriceChart = () => {
     }
 
   return (
-    <div className="w-full h-full rounded-xl shadow-xl border pt-5">
-        <ReactEcharts option={option} style={{width:'100%', height:'100%'}} className="relative right-0"/>
-    </div>
-    
+        <ReactEcharts option={option} style={{width:'96.5%', height:'100%'}} className="absolute top-0 right-4 rounded-xl shadow-xl border pt-3"/>
   )
 }
 

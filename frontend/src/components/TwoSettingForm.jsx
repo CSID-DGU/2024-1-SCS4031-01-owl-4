@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form';
 
 const TwoSettingForm = () => {
-  const { register, formState: { errors } } = useFormContext();
+  const { register, formState: { errors} } = useFormContext();
 
   const getInputErrorStyle = (field) => {
     return errors[field] ? "border-red-600 text-red-600 placeholder-shown:border-red-600 placeholder-shown:border-red-600 focus:text-black" : "border-black text-black placeholder-shown:border-black placeholder-shown:border-t-black";

@@ -11,8 +11,8 @@ const BackTestTable = ({trading, performance}) => {
 
   return (
     <div className="flex flex-col">
-        <div className="h-1/3">
-            <div className="flex flex-col items-center mt-3">
+        <div className="">
+            <div className="flex h-full flex-col items-center">
                 <div className="flex">
                     <div className="w-[175px] h-[125px] border shadow-xl rounded-xl p-3">
                         <span className="block font-bold text-lg">{calProfit >= 0 ? "Proceeds":"Loss"} </span>
@@ -41,13 +41,13 @@ const BackTestTable = ({trading, performance}) => {
                 </div>
             </div>
         </div>
-        <div className="w-full h-1/3 flex justify-center mt-3">
+        <div className="w-full flex justify-center mt-3">
             <div className="w-full p-5 rounded-xl shadow-xl border">
                 <PerformanceTable performance = {performance} trading = {trading} />
             </div>
         </div>
-        <div className="w-full h-[232px] p-3 mt-3 border rounded-xl shadow-lg">
-                <WinLossChart performance = {performance}/>
+        <div className="w-full h-1/3 mt-3 border rounded-xl shadow-lg relative">
+            <WinLossChart performance = {performance}/>
         </div>
     </div>
   )

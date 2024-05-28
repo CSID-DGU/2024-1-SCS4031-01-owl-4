@@ -12,6 +12,20 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/* Custom CSS */
+.cssbuttons-io-button:hover .icon {
+  width: calc(100% - 0.6em);
+}
+
+.cssbuttons-io-button:hover .icon svg {
+  transform: translateX(0.1em);
+}
+
+.cssbuttons-io-button:active .icon {
+  transform: scale(0.95);
+}
+
+
 
 @layer base {
     body {
@@ -20,4 +34,19 @@ input[type="number"] {
         box-sizing: border-box;
         scroll-behavior: smooth;
     }
+}
+
+@layer components {
+  .custom-checkbox {
+      @apply appearance-none rounded cursor-pointer px-3;
+  }
+
+  .custom-checkbox:checked {
+      @apply bg-rose-500 border-rose-500;
+  }
+
+  .custom-checkbox:checked::after {
+      content: '⭐';
+      @apply text-white text-lg absolute inset-0 flex items-center justify-center;
+  }
 }

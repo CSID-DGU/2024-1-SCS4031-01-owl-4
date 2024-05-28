@@ -16,11 +16,7 @@ const SideBar = () => {
   const path = location.split('/')[2];
 
   const [open, setOpen] = useState(true);
-  const [link, setLink] = useState(path);
 
-  const handleLink = (linkId) => {
-    setLink(linkId);
-  };
 
   const handleOpen = () => {
     setOpen(!open);
@@ -28,67 +24,92 @@ const SideBar = () => {
   }
 
   const navOpenStyle = open ? 'basis-[200px]' : 'basis-[100px]'
-  const listOpenStyle = open ? 'hover:bg-amber-200' : 'hover:translate-x-[70%] hover:duration-[400ms] taransition-all'
-  // const homeClickStyle = link === undefined ? 'bg-amber-200 bg-red-500' : '' 
+  const listOpenStyle = open ? 'hover:bg-amber-200' : ''
   const openingToggleStyle = open ? 'translate-x-[200%] duration-[400ms] rotate-[-90deg]' : 'duration-[400ms]'
   const spanMenuStyle = open ? "" : "hidden"
 
   return (
-    <div className={`${navOpenStyle} flex justify-center items-center transition-all duration-[400ms] ease-out`}>
-      <div className='w-full h-[75%] flex flex-col justify-center items-center bg-amber-400 rounded-r-[100px]'>
+    <div className={`${navOpenStyle} flex flex-col justify-center items-center transition-all duration-[400ms] ease-out relative`}>
+      <div className='w-full h-[75%] flex flex-col justify-center items-center bg-amber-400 rounded-r-[110px]'>
           
-          <div className='grow-[1] w-full flex items-center'>
+          <div className='grow-[1] w-full flex items-center relative z-10'>
             <AiTwotoneUpSquare onClick={handleOpen} className={`size-[40px] top-4 left-5 relative transition-all rotate-90 ease-out ${openingToggleStyle}`} />
           </div>
 
-          <ul className='grow-[8] w-full flex flex-col pl-6 mt-6'>
-            <li className={`w-full rounded-l-lg ${listOpenStyle}`}>
-            <Link to="." className='relative w-full group' onClick={() => handleLink(undefined)}>
-              <div className='size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-red-500'>
-                <BsGridFill className='size-[25px] relative top-0 left-0 group-hover:text-white' />
+          <ul className='grow-[8] w-full flex flex-col pl-6 mt-7'>
+            
+            <li className={`w-full rounded-l-lg ${listOpenStyle} ${path === undefined && open ? "bg-amber-200": " "} ${path === undefined && !open ? "translate-x-[52px] duration-[400ms] taransition-all" : "translate-x-0 duration-[400ms] taransition-all"}`}>
+            <Link to="." className='relative w-full group'>
+              <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-red-500 ${path === undefined && open ? "bg-red-500": " "} ${path === undefined && !open ? "bg-red-500" : ""}`}>
+                <BsGridFill className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === undefined && open ? "text-white": " "} ${path === undefined && !open ? "text-white" : ""}`} />
               </div>
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-red-600`}>HOME</span>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-red-600 ${path === undefined && open ? "text-red-600": " "} `}>HOME</span>
             </Link>
             </li>
-            <li className='mt-4'>
-            <Link to="chart" className='text-black relative w-full text-lg font-bold' onClick={() => handleLink(undefined)}>
-              <MdCandlestickChart className='size-[30px] relative top-0 left-0' />
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base`}>CHART</span>
+
+            <li className={`w-full mt-4 rounded-l-lg ${listOpenStyle} ${path === 'chart' && open ? "bg-amber-200": " "} ${path === 'chart' && !open ? "translate-x-[52px] duration-[400ms] taransition-all" : "translate-x-0 duration-[400ms] taransition-all"}`}>
+            <Link to="chart" className='relative w-full group'>
+              <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-blue-500 ${path === 'chart' && open ? "bg-blue-500": " "} ${path === 'chart' && !open ? "bg-blue-500" : ""}`}>
+                <MdCandlestickChart className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'chart' && open ? "text-white": " "} ${path === 'chart' && !open ? "text-white" : ""}`} />
+              </div>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-blue-600 ${path === 'chart' && open ? "text-blue-600": " "} `}>CHART</span>
             </Link>
             </li>
-            <li className='mt-4'>
-            <Link to="table" className='text-black relative w-full text-lg font-bold' onClick={() => handleLink(undefined)}>
-              <TbTableFilled className='size-[30px] relative top-0 left-0' />
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base`}>TABLE</span>
+
+            <li className={`w-full mt-4 rounded-l-lg ${listOpenStyle} ${path === 'table' && open ? "bg-amber-200": " "} ${path === 'table' && !open ? "translate-x-[52px] duration-[400ms] taransition-all" : "translate-x-0 duration-[400ms] taransition-all"}`}>
+            <Link to="table" className='relative w-full group'>
+              <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-lime-500 ${path === 'table' && open ? "bg-lime-500": " "} ${path === 'table' && !open ? "bg-lime-500" : ""}`}>
+                <TbTableFilled className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'table' && open ? "text-white": " "} ${path === 'table' && !open ? "text-white" : ""}`} />
+              </div>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-lime-600 ${path === 'table' && open ? "text-lime-600": " "} `}>Table</span>
             </Link>
             </li>
-            <li className='mt-4'>
-            <Link to="strategy" className='text-black relative w-full text-lg font-bold' onClick={() => handleLink(undefined)}>
-              <BsFillClipboard2PlusFill className='size-[30px] relative top-0 left-0' />
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base`}>STRATEGY</span>
+
+            <li className={`w-full mt-4 rounded-l-lg ${listOpenStyle} ${path === 'strategy' && open ? "bg-amber-200": " "} ${path === 'strategy' && !open ? "translate-x-[52px] duration-[400ms] taransition-all" : "translate-x-0 duration-[400ms] taransition-all"}`}>
+            <Link to="strategy" className='relative w-full group'>
+              <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-indigo-600 ${path === 'strategy' && open ? "bg-indigo-600": " "} ${path === 'strategy' && !open ? "bg-indigo-600" : ""}`}>
+                <BsFillClipboard2PlusFill className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'strategy' && open ? "text-white": " "} ${path === 'strategy' && !open ? "text-white" : ""}`} />
+              </div>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-indigo-700 ${path === 'strategy' && open ? "text-indigo-700": " "} `}>STRATEGY</span>
             </Link>
             </li>
-            <li className='mt-4'>
-            <Link to="run" className='text-black relative w-full text-lg font-bold' onClick={() => handleLink(undefined)}>
-              <BsCpuFill className='size-[30px] relative top-0 left-0' />
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base`}>RUN</span>
+
+            <li className={`w-full mt-4 rounded-l-lg ${listOpenStyle} ${path === 'run' && open ? "bg-amber-200": " "} ${path === 'run' && !open ? "translate-x-[52px] duration-[400ms] taransition-all" : "translate-x-0 duration-[400ms] taransition-all"}`}>
+            <Link to="run" className='relative w-full group'>
+              <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-violet-500 ${path === 'run' && open ? "bg-violet-500": " "} ${path === 'run' && !open ? "bg-violet-500" : ""}`}>
+                <BsCpuFill className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'run' && open ? "text-white": " "} ${path === 'run' && !open ? "text-white" : ""}`} />
+              </div>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-violet-600 ${path === 'run' && open ? "text-violet-600": " "} `}>RUN</span>
             </Link>
             </li>
-            <li className='mt-4'>
-            <Link to="portfolio" className='text-black relative w-full text-lg font-bold' onClick={() => handleLink(undefined)}>
-              <BsClipboard2DataFill className='size-[30px] relative top-0 left-0' />
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base`}>PORTFOLIO</span>
+
+            <li className={`w-full mt-4 rounded-l-lg ${listOpenStyle} ${path === 'portfolio' && open ? "bg-amber-200": " "} ${path === 'portfolio' && !open ? "translate-x-[52px] duration-[400ms] taransition-all" : "translate-x-0 duration-[400ms] taransition-all"}`}>
+            <Link to="portfolio" className='relative w-full group'>
+              <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-pink-500 ${path === 'portfolio' && open ? "bg-pink-500": " "} ${path === 'portfolio' && !open ? "bg-pink-500" : ""}`}>
+                <BsClipboard2DataFill className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'portfolio' && open ? "text-white": " "} ${path === 'portfolio' && !open ? "text-white" : ""}`} />
+              </div>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-pink-600 ${path === 'portfolio' && open ? "text-pink-600": " "} `}>PORTFOLIO</span>
             </Link>
             </li>
+
           </ul>
 
           <div className='grow-[1] w-full flex items-center'>
             <IoMdSettings onClick={handleOpen} className={`size-[30px] top-[-20px] left-6 relative`} />
           </div>
-
-
       </div>
-      {/* <div className='bg-amber-400 absolute rounded-[100px] flex left-[-130.4px] h-full w-[300px]' />
+    </div>
+    
+  );
+};
+
+export default SideBar;
+
+{/* <div className='flex flex-col items-center py-5 w-[275px] h-[800px] bg-red-500 absolute top-0 left-[40%] mt-8'>
+
+</div> */}
+
+{/* <div className='bg-amber-400 absolute rounded-[100px] flex left-[-130.4px] h-full w-[300px]' />
       <div className='w-full h-full relative flex flex-col'>
         <div className='grow-[1] flex justify-center items-center'>
           <div className='flex flex-col gap-3'>
@@ -141,13 +162,3 @@ const SideBar = () => {
       <div className='grow-[1] w-full flex justify-center items-center text-black'>
         <div>Settings</div>
       </div> */}
-    </div>
-    
-  );
-};
-
-export default SideBar;
-
-{/* <div className='flex flex-col items-center py-5 w-[275px] h-[800px] bg-red-500 absolute top-0 left-[40%] mt-8'>
-
-</div> */}

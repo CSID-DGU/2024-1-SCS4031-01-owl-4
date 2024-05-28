@@ -9,6 +9,11 @@ import { useMutation } from '@tanstack/react-query';
 import useResponseStore from '../../../utils/useResponseStore.js'
 import { useNavigate } from "react-router-dom";
 import useTokenStore from '../../../utils/token.js';
+import { FaRegArrowAltCircleRight } from "react-icons/fa";
+import { IoIosSend } from "react-icons/io";
+import { FaRegArrowAltCircleLeft } from "react-icons/fa";
+import { useEffect } from 'react';
+import Loading from '../../../components/Loading.jsx';
 
 const formSchema = z.object({
   title: z.string().nonempty({ message: "Title is required" }),
@@ -54,16 +59,16 @@ const formSchema = z.object({
 
 const StrategySetting = () => {
   const navigate = useNavigate();
-  const {setResponseBackTest} = useResponseStore();
-  const token = 'eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOiIxNTlmNDU0Mi1lYmZmLTRhY2QtYTYwMy1hNGZiNGM5NDUyNmMiLCJpYXQiOjE3MTYzMDAyOTEsImV4cCI6MTcyMTEwMDI5MX0.Vyf48RAXt3Eoxg5iTN3oON_hcYnEHB4octStoJlrE5Y0owYoz7OL0Nv4RlrnNe4q'
-
-  console.log(token)
+  const {setResponseBackTest, setLoading} = useResponseStore();
+  const {token} = useTokenStore();
 
   const methods = useForm({
     resolver: zodResolver(formSchema),
     mode: 'onBlur'
   });
   
+  const {formState, reset} = methods
+  const {isSubmitting, isSubmitted, isSubmitSuccessful} = formState
   const {steps, step, currentStepIndex, isFirstStep, isLastStep, back, next} = useMultistepForm([<FirstSettingForm />, <TwoSettingForm />])
   
   const mutation = useMutation({
@@ -79,6 +84,8 @@ const StrategySetting = () => {
       setResponseBackTest(response.data)
     },
     onSuccess: () => {
+      setLoading()
+      reset();
       navigate('/dashboard/run');
     },
     onError: () => {
@@ -86,12 +93,17 @@ const StrategySetting = () => {
     }
   })
 
+  useEffect(() => {
+    if(mutation.isPending){
+      setLoading()
+    }
+  },[mutation.isPending, setLoading])
+  
   const onSubmit = (data) => {
     mutation.mutate(data);
   };
 
-
-
+ 
   return (
     <>
       <div className="basis-[50px] rounded-t-xl flex relative">
@@ -104,15 +116,33 @@ const StrategySetting = () => {
       </div>
       <div className="h-full bg-white rounded-b-xl rounded-r-xl p-5" >
       <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)} className='flex flex-col relative h-full bg-amber-200 rounded-xl p-5'>
+          <form onSubmit={methods.handleSubmit(onSubmit)} className='flex flex-col relative h-full bg-white rounded-xl p-5 shadow-xl border'>
             
             {step}
 
             <div className="flex justify-evenly mt-10">
-              {!isFirstStep && <button type="button" onClick={back}>Back</button>}
-              <button type="button" onClick={isLastStep ? methods.handleSubmit(onSubmit) : next}>
-                {isLastStep ? "Finish" : "Next"}
+              {
+              
+                !isFirstStep && 
+                <button type='button' onClick={back} className="group flex items-center justify-start w-11 h-11 bg-violet-500 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-32 hover:rounded-lg active:translate-x-1 active:translate-y-1">
+                <div className="flex items-center justify-center w-full transition-all duration-300 group-hover:justify-start group-hover:px-3">
+                  <FaRegArrowAltCircleLeft className='text-white size-[20px]' />
+                </div>
+                <div className="absolute right-5 transform translate-x-full opacity-0 text-white text-lg font-semibold transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                BACK
+                </div>
               </button>
+                // <button type="button" onClick={back} className=''>Back</button>
+              }
+              <button disabled={isSubmitting} type='button' onClick={isLastStep ? methods.handleSubmit(onSubmit) : next} className={`group flex items-center justify-start w-11 h-11 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-32 hover:rounded-lg active:translate-x-1 active:translate-y-1 ${isSubmitting? "bg-slate-500" : "bg-violet-500"}`}>
+                <div className="flex items-center justify-center w-full transition-all duration-300 group-hover:justify-start group-hover:px-3">
+                  {isLastStep? <IoIosSend className='text-white size-[20px]' /> : <FaRegArrowAltCircleRight className='text-white size-[20px]' />}
+                </div>
+                <div className="absolute right-5 transform translate-x-full opacity-0 text-white text-lg font-semibold transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                {isLastStep ? "SUBMIT" : "NEXT"}
+                </div>
+              </button>
+
             </div>
           </form>
         </FormProvider>
@@ -122,3 +152,5 @@ const StrategySetting = () => {
 }
 
 export default StrategySetting
+
+
