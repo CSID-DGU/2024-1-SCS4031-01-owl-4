@@ -8,7 +8,7 @@ const DashBoard = () => {
   const {token} = useTokenStore();
 
   return (
-    <main className='h-screen flex flex-col'>
+    <main className='h-screen flex flex-col overflow-hidden'>
       <NavBar />
       <div className='h-full bg-slate-200 flex'>
       <SideBar />

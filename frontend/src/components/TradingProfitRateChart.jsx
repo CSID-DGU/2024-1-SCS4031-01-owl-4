@@ -1,5 +1,6 @@
 import ReactEcharts from "echarts-for-react";
 import useResponseStore from '../utils/useResponseStore';
+import * as echarts from 'echarts';
 
 const TradingProfitRateChart = () => {
 
@@ -9,52 +10,118 @@ const TradingProfitRateChart = () => {
         trading_logs
       } = responseBackTest.payload;
     
-    const tradeDate = trading_logs.map((log) =>{
-      if(log.type === '매도'){
-        const dateObj = new Date(log.date)
-        const date = dateObj.toLocaleDateString()
-        return date
-      }
-    })
-    const tradeRate = trading_logs.map((log) => {
-      if(log.type ==='매도') return log.rate
+      const tradeDate = trading_logs
+      .filter(log => log.type === '매도')
+      .map(log => {
+        const dateObj = new Date(log.date);
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      });
+
+    const tradeRate = trading_logs
+    .filter(log => log.type === '매도')
+    .map((log) => {
+       return log.rate
     })
     
+    const labelTradeData = tradeDate.map((date , index) => {
+      if(tradeRate[index] > 0){
+        return '+ '+ date
+      } return '- '+ date
+    })
+
     const option = {
         legend: {
             data: ['매도']
         },
         xAxis: {
-            type: 'category',
-            boundaryGap: false,
+            boundaryGap: true,
+            offset: 55,
+            data: labelTradeData,
             axisLine: {
-                onZero: false
+              show: true,
+              onZero: true,
+              lineStyle: {
+                color: '#000'
+              }
             },
-            data: tradeDate.filter(item => item !== undefined)
+            axisTick: {
+              show:false
+            },
+            axisLabel: {
+              inside: true,
+              margin: 16,
+              formatter: (value) => {
+                return value.substring(1)
+              },
+              color: (value) => {
+                return value.charAt(0) === '+' ? "green" : "red";
+              },
+              fontWeight: 'bolder'
+            },
+            splitLine: {
+              show: false
+            },
+            axisPointer: {
+              show: true,
+              type: 'none'
+            }
+            
         },
         yAxis: {
           scale:true,
+          offset: 25,
           axisLabel: {
               formatter: function(value) {
                   return value
-              }
+              },
+              fontWeight: 'bolder'
+          },
+          axisPointer: {
+            show: true,
+            type: 'line',
+            triggerEmphasis: false,
+            triggerTooltip: false
           }
         },
+        tooltip: {
+          trigger: 'axis',
+        },
+        dataZoom: [{
+          type: 'inside'
+        }],
         series: [
             {
                 name: '매도',
                 type: 'bar',
-                data: tradeRate.filter(item => item !== undefined)
+                data: tradeRate,
+                barMaxWidth: 20,
+                itemStyle: {
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#83bff6' },
+                    { offset: 0.5, color: '#188df0' },
+                    { offset: 1, color: '#188df0' }
+                  ])
+                },
+                emphasis: {
+                  itemStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                      { offset: 0, color: '#2378f7' },
+                      { offset: 0.7, color: '#2378f7' },
+                      { offset: 1, color: '#83bff6' }
+                    ])
+                  }
+                },
             }
-        ]
+        ],
     }
 
 
 
   return (
-    <div className="h-full rounded-xl shadow-xl border pt-5">
-      <ReactEcharts option={option} style={{width:'100%', height:'100%'}} className="relative right-0"/>
-    </div>
+      <ReactEcharts option={option} style={{height:'100%'}} className=""/>
   )
 }
 

@@ -46,13 +46,13 @@ const TwoSettingForm = () => {
           className={`peer w-full h-full px-3 py-2.5 bg-transparent border-t-transparent rounded-[7px] text-sm font-bold outline-none transition-all 
           focus:outline-none focus:border-2 focus:border-purple-500 focus:border-t-transparent focus:bg-white
           disabled:bg-blue-gray-50 disabled:border-0 
-          placeholder-shown: border ${getInputErrorStyle('a_date')}`}
+          placeholder-shown: border ${getInputErrorStyle('n_date')}`}
           placeholder="" type='number'
-          {...register('a_date')}
+          {...register('n_date')}
         />
         <label
-          className={`flex w-full h-full ${getLabelErrorStyle('a_date')} select-none text-sm pointer-events-none absolute left-0 font-bold !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] peer-focus:text-purple-500 peer-focus:before:!border-purple-500 peer-focus:after:!border-purple-500`}>
-          {errors['a_date'] ? "Moving Average Error" : "N-Moving Average"}
+          className={`flex w-full h-full ${getLabelErrorStyle('n_date')} select-none text-sm pointer-events-none absolute left-0 font-bold !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] peer-focus:text-purple-500 peer-focus:before:!border-purple-500 peer-focus:after:!border-purple-500`}>
+          {errors['n_date'] ? "Moving Average Error" : "N-Moving Average"}
         </label>
       </div>
 
@@ -67,7 +67,7 @@ const TwoSettingForm = () => {
         />
         <label
           className={`flex w-full h-full ${getLabelErrorStyle('trading_unit')} select-none text-sm pointer-events-none absolute left-0 font-bold !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] peer-focus:text-purple-500 peer-focus:before:!border-purple-500 peer-focus:after:!border-purple-500`}>
-          {errors['trading_unit'] ? "Selling Split Error" : "Selling Split"}
+          {errors['trading_unit'] ? "Buying Split Error" : "Buying Split"}
         </label>
       </div>
 

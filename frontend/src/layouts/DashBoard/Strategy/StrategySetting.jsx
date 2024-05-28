@@ -35,7 +35,7 @@ const formSchema = z.object({
     (value) => parseFloat(value),
     z.number().positive({ message: "m_MA must be a positive number" })
   ),
-  a_date: z.preprocess(
+  n_date: z.preprocess(
     (value) => parseFloat(value),
     z.number().positive({ message: "n_MA must be a positive number" })
   ),

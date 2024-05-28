@@ -76,11 +76,9 @@ const Portfolio = () => {
   const toggleSearchInputStyle = searchToggle ? "w-0" : "w-[320px] delay-500"
   const toggleSearchIconStyle = searchToggle ? "left-[-20%] delay-300" : "left-[-5%]"
   
-  console.log(responsePortfolio)
-  
   return (
     <div className="w-full bg-slate-200 p-10">
-      <div className='w-full h-full bg-white rounded-xl flex'>
+      <div className='w-full h-[788px] bg-white rounded-xl flex'>
         <div className='w-2/5 h-full py-5 pl-5 pr-2'>
           <div className='w-full h-full bg-white shadow-xl rounded-xl border py-3 px-4 flex flex-col'>
             <h1 className='font-bold text-xl'>PORTFOLIO</h1>
@@ -143,9 +141,10 @@ const Portfolio = () => {
           </div>
         </div>
         <div className='w-3/5 h-full py-5 pr-5 pl-2'>
-            <div className='w-full h-full bg-white rounded-xl shadow-xl border'>
-              {responsePortfolio.comment}
-              
+            <div className='w-full h-full bg-white rounded-xl shadow-xl border p-5 overflow-x-hidden'>
+              <div className='w-full h-[300px] bg-slate-400'></div>
+              <div className='w-full h-[300px] bg-slate-400 mt-5'></div>
+              <div className='w-full h-[300px] bg-slate-400 mt-5'></div>
             </div>
         </div>
       </div>

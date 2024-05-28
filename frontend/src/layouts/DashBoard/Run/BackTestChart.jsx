@@ -45,14 +45,19 @@ const BackTestChart = ({trading, performance, trading_logs, portfolio_id}) => {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="w-full h-1/2 relative">
-        <CoinPriceChart/>
+      <div className="w-full h-1/2 px-5">
+        <div className='h-full rounded-xl shadow-xl border relative'>
+          <CoinPriceChart/>
+        </div>
       </div>
       <div className="w-full h-1/2 flex">
-        <div className="w-3/5 h-full p-5">
-          <TradingProfitRateChart />
+        <div className="w-3/5 h-full pl-5 pt-5 pb-1 pr-2">
+          <div className='h-full rounded-xl shadow-xl border relative p-4'>
+             <TradingProfitRateChart />
+          </div>
+         
         </div>
-        <div className="w-2/5 flex justify-center items-center py-5 pr-5 pl-1">
+        <div className="w-2/5 flex justify-center items-center pt-5 pb-1 pr-5 pl-2">
           <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full border rounded-xl shadow-xl p-3 flex flex-col relative">
             <h1 className="font-bold text-2xl ml-4 mt-3">Comment</h1>
             <div className="relative w-full h-3/4 my-4">
