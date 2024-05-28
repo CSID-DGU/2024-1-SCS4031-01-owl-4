@@ -3,7 +3,6 @@ package org.dgu.backend.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.domain.*;
-import org.dgu.backend.dto.BackTestingDto;
 import org.dgu.backend.dto.PortfolioDto;
 import org.dgu.backend.exception.PortfolioErrorResult;
 import org.dgu.backend.exception.PortfolioException;
@@ -39,14 +38,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         for (Portfolio portfolio: portfolios) {
             PortfolioOption portfolioOption = portfolioOptionRepository.findByPortfolio(portfolio);
 
-            portfolioInfoGroups.add(PortfolioDto.PortfolioInfos.builder()
-                            .portfolioId(portfolio.getPortfolioId())
-                            .title(portfolio.getTitle())
-                            .startDate(String.valueOf(portfolioOption.getStartDate()))
-                            .endDate(String.valueOf(portfolioOption.getEndDate()))
-                            .candleName(portfolioOption.getCandleName())
-                            .isTrade(Objects.equals(portfolio.getPortfolioId(), currentPortfolioId))
-                            .build());
+            portfolioInfoGroups.add(PortfolioDto.PortfolioInfos.of(portfolio, portfolioOption, currentPortfolioId));
         }
 
         return portfolioInfoGroups;
@@ -63,12 +55,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         TradingResult tradingResult = tradingResultRepository.findByPortfolio(portfolio);
         PerformanceResult performanceResult = performanceResultRepository.findByPortfolio(portfolio);
 
-        return PortfolioDto.PortfolioDetailInfos.builder()
-                .description(portfolio.getDescription())
-                .comment(portfolio.getComment())
-                .trading(createTradingResultResponse(tradingResult))
-                .performance(createPerformanceResultResponse(performanceResult))
-                .build();
+        return PortfolioDto.PortfolioDetailInfos.of(portfolio, tradingResult, performanceResult);
     }
 
     // 포트폴리오를 삭제하는 메서드
@@ -104,32 +91,5 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolioRepository.save(portfolio);
 
         return PortfolioDto.EditPortfolioResponse.of(portfolio);
-    }
-
-    // 거래 결과 응답 객체를 만드는 메서드
-    private BackTestingDto.Trading createTradingResultResponse(TradingResult tradingResult) {
-        return BackTestingDto.Trading.builder()
-                .initialCapital(tradingResult.getInitialCapital())
-                .finalCapital(tradingResult.getFinalCapital())
-                .totalTradeCount(tradingResult.getTotalTradeCount())
-                .positiveTradeCount(tradingResult.getPositiveTradeCount())
-                .negativeTradeCount(tradingResult.getNegativeTradeCount())
-                .averageTradePeriod(tradingResult.getAverageTradePeriod())
-                .averagePositiveTrade(tradingResult.getAveragePositiveTrade())
-                .averageNegativeTrade(tradingResult.getAverageNegativeTrade())
-                .build();
-    }
-
-    // 성능 결과 응답 객체를 만드는 메서드
-    private BackTestingDto.Performance createPerformanceResultResponse(PerformanceResult performanceResult) {
-        return BackTestingDto.Performance.builder()
-                .totalRate(performanceResult.getTotalRate())
-                .winRate(performanceResult.getWinRate())
-                .lossRate(performanceResult.getLossRate())
-                .winLossRatio(performanceResult.getWinLossRatio())
-                .highValueStrategy(performanceResult.getHighValueStrategy())
-                .lowValueStrategy(performanceResult.getLowValueStrategy())
-                .highLossValueStrategy(performanceResult.getHighLossValueStrategy())
-                .build();
     }
 }

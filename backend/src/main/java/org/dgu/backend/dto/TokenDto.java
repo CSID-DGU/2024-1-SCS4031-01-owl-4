@@ -9,12 +9,17 @@ import lombok.*;
 public class TokenDto {
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class TokenResponse {
         @JsonProperty("access_token")
         private String accessToken;
+
+        public static TokenDto.TokenResponse of(String accessToken) {
+            return TokenResponse.builder()
+                    .accessToken(accessToken)
+                    .build();
+        }
     }
 }

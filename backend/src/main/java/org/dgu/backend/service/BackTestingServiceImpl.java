@@ -7,7 +7,6 @@ import org.dgu.backend.dto.BackTestingDto;
 import org.dgu.backend.exception.PortfolioErrorResult;
 import org.dgu.backend.exception.PortfolioException;
 import org.dgu.backend.repository.*;
-import org.dgu.backend.util.BackTestingCalculator;
 import org.dgu.backend.util.DateUtil;
 import org.dgu.backend.util.JwtUtil;
 import org.springframework.stereotype.Service;
@@ -79,76 +78,20 @@ public class BackTestingServiceImpl implements BackTestingService {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         // 포트폴리오 임시 저장
-        Portfolio savedTempPortfolio = saveTempPortfolio(user, stepInfo);
-        backTestingResponse.addId(savedTempPortfolio.getPortfolioId()); // 응답에 포트폴리오 ID 추가
+        Portfolio portfolio = stepInfo.toPortfolio(user);
+        portfolioRepository.save(portfolio);
+        backTestingResponse.addId(portfolio.getPortfolioId()); // 응답에 포트폴리오 ID 추가
 
         // 포트폴리오 지표 임시 저장
-        saveTempPortfolioOption(savedTempPortfolio, stepInfo);
+        PortfolioOption portfolioOption = stepInfo.toPortfolioOption(portfolio);
+        portfolioOptionRepository.save(portfolioOption);
 
         // 포트폴리오 거래 결과 임시 저장
-        saveTempPortfolioTradingResult(savedTempPortfolio, backTestingResponse);
+        TradingResult tradingResult = backTestingResponse.toTradingResult(portfolio);
+        tradingResultRepository.save(tradingResult);
 
         // 포트폴리오 성능 결과 임시 저장
-        saveTempPortfolioPerformanceResult(savedTempPortfolio, backTestingResponse);
-    }
-
-    // 포트폴리오를 임시 저장하는 메서드
-    private Portfolio saveTempPortfolio(User user, BackTestingDto.StepInfo stepInfo) {
-        Portfolio portfolio = Portfolio.builder()
-                .user(user)
-                .title(stepInfo.getTitle())
-                .description(stepInfo.getDescription())
-                .build();
-        portfolioRepository.save(portfolio);
-
-        return portfolio;
-    }
-
-    // 포트폴리오 지표를 임시 저장하는 메서드
-    private void saveTempPortfolioOption(Portfolio portfolio, BackTestingDto.StepInfo stepInfo) {
-        PortfolioOption portfolioOption = PortfolioOption.builder()
-                .portfolio(portfolio)
-                .candleName(stepInfo.getCandleName())
-                .startDate(LocalDateTime.parse(stepInfo.getStartDate()))
-                .endDate(LocalDateTime.parse(stepInfo.getEndDate()))
-                .nDate(stepInfo.getNDate())
-                .mDate(stepInfo.getMDate())
-                .tradingUnit(stepInfo.getTradingUnit())
-                .buyingPoint(stepInfo.getBuyingPoint())
-                .sellingPoint(stepInfo.getSellingPoint())
-                .stopLossPoint(stepInfo.getStopLossPoint())
-                .build();
-        portfolioOptionRepository.save(portfolioOption);
-    }
-
-    // 포트폴리오 거래 결과를 임시 저장하는 메서드
-    private void saveTempPortfolioTradingResult(Portfolio portfolio, BackTestingDto.BackTestingResponse backTestingResponse) {
-        TradingResult tradingResult = TradingResult.builder()
-                .portfolio(portfolio)
-                .initialCapital(backTestingResponse.getTrading().getInitialCapital())
-                .finalCapital(backTestingResponse.getTrading().getFinalCapital())
-                .totalTradeCount(backTestingResponse.getTrading().getTotalTradeCount())
-                .positiveTradeCount(backTestingResponse.getTrading().getPositiveTradeCount())
-                .negativeTradeCount(backTestingResponse.getTrading().getNegativeTradeCount())
-                .averageTradePeriod(backTestingResponse.getTrading().getAverageTradePeriod())
-                .averagePositiveTrade(backTestingResponse.getTrading().getAveragePositiveTrade())
-                .averageNegativeTrade(backTestingResponse.getTrading().getAverageNegativeTrade())
-                .build();
-        tradingResultRepository.save(tradingResult);
-    }
-
-    // 포트폴리오 성능 결과를 임시 저장하는 메서드
-    private void saveTempPortfolioPerformanceResult(Portfolio portfolio, BackTestingDto.BackTestingResponse backTestingResponse) {
-        PerformanceResult performanceResult = PerformanceResult.builder()
-                .portfolio(portfolio)
-                .totalRate(backTestingResponse.getPerformance().getTotalRate())
-                .winRate(backTestingResponse.getPerformance().getWinRate())
-                .lossRate(backTestingResponse.getPerformance().getLossRate())
-                .winLossRatio(backTestingResponse.getPerformance().getWinLossRatio())
-                .highValueStrategy(backTestingResponse.getPerformance().getHighValueStrategy())
-                .lowValueStrategy(backTestingResponse.getPerformance().getLowValueStrategy())
-                .highLossValueStrategy(backTestingResponse.getPerformance().getHighLossValueStrategy())
-                .build();
+        PerformanceResult performanceResult = backTestingResponse.toPerformanceResult(portfolio);
         performanceResultRepository.save(performanceResult);
     }
 }
