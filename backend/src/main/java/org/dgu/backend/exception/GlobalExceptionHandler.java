@@ -20,6 +20,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         TokenErrorResult errorResult = e.getTokenErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
+    // Header
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<String> handleMissingHeaderException(MissingRequestHeaderException ex) {
+        String errorMessage = "Required header '" + ex.getHeaderName() + "' is missing";
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
+    }
     // User
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ApiResponse<BaseErrorCode>> handleUserException(UserException e) {
@@ -32,10 +38,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         PortfolioErrorResult errorResult = e.getPortfolioErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
-    // Header
-    @ExceptionHandler(MissingRequestHeaderException.class)
-    public ResponseEntity<String> handleMissingHeaderException(MissingRequestHeaderException ex) {
-        String errorMessage = "Required header '" + ex.getHeaderName() + "' is missing";
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorMessage);
+    // BackTesting
+    @ExceptionHandler(BackTestingException.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handleBackTestingException(BackTestingException e) {
+        BackTestingErrorResult errorResult = e.getBackTestingErrorResult();
+        return ApiResponse.onFailure(errorResult);
     }
 }
