@@ -44,4 +44,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         BackTestingErrorResult errorResult = e.getBackTestingErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
+    // Number
+    @ExceptionHandler(NumberException.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handleNumberException(NumberException e) {
+        NumberErrorResult errorResult = e.getNumberErrorResult();
+        return ApiResponse.onFailure(errorResult);
+    }
 }
