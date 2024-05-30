@@ -20,7 +20,7 @@ import java.util.*;
 public class BackTestingServiceImpl implements BackTestingService {
     private final JwtUtil jwtUtil;
     private final DateUtil dateUtil;
-    private final BackTestingCalculator backTestingUtil;
+    private final BackTestingCalculator backTestingCalculator;
     private final CandleInfoRepository candleInfoRepository;
     private final CandleRepository candleRepository;
     private final PortfolioRepository portfolioRepository;
@@ -36,16 +36,16 @@ public class BackTestingServiceImpl implements BackTestingService {
         LocalDateTime endDate = dateUtil.convertToLocalDateTime(stepInfo.getEndDate());
 
         List<CandleInfo> candles = candleInfoRepository.findFilteredCandleInfo(candle, startDate, endDate);
-        candles = backTestingUtil.removeDuplicatedCandles(candles); // 중복 데이터 제거
+        candles = backTestingCalculator.removeDuplicatedCandles(candles); // 중복 데이터 제거
 
         // 골든 크로스 지점 찾기
-        List<LocalDateTime> goldenCrossPoints = backTestingUtil.findGoldenCrossPoints(candles, stepInfo);
+        List<LocalDateTime> goldenCrossPoints = backTestingCalculator.findGoldenCrossPoints(candles, stepInfo);
 
         // 백테스팅 시작
-        List<BackTestingDto.BackTestingResult> backTestingResults = backTestingUtil.run(candles, stepInfo, goldenCrossPoints);
+        List<BackTestingDto.BackTestingResult> backTestingResults = backTestingCalculator.run(candles, stepInfo, goldenCrossPoints);
 
         // 백테스팅 결과 집계
-        BackTestingDto.BackTestingResponse backTestingResponse = backTestingUtil.collectResults(backTestingResults, stepInfo.getInitialCapital());
+        BackTestingDto.BackTestingResponse backTestingResponse = backTestingCalculator.collectResults(backTestingResults, stepInfo.getInitialCapital());
 
         // 회원인 경우 포트폴리오 임시 저장
         if (authorizationHeader != null) {
