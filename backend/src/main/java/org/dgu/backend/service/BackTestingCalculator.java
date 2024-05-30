@@ -3,6 +3,8 @@ package org.dgu.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.domain.CandleInfo;
 import org.dgu.backend.dto.BackTestingDto;
+import org.dgu.backend.exception.BackTestingErrorResult;
+import org.dgu.backend.exception.BackTestingException;
 import org.dgu.backend.util.NumberUtil;
 import org.springframework.stereotype.Component;
 
@@ -44,15 +46,15 @@ public class BackTestingCalculator {
     public List<BackTestingDto.EMAInfo> calculateEMA(List<CandleInfo> candles, int date) {
         Double k = 2.0 / (date + 1);
         List<Double> emaValues = new ArrayList<>();
-        for (int i = 0; i < candles.size(); i++) {
+        Double ema = candles.get(0).getTradePrice();
+        emaValues.add(ema);
+
+        for (int i = 1; i < candles.size(); i++) {
             Double price = candles.get(i).getTradePrice();
-            if (i == 0) {
-                emaValues.add(price);
-            } else {
-                Double ema = k * price + (1 - k) * emaValues.get(i - 1);
-                emaValues.add(ema);
-            }
+            ema = k * price + (1 - k) * ema;
+            emaValues.add(ema);
         }
+
         return IntStream.range(0, emaValues.size())
                 .mapToObj(i -> BackTestingDto.EMAInfo.builder()
                         .date(candles.get(i).getDateTime())
@@ -99,14 +101,14 @@ public class BackTestingCalculator {
         for (LocalDateTime goldenCrossPoint : goldenCrossPoints) {
             int startIndex = findStartIndex(candles, goldenCrossPoint);
 
-            executeTrade(candles, startIndex, backTestingResults);
+            executeTrade(candles, startIndex, stepInfo.getTradingUnit(), backTestingResults);
         }
 
         return backTestingResults;
     }
 
     // 거래를 실행하는 메서드
-    private void executeTrade(List<CandleInfo> candles, int startIndex, List<BackTestingDto.BackTestingResult> backTestingResults) {
+    private void executeTrade(List<CandleInfo> candles, int startIndex, int tradingUnit, List<BackTestingDto.BackTestingResult> backTestingResults) {
         // 초기 세팅
         coin = 0.0;
         executeBuy(candles.get(startIndex).getDateTime(), candles.get(startIndex).getTradePrice(), backTestingResults);
@@ -116,7 +118,7 @@ public class BackTestingCalculator {
         Double avgPrice = candles.get(startIndex).getTradePrice();
         startDate = null;
 
-        for (int i = startIndex; i < candles.size(); i++) {
+        for (int i = startIndex + 1; i < candles.size(); i++) {
             LocalDateTime currentDate = candles.get(i).getDateTime();
             Double currentPrice = candles.get(i).getTradePrice();
 
@@ -125,23 +127,19 @@ public class BackTestingCalculator {
             }
 
             // 매수 처리
-            if (currentPrice < avgPrice * (100 - buyingPoint) / 100) {
+            if (buyingCnt < tradingUnit && currentPrice < avgPrice * (100 - buyingPoint) / 100) {
                 executeBuy(currentDate, currentPrice, backTestingResults);
                 buyingCnt++;
+                tradePrices.add(currentPrice);
                 avgPrice = tradePrices.stream().mapToDouble(Double::doubleValue).sum() / buyingCnt;
-
-                if (buyingCnt == 10 || capital < currentPrice) {
-                    executeSell(currentDate, currentPrice, backTestingResults);
-                    break;
-                }
             }
-            // 익절 처리
-            else if (currentPrice > avgPrice * (100 + sellingPoint) / 100) {
+            // 전체 자본 대비 수익률을 기준으로 한 익절 처리
+            else if (((currentPrice * coin + capital) - (tradingUnit * buyingCnt)) / (tradingUnit * buyingCnt) * 100 > sellingPoint) {
                 executeSell(currentDate, currentPrice, backTestingResults);
                 break;
             }
-            // 손절 처리
-            else if (currentPrice < avgPrice * (100 - stopLossPoint) / 100) {
+            // 전체 자본 대비 수익률을 기준으로 한 손절 처리
+            else if (((currentPrice * coin + capital) - (tradingUnit * buyingCnt)) / (tradingUnit * buyingCnt) * 100 < -stopLossPoint) {
                 executeStopLoss(currentDate, currentPrice, backTestingResults);
                 break;
             }
@@ -153,7 +151,7 @@ public class BackTestingCalculator {
         coin += tradingUnit / currentPrice;
         capital -= tradingUnit;
 
-        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "BUY", currentPrice, coin, capital, null, null, null));
+        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "BUY", currentPrice, coin, capital, 0.0, 0L, null));
     }
 
     // 익절 처리 메서드
@@ -185,7 +183,8 @@ public class BackTestingCalculator {
                 return i;
             }
         }
-        return -1;
+
+        throw new BackTestingException(BackTestingErrorResult.NOT_FOUND_START_INDEX);
     }
 
     // 백테스팅 결과를 집계하는 메서드
@@ -267,9 +266,9 @@ public class BackTestingCalculator {
     private BackTestingDto.Performance createPerformancePart(Double initialCapital, Long finalCapital) {
         int totalTradeCount = positiveTradeCount + negativeTradeCount;
         Double totalRate = numberUtil.round(((finalCapital - initialCapital) / initialCapital) * 100, 2);
-        Double winRate = numberUtil.round((double) positiveTradeCount / totalTradeCount * 100, 2);
-        Double lossRate = numberUtil.round((double) negativeTradeCount / totalTradeCount * 100, 2);
-        Double winLossRatio = numberUtil.round((double) positiveTradeCount / negativeTradeCount * 100, 2);
+        Double winRate = positiveTradeCount != 0 ? numberUtil.round((double) positiveTradeCount / totalTradeCount * 100, 2) : 0.0;
+        Double lossRate = negativeTradeCount != 0 ? numberUtil.round((double) negativeTradeCount / totalTradeCount * 100, 2) : 0.0;
+        Double winLossRatio = negativeTradeCount != 0 ? numberUtil.round((double) positiveTradeCount / negativeTradeCount * 100, 2) : 0.0;
 
         return BackTestingDto.Performance.builder()
                 .totalRate(totalRate)
@@ -284,13 +283,9 @@ public class BackTestingCalculator {
 
     // 거래 로그 생성 메서드
     private BackTestingDto.TradingLog createTradingLog(BackTestingDto.BackTestingResult backTestingResult) {
-        return BackTestingDto.TradingLog.builder()
-                .type(!backTestingResult.getAction().equals("BUY") ? "매도" : "매수")
-                .date(backTestingResult.getDate())
-                .capital(backTestingResult.getCapital())
-                .coinPrice(backTestingResult.getCoinPrice().longValue())
-                .coin(backTestingResult.getCoin())
-                .rate(backTestingResult.getRate() != null && !backTestingResult.getRate().isNaN() ? (numberUtil.round(backTestingResult.getRate(), 2)) : 0.0)
-                .build();
+        Double rate = numberUtil.round(backTestingResult.getRate(), 2);
+        backTestingResult.updateRate(rate);
+
+        return BackTestingDto.TradingLog.of(backTestingResult);
     }
 }

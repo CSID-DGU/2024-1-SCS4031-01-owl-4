@@ -74,6 +74,10 @@ public class BackTestingDto {
         private Long income;
         private Integer tradingPeriod;
 
+        public void updateRate(Double rate) {
+            this.rate = rate;
+        }
+
         public static BackTestingDto.BackTestingResult of(LocalDateTime date, String action, Double coinPrice, Double coin, Long capital, Double rate, Long income, Integer tradingPeriod) {
             return BackTestingDto.BackTestingResult.builder()
                     .date(date)
@@ -209,6 +213,17 @@ public class BackTestingDto {
         private Double coin;
         private Long coinPrice;
         private Double rate;
+
+        public static BackTestingDto.TradingLog of(BackTestingDto.BackTestingResult backTestingResult) {
+            return BackTestingDto.TradingLog.builder()
+                    .type(!backTestingResult.getAction().equals("BUY") ? "매도" : "매수")
+                    .date(backTestingResult.getDate())
+                    .capital(backTestingResult.getCapital())
+                    .coinPrice(backTestingResult.getCoinPrice().longValue())
+                    .coin(backTestingResult.getCoin())
+                    .rate(backTestingResult.getRate())
+                    .build();
+        }
     }
 
     @Builder
