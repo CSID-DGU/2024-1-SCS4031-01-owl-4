@@ -108,7 +108,7 @@ public class BackTestingCalculator {
     }
 
     // 거래를 실행하는 메서드
-    private void executeTrade(List<CandleInfo> candles, int startIndex, int tradingUnit, List<BackTestingDto.BackTestingResult> backTestingResults) {
+    private void executeTrade(List<CandleInfo> candles, int startIndex, int tradingCnt, List<BackTestingDto.BackTestingResult> backTestingResults) {
         // 초기 세팅
         coin = 0.0;
         executeBuy(candles.get(startIndex).getDateTime(), candles.get(startIndex).getTradePrice(), backTestingResults);
@@ -126,20 +126,22 @@ public class BackTestingCalculator {
                 startDate = currentDate;
             }
 
+            Long initialCapital = capital + tradingUnit * (buyingCnt);
+            Double curRate = calculateRate(capital, initialCapital, currentPrice, coin);
             // 매수 처리
-            if (buyingCnt < tradingUnit && currentPrice < avgPrice * (100 - buyingPoint) / 100) {
+            if (buyingCnt < tradingCnt && currentPrice < avgPrice * (100 - buyingPoint) / 100) {
                 executeBuy(currentDate, currentPrice, backTestingResults);
                 buyingCnt++;
                 tradePrices.add(currentPrice);
                 avgPrice = tradePrices.stream().mapToDouble(Double::doubleValue).sum() / buyingCnt;
             }
             // 전체 자본 대비 수익률을 기준으로 한 익절 처리
-            else if (((currentPrice * coin + capital) - (tradingUnit * buyingCnt)) / (tradingUnit * buyingCnt) * 100 > sellingPoint) {
+            else if (curRate > sellingPoint) {
                 executeSell(currentDate, currentPrice, backTestingResults);
                 break;
             }
             // 전체 자본 대비 수익률을 기준으로 한 손절 처리
-            else if (((currentPrice * coin + capital) - (tradingUnit * buyingCnt)) / (tradingUnit * buyingCnt) * 100 < -stopLossPoint) {
+            else if (curRate < -stopLossPoint) {
                 executeStopLoss(currentDate, currentPrice, backTestingResults);
                 break;
             }
@@ -156,22 +158,22 @@ public class BackTestingCalculator {
 
     // 익절 처리 메서드
     private void executeSell(LocalDateTime currentDate, Double currentPrice, List<BackTestingDto.BackTestingResult> backTestingResults) {
-        Long orgCapital = capital + tradingUnit * buyingCnt;
+        Long initialCapital = capital + tradingUnit * buyingCnt;
         capital += (long) (currentPrice * coin);
         coin = 0.0;
-        Long income = capital - orgCapital;
-        Double rate = ((double) income / orgCapital) * 100;
+        Long income = capital - initialCapital;
+        Double rate = ((double) income / initialCapital) * 100;
 
         backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "SELL", currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
     }
 
     // 손절 처리 메서드
     private void executeStopLoss(LocalDateTime currentDate, Double currentPrice, List<BackTestingDto.BackTestingResult> backTestingResults) {
-        Long orgCapital = capital + tradingUnit * buyingCnt;
+        Long initialCapital = capital + tradingUnit * buyingCnt;
         capital += (long) (currentPrice * coin);
         coin = 0.0;
-        Long income = capital - orgCapital;
-        Double rate = ((double) income / orgCapital) * 100;
+        Long income = capital - initialCapital;
+        Double rate = ((double) income / initialCapital) * 100;
 
         backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "STOP_LOSS", currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
     }
@@ -287,5 +289,12 @@ public class BackTestingCalculator {
         backTestingResult.updateRate(rate);
 
         return BackTestingDto.TradingLog.of(backTestingResult);
+    }
+
+    // 수익률을 계산하는 메서드
+    private Double calculateRate(Long capital, Long initialCapital, Double currentPrice, Double coin) {
+        Double currentAssetValue = capital + (currentPrice * coin);
+
+        return ((currentAssetValue - initialCapital) / initialCapital) * 100;
     }
 }
