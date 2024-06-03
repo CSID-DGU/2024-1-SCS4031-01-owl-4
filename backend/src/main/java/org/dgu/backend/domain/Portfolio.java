@@ -84,6 +84,10 @@ public class Portfolio extends BaseEntity {
         this.isMarked = true;
     }
 
+    public void removeBookMark() {
+        this.isMarked = false;
+    }
+
     public void updateDescription(String description) {
         this.description = description;
     }
