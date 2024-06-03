@@ -16,7 +16,7 @@ public class BackTestingController {
 
     // 백테스팅 Step1,2 입력 후 백테스팅 실행 API
     @PostMapping("/run")
-    public ResponseEntity<ApiResponse<Object>> getBackTestingResult(
+    public ResponseEntity<ApiResponse<BackTestingDto.BackTestingResponse>> getBackTestingResult(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @RequestBody BackTestingDto.StepInfo stepInfo) {
 
@@ -32,5 +32,14 @@ public class BackTestingController {
 
         backTestingService.saveBackTestingResult(authorizationHeader, savingRequest);
         return ApiResponse.onSuccess(SuccessStatus.CREATED_BACKTESTING_RESULT);
+    }
+
+    // 백테스팅 최근 결과 조회 API
+    @GetMapping("/recent")
+    public ResponseEntity<ApiResponse<BackTestingDto.BackTestingResponse>> getRecentBackTestingResult(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        BackTestingDto.BackTestingResponse recentBackTestingResult  = backTestingService.getRecentBackTestingResult(authorizationHeader);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_RECENT_BACKTESTING_RESULT, recentBackTestingResult);
     }
 }
