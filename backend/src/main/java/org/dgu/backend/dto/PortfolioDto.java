@@ -91,4 +91,13 @@ public class PortfolioDto {
                     .build();
         }
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class AddPortfolioScrapRequest {
+        private String portfolioId;
+    }
 }
