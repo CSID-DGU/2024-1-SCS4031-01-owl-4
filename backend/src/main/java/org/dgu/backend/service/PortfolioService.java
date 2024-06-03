@@ -9,4 +9,5 @@ public interface PortfolioService {
     PortfolioDto.PortfolioDetailInfos getPortfolioDetails(String authorizationHeader, String portfolioId);
     void removePortfolio(String authorizationHeader, String portfolioId);
     PortfolioDto.EditPortfolioResponse editPortfolio(String authorizationHeader, PortfolioDto.EditPortfolioRequest editPortfolioRequest);
+    void addPortfolioBookMark(String authorizationHeader, String portfolioId);
 }

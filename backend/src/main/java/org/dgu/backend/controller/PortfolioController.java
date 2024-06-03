@@ -54,4 +54,14 @@ public class PortfolioController {
         PortfolioDto.EditPortfolioResponse editPortfolioResponse = portfolioService.editPortfolio(authorizationHeader, editPortfolioRequest);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_EDIT_PORTFOLIO, editPortfolioResponse);
     }
+
+    // 포트폴리오 즐겨찾기 추가 API
+    @PostMapping("/bookmark")
+    public ResponseEntity<ApiResponse<Object>> addPortfolioBookMark(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam("portfolio_id") String portfolioId) {
+
+        portfolioService.addPortfolioBookMark(authorizationHeader, portfolioId);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_ADD_PORTFOLIO_SCRAP);
+    }
 }
