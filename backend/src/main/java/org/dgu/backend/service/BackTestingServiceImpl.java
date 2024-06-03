@@ -27,6 +27,7 @@ public class BackTestingServiceImpl implements BackTestingService {
     private final PortfolioOptionRepository portfolioOptionRepository;
     private final TradingResultRepository tradingResultRepository;
     private final PerformanceResultRepository performanceResultRepository;
+    private final TradingLogRepository tradingLogRepository;
 
     // 백테스팅 결과를 생성하는 메서드
     @Override
@@ -64,7 +65,7 @@ public class BackTestingServiceImpl implements BackTestingService {
                 .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
 
         // 이미 저장된 포트폴리오인 경우
-        if (portfolio.getIsSaved() != 0) {
+        if (portfolio.getIsSaved()) {
             throw new PortfolioException(PortfolioErrorResult.IS_ALREADY_SAVED);
         }
 
@@ -73,9 +74,32 @@ public class BackTestingServiceImpl implements BackTestingService {
         portfolioRepository.save(portfolio);
     }
 
+    // 백테스팅 최근 결과를 반환하는 메서드
+    @Override
+    public BackTestingDto.BackTestingResponse getRecentBackTestingResult(String authorizationHeader) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+
+        Portfolio portfolio = portfolioRepository.findTopByUserOrderByCreatedAtDesc(user)
+                .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
+
+        TradingResult tradingResult = tradingResultRepository.findByPortfolio(portfolio);
+        PerformanceResult performanceResult = performanceResultRepository.findByPortfolio(portfolio);
+        List<TradingLog> tradingLogs = tradingLogRepository.findAllByPortfolio(Optional.ofNullable(portfolio));
+
+        return BackTestingDto.BackTestingResponse.of(portfolio, tradingResult, performanceResult, tradingLogs);
+    }
+
     // 백테스팅 결과를 임시 저장하는 메서드
     private void saveTempBackTestingResult(String authorizationHeader, BackTestingDto.StepInfo stepInfo, BackTestingDto.BackTestingResponse backTestingResponse) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
+
+        // 기존에 있던 거래 로그 삭제
+        Optional<Portfolio> existPortfolio = portfolioRepository.findTopByUserOrderByCreatedAtDesc(user);
+
+        if (!Objects.isNull(existPortfolio)) {
+            List<TradingLog> tradingLogs = tradingLogRepository.findAllByPortfolio(existPortfolio);
+            tradingLogRepository.deleteAll(tradingLogs);
+        }
 
         // 포트폴리오 임시 저장
         Portfolio portfolio = stepInfo.toPortfolio(user);
@@ -93,5 +117,12 @@ public class BackTestingServiceImpl implements BackTestingService {
         // 포트폴리오 성능 결과 임시 저장
         PerformanceResult performanceResult = backTestingResponse.toPerformanceResult(portfolio);
         performanceResultRepository.save(performanceResult);
+
+        // 포트폴리오 거래 로그 임시 저장
+        List<BackTestingDto.TradingLog> tradingLogs = backTestingResponse.getTradingLogs();
+        for (BackTestingDto.TradingLog log : tradingLogs) {
+            TradingLog tradingLog = log.toTradingLog(portfolio);
+            tradingLogRepository.save(tradingLog);
+        }
     }
 }
