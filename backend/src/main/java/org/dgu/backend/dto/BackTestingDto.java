@@ -10,6 +10,7 @@ import lombok.Getter;
 import org.dgu.backend.domain.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -143,6 +144,15 @@ public class BackTestingDto {
                     .highLossValueStrategy(performance.getHighLossValueStrategy())
                     .build();
         }
+
+        public static BackTestingDto.BackTestingResponse of(Portfolio portfolio, TradingResult tradingResult, PerformanceResult performanceResult, List<org.dgu.backend.domain.TradingLog> tradingLogs) {
+            return BackTestingDto.BackTestingResponse.builder()
+                    .portfolioId(portfolio.getPortfolioId())
+                    .trading(Trading.of(tradingResult))
+                    .performance(Performance.of(performanceResult))
+                    .tradingLogs(TradingLog.ofTradingLogs(tradingLogs))
+                    .build();
+        }
     }
 
     @Builder
@@ -222,6 +232,34 @@ public class BackTestingDto {
                     .coinPrice(backTestingResult.getCoinPrice().longValue())
                     .coin(backTestingResult.getCoin())
                     .rate(backTestingResult.getRate())
+                    .build();
+        }
+
+        public static List<BackTestingDto.TradingLog> ofTradingLogs(List<org.dgu.backend.domain.TradingLog> tradingLogs) {
+            List<BackTestingDto.TradingLog> tradingLogList = new ArrayList<>();
+            for (org.dgu.backend.domain.TradingLog tradingLog : tradingLogs) {
+                tradingLogList.add(BackTestingDto.TradingLog.builder()
+                        .type(tradingLog.getType())
+                        .date(tradingLog.getDate())
+                        .capital(tradingLog.getCapital())
+                        .coinPrice(tradingLog.getCoinPrice())
+                        .coin(tradingLog.getCoin())
+                        .rate(tradingLog.getRate())
+                        .build());
+            }
+
+            return tradingLogList;
+        }
+
+        public org.dgu.backend.domain.TradingLog toTradingLog(Portfolio portfolio) {
+            return org.dgu.backend.domain.TradingLog.builder()
+                    .portfolio(portfolio)
+                    .type(type)
+                    .date(date)
+                    .capital(capital)
+                    .coin(coin)
+                    .coinPrice(coinPrice)
+                    .rate(rate)
                     .build();
         }
     }
