@@ -27,7 +27,8 @@ public enum SuccessStatus implements BaseCode {
     SUCCESS_GET_PORTFOLIO_DETAILS(HttpStatus.OK, "200", "포트폴리오 상세 조회에 성공했습니다."),
     SUCCESS_DELETE_PORTFOLIO(HttpStatus.OK, "200", "포트폴리오 삭제에 성공했습니다."),
     SUCCESS_EDIT_PORTFOLIO(HttpStatus.OK, "200", "포트폴리오 정보 수정에 성공했습니다."),
-    SUCCESS_ADD_PORTFOLIO_SCRAP(HttpStatus.CREATED, "201", "포트폴리오 즐겨찾기 추가에 성공했습니다.");
+    SUCCESS_ADD_PORTFOLIO_SCRAP(HttpStatus.CREATED, "201", "포트폴리오 즐겨찾기 추가에 성공했습니다."),
+    SUCCESS_DELETE_PORTFOLIO_SCRAP(HttpStatus.OK, "200", "포트폴리오 즐겨찾기 삭제에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
