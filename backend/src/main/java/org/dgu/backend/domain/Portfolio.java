@@ -48,6 +48,9 @@ public class Portfolio extends BaseEntity {
     @Column(name = "is_saved", nullable = false, length = 1)
     private int isSaved;
 
+    @Column(name = "is_marked", nullable = false)
+    private Boolean isMarked;
+
     @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
     private PortfolioOption portfolioOption;
 
@@ -64,6 +67,7 @@ public class Portfolio extends BaseEntity {
         this.title = title;
         this.description = description;
         this.isSaved = 0;
+        this.isMarked = false;
     }
 
     public void savePortfolio(String comment) {
@@ -74,6 +78,10 @@ public class Portfolio extends BaseEntity {
 
     public void updateTitle(String title) {
         this.title = title;
+    }
+
+    public void addBookMark() {
+        this.isMarked = true;
     }
 
     public void updateDescription(String description) {
