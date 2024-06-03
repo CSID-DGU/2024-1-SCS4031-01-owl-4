@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.dgu.backend.common.BaseEntity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -45,8 +46,8 @@ public class Portfolio extends BaseEntity {
     @Column(name = "saved_at", length = 20)
     private LocalDateTime savedAt;
 
-    @Column(name = "is_saved", nullable = false, length = 1)
-    private int isSaved;
+    @Column(name = "is_saved", nullable = false)
+    private Boolean isSaved;
 
     @Column(name = "is_marked", nullable = false)
     private Boolean isMarked;
@@ -60,19 +61,22 @@ public class Portfolio extends BaseEntity {
     @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
     private PerformanceResult performanceResult;
 
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TradingLog> tradingLogs;
+
     @Builder
     public Portfolio(User user, String title, String description) {
         this.user = user;
         this.portfolioId = UUID.randomUUID();
         this.title = title;
         this.description = description;
-        this.isSaved = 0;
+        this.isSaved = false;
         this.isMarked = false;
     }
 
     public void savePortfolio(String comment) {
         this.comment = comment;
-        isSaved = 1;
+        isSaved = true;
         savedAt = LocalDateTime.now();
     }
 
