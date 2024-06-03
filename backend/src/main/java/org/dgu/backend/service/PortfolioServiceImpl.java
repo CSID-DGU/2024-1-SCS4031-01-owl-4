@@ -104,4 +104,16 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolio.addBookMark();
         portfolioRepository.save(portfolio);
     }
+
+    // 포트폴리오 즐겨찾기를 삭제하는 메서드
+    @Override
+    public void removePortfolioBookMark(String authorizationHeader, String portfolioId) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+
+        Portfolio portfolio = portfolioRepository.findByUserAndPortfolioId(user, UUID.fromString(portfolioId))
+                .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
+
+        portfolio.removeBookMark();
+        portfolioRepository.save(portfolio);
+    }
 }

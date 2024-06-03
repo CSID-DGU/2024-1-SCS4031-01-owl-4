@@ -64,4 +64,14 @@ public class PortfolioController {
         portfolioService.addPortfolioBookMark(authorizationHeader, portfolioId);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_ADD_PORTFOLIO_SCRAP);
     }
+
+    // 포트폴리오 즐겨찾기 삭제 API
+    @DeleteMapping("/bookmark")
+    public ResponseEntity<ApiResponse<Object>> removePortfolioBookMark(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam("portfolio_id") String portfolioId) {
+
+        portfolioService.removePortfolioBookMark(authorizationHeader, portfolioId);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_DELETE_PORTFOLIO_SCRAP);
+    }
 }
