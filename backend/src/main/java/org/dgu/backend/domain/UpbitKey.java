@@ -24,9 +24,9 @@ public class UpbitKey {
     @Column(name = "upbit_keys_uuid", columnDefinition = "BINARY(16)", unique = true)
     private UUID upbitKey;
 
-    @Column(name = "access_key", nullable = false, length = 50)
+    @Column(name = "access_key", nullable = false, length = 100)
     private String accessKey;
 
-    @Column(name = "secret_key", nullable = false, length = 10)
+    @Column(name = "secret_key", nullable = false, length = 100)
     private String secretKey;
 }
