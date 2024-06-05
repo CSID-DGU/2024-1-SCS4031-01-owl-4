@@ -32,7 +32,8 @@ public enum SuccessStatus implements BaseCode {
     SUCCESS_DELETE_PORTFOLIO_SCRAP(HttpStatus.OK, "200", "포트폴리오 즐겨찾기 삭제에 성공했습니다."),
     // DashBoard
     SUCCESS_GET_USER_BALANCE(HttpStatus.OK, "200", "유저 업비트 잔고 조회에 성공했습니다"),
-    SUCCESS_GET_USER_COINS(HttpStatus.OK, "200", "유저 보유 코인 조회에 성공했습니다");
+    SUCCESS_GET_USER_COINS(HttpStatus.OK, "200", "유저 보유 코인 조회에 성공했습니다"),
+    SUCCESS_GET_REPRESENTATIVE_COINS(HttpStatus.OK, "200", "대표 코인 조회에 성공했습니다");
 
     private final HttpStatus httpStatus;
     private final String code;
