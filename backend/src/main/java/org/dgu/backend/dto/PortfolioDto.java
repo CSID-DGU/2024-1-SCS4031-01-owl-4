@@ -50,13 +50,15 @@ public class PortfolioDto {
         private String comment;
         private BackTestingDto.Trading trading;
         private BackTestingDto.Performance performance;
+        private Option option;
 
-        public static PortfolioDto.PortfolioDetailInfos of(Portfolio portfolio, TradingResult tradingResult, PerformanceResult performanceResult) {
-            return PortfolioDto.PortfolioDetailInfos.builder()
+        public static PortfolioDto.PortfolioDetailInfos of(Portfolio portfolio, TradingResult tradingResult, PerformanceResult performanceResult, PortfolioOption portfolioOption) {
+            return PortfolioDetailInfos.builder()
                     .description(portfolio.getDescription())
                     .comment(portfolio.getComment())
                     .trading(BackTestingDto.Trading.of(tradingResult))
                     .performance(BackTestingDto.Performance.of(performanceResult))
+                    .option(PortfolioDto.Option.of(portfolioOption))
                     .build();
         }
     }
@@ -88,6 +90,31 @@ public class PortfolioDto {
                     .title(portfolio.getTitle())
                     .description(portfolio.getDescription())
                     .comment(portfolio.getComment())
+                    .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class Option {
+        private int nDate;
+        private int mDate;
+        private int tradingUnit;
+        private Double buyingPoint;
+        private Double sellingPoint;
+        private Double stopLossPoint;
+
+        public static PortfolioDto.Option of(org.dgu.backend.domain.PortfolioOption portfolioOption) {
+            return Option.builder()
+                    .nDate(portfolioOption.getNDate())
+                    .mDate(portfolioOption.getMDate())
+                    .tradingUnit(portfolioOption.getTradingUnit())
+                    .buyingPoint(portfolioOption.getBuyingPoint())
+                    .sellingPoint(portfolioOption.getSellingPoint())
+                    .stopLossPoint(portfolioOption.getStopLossPoint())
                     .build();
         }
     }
