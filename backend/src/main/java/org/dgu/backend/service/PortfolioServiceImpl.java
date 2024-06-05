@@ -54,8 +54,9 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         TradingResult tradingResult = tradingResultRepository.findByPortfolio(portfolio);
         PerformanceResult performanceResult = performanceResultRepository.findByPortfolio(portfolio);
+        PortfolioOption portfolioOption = portfolioOptionRepository.findByPortfolio(portfolio);
 
-        return PortfolioDto.PortfolioDetailInfos.of(portfolio, tradingResult, performanceResult);
+        return PortfolioDto.PortfolioDetailInfos.of(portfolio, tradingResult, performanceResult, portfolioOption);
     }
 
     // 포트폴리오를 삭제하는 메서드
