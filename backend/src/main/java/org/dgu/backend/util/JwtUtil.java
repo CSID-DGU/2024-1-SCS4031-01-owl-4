@@ -31,6 +31,11 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    private SecretKey getUpbitSigningKey(String upbitSecretKey) {
+        byte[] keyBytes = upbitSecretKey.getBytes();
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
     // 액세스 토큰을 발급하는 메서드
     public String generateAccessToken(UUID userId, long expirationMillis) {
         log.info("액세스 토큰이 발행되었습니다.");
@@ -52,6 +57,17 @@ public class JwtUtil {
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationMillis))
                 .signWith(this.getSigningKey())
+                .compact();
+    }
+
+    // 업비트 통신을 위한 토큰을 발급하는 메서드
+    public String generateUpbitToken(String accessKey, String secretKey) {
+        log.info("업비트 API 토큰이 발행되었습니다.");
+
+        return Jwts.builder()
+                .claim("access_key", accessKey)
+                .claim("nonce", UUID.randomUUID().toString())
+                .signWith(getUpbitSigningKey(secretKey))
                 .compact();
     }
 
