@@ -44,7 +44,7 @@ public class BackTestingDto {
                     .build();
         }
 
-        public PortfolioOption toPortfolioOption(Portfolio portfolio) { // 추가된 메서드
+        public PortfolioOption toPortfolioOption(Portfolio portfolio) {
             return PortfolioOption.builder()
                     .portfolio(portfolio)
                     .candleName(candleName)
