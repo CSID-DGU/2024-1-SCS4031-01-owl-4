@@ -248,7 +248,7 @@ public class BackTestingCalculator {
     // 거래 파트 생성 메서드
     private BackTestingDto.Trading createTradingPart(Long capital, Long finalCapital) {
         int totalTradeCount = positiveTradeCount + negativeTradeCount;
-        int averageTradePeriod = tradingPeriodSum / totalTradeCount;
+        int averageTradePeriod = (int) Math.ceil((double) tradingPeriodSum / totalTradeCount);
         Double averagePositiveTrade = positiveTradeCount != 0 ? numberUtil.round(positiveRatioSum / positiveTradeCount, 2) : 0.0;
         Double averageNegativeTrade = negativeTradeCount != 0 ? numberUtil.round(negativeRatioSum / negativeTradeCount, 2) : 0.0;
 
