@@ -38,6 +38,9 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UpbitKey upbitKey;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserCoin> userCoins;
+
     @Builder
     public User(UUID userId, String name, String provider, String providerId) {
         this.userId = userId;
