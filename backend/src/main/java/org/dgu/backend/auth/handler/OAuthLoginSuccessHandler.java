@@ -9,8 +9,10 @@ import org.dgu.backend.auth.info.KakaoUserInfo;
 import org.dgu.backend.auth.info.NaverUserInfo;
 import org.dgu.backend.auth.info.OAuth2UserInfo;
 import org.dgu.backend.domain.RefreshToken;
+import org.dgu.backend.domain.UpbitKey;
 import org.dgu.backend.domain.User;
 import org.dgu.backend.repository.RefreshTokenRepository;
+import org.dgu.backend.repository.UpbitKeyRepository;
 import org.dgu.backend.repository.UserRepository;
 import org.dgu.backend.util.CookieUtil;
 import org.dgu.backend.util.JwtUtil;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -46,6 +49,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
     private final CookieUtil cookieUtil;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UpbitKeyRepository upbitKeyRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -74,6 +78,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         User existUser = userRepository.findByProviderId(providerId);
         User user;
+        String hasKey = "F";
 
         if (existUser == null) {
             // 신규 유저인 경우
@@ -90,6 +95,11 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             // 기존 유저인 경우
             log.info("기존 유저입니다.");
             user = existUser;
+
+            UpbitKey upbitKey = upbitKeyRepository.findByUser(user);
+            if (!Objects.isNull(upbitKey)) {
+                hasKey = "T";
+            }
         }
 
         log.info("유저 이름 : {}", name);
@@ -109,7 +119,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         // 이름, 액세스 토큰을 담아 리다이렉트
         String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
-        String redirectUri = String.format(REDIRECT_URI, encodedName, accessToken);
+        String redirectUri = String.format(REDIRECT_URI, encodedName, hasKey, accessToken);
         getRedirectStrategy().sendRedirect(request, response, redirectUri);
     }
 }
