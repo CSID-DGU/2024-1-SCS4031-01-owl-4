@@ -50,4 +50,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         NumberErrorResult errorResult = e.getNumberErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
+    // Upbit
+    @ExceptionHandler(UpbitException.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handleUpbitException(UpbitException e) {
+        UpbitErrorResult errorResult = e.getUpbitErrorResult();
+        return ApiResponse.onFailure(errorResult);
+    }
 }

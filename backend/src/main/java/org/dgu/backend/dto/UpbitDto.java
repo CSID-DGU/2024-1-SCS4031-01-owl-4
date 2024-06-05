@@ -9,7 +9,6 @@ import lombok.*;
 public class UpbitDto {
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,7 +25,6 @@ public class UpbitDto {
 
     @Builder
     @Getter
-    @NoArgsConstructor
     @AllArgsConstructor
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -66,5 +64,18 @@ public class UpbitDto {
 
         @JsonProperty("change_rate")
         private Double changeRate;
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class Account {
+        private String currency;
+        private Double balance;
+        private Double locked;
+        private Double avgBuyPrice;
+        private String unitCurrency;
     }
 }
