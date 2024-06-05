@@ -33,4 +33,12 @@ public class DashBoardController {
         List<DashBoardDto.UserCoinResponse> userCoins = dashBoardService.getUserCoins(authorizationHeader);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_USER_COINS, userCoins);
     }
+
+    // 대표 코인 5개 조회 API
+    @GetMapping("/coins/representative")
+    public ResponseEntity<ApiResponse<List<DashBoardDto.RepresentativeCoinResponse>>> getRepresentativeCoins() {
+
+        List<DashBoardDto.RepresentativeCoinResponse> representativeCoinResponses = dashBoardService.getRepresentativeCoins();
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_REPRESENTATIVE_COINS, representativeCoinResponses);
+    }
 }

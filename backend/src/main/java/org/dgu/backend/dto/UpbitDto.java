@@ -78,4 +78,20 @@ public class UpbitDto {
         private Double avgBuyPrice;
         private String unitCurrency;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class Ticker {
+        private String market;
+        @JsonProperty("trade_price")
+        private Double price;
+        private String change;
+        @JsonProperty("signed_change_rate")
+        private Double changeRate;
+        @JsonProperty("signed_change_price")
+        private Double changePrice;
+    }
 }
