@@ -9,7 +9,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum UpbitErrorResult implements BaseErrorCode  {
-    FAIL_ACCESS_USER_ACCOUNT(HttpStatus.NOT_FOUND, "404", "업비트에서 유저 잔고를 가져오는 데 실패했습니다.");
+    FAIL_ACCESS_USER_ACCOUNT(HttpStatus.NOT_FOUND, "404", "업비트에서 유저 잔고를 가져오는 데 실패했습니다."),
+    FAIL_ACCESS_COIN_INFO(HttpStatus.NOT_FOUND, "404", "업비트에서 코인 정보를 가져오는 데 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
