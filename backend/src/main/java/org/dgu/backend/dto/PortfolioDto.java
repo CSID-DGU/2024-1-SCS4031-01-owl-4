@@ -26,15 +26,17 @@ public class PortfolioDto {
         private String startDate;
         private String endDate;
         private String candleName;
-        private boolean isTrade;
+        private Boolean isMarked;
+        private Boolean isTrade;
 
         public static PortfolioDto.PortfolioInfos of(Portfolio portfolio, PortfolioOption portfolioOption, UUID currentPortfolioId) {
-            return PortfolioDto.PortfolioInfos.builder()
+            return PortfolioInfos.builder()
                     .portfolioId(portfolio.getPortfolioId())
                     .title(portfolio.getTitle())
                     .startDate(String.valueOf(portfolioOption.getStartDate()))
                     .endDate(String.valueOf(portfolioOption.getEndDate()))
                     .candleName(portfolioOption.getCandleName())
+                    .isMarked(portfolio.getIsMarked())
                     .isTrade(Objects.equals(portfolio.getPortfolioId(), currentPortfolioId))
                     .build();
         }
