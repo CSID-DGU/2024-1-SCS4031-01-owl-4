@@ -1,15 +1,26 @@
 import { FaArrowCircleRight } from "react-icons/fa";
 import usePortfolioOpenPageStore from '../utils/portfolioOpenPageStore';
 import useTokenStore from '../utils/token';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import useResponseStore from "../utils/useResponseStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const PortfolioList = ({item, onClick, isSelected}) => {
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 1을 더해줍니다.
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  
+const PortfolioList = ({item, onClick, isSelected, refetchingData}) => {
     const {isCurrentPage, setIsCurrentPage} = usePortfolioOpenPageStore();
     const {setResponsePortfolio} = useResponseStore();
     const { token } = useTokenStore();
+    const [isChecked, setIsChecked] = useState(false);
+
+
     const autoPurchaseToggle = item.trade
     const autoPurchaseToggleStyle = autoPurchaseToggle ? "bg-lime-400" : "bg-red-400"
     
@@ -27,11 +38,50 @@ const PortfolioList = ({item, onClick, isSelected}) => {
         enabled: isCurrentPage !== item.portfolio_id
     });
 
+
+    const mutationBookMarkDelete = useMutation({
+        mutationFn: async () => {
+            const response = await axios.delete('http://localhost:8081/api/v1/portfolios/bookmark?portfolio_id=' + `${isCurrentPage}`,{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+            })
+            console.log(response)
+        },
+        onSuccess: () => {
+            refetchingData
+        }
+    })
+
+    const mutationBookMarkPost = useMutation({
+        mutationFn: async() => {
+            const response = await axios.post('http://localhost:8081/api/v1/portfolios/bookmark?portfolio_id=' + `${isCurrentPage}`,'',{
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+            })
+            console.log(response)
+        },
+        onSuccess: () => {
+            refetchingData
+        }
+    })
+
     const handleClick = () => {
         if (isCurrentPage !== item.portfolio_id) {
             setIsCurrentPage(item.portfolio_id);
         }
     };
+
+    const handleBookmarkChange = () => {
+        setIsChecked(!isChecked);
+        if(!isChecked){
+            mutationBookMarkPost.mutate()
+        } else {
+            mutationBookMarkDelete.mutate()
+        }
+        // console.log("Checkbox is checked:", !isChecked);
+      };
 
     useEffect(() => {
         if(isCurrentPage === item.portfolio_id){
@@ -41,14 +91,14 @@ const PortfolioList = ({item, onClick, isSelected}) => {
 
   return (
     <div className="relative">
-        <input type="checkbox" className='w-[25px] h-[25px] z-10 absolute -left-3 top-[50px] custom-checkbox border border-slate-300 bg-white' />
+        <input type="checkbox" className='w-[25px] h-[25px] z-10 absolute -left-3 top-[50px] custom-checkbox border border-slate-300 bg-white' checked={isChecked} onChange={handleBookmarkChange} />
         <div className={`w-full h-[80px] bg-white mt-6 rounded-xl border shadow-md relative flex cursor-pointer hover:border-2 hover:border-red-500 ${isSelected ? "border-red-500 border-2": ""}`} onClick={onClick}>
             <div className='w-[42%] flex items-center'>
                 <span className='block ml-8 truncate font-bold'>{item.title}</span>
             </div>
             <div className='w-[28%] flex flex-col border-l items-center text-sm'>
-                <span className='w-full h-1/2 flex justify-center items-center border-b font-bold'>{item.start_date}</span>
-                <span className='w-full h-1/2 flex justify-center items-center font-bold'>{item.end_date}</span>
+                <span className='w-full h-1/2 flex justify-center items-center border-b font-bold'>{formatDate(item.start_date)}</span>
+                <span className='w-full h-1/2 flex justify-center items-center font-bold'>{formatDate(item.end_date)}</span>
             </div>
             <div className='w-[13%] flex justify-center items-center border-l'>
                 <span className='font-bold text-sm'>{item.candle_name}</span>

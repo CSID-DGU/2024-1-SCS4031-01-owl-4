@@ -11,7 +11,7 @@ const useStore = create(
         {
             name: 'auth'
         }
-    )
+    ),
 )
 
 export default useStore

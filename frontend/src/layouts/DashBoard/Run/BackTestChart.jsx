@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CoinPriceChart from "../../../components/CoinPriceChart";
 import TradingProfitRateChart from "../../../components/TradingProfitRateChart";
 import { useForm } from 'react-hook-form';
@@ -16,7 +16,7 @@ const schema = z.object({
 const BackTestChart = ({trading, performance, trading_logs, portfolio_id}) => {
 
   const {token} = useTokenStore();
-  const {submit,setSubmiting} = useResponseStore();
+  const {prevPortfolioId,setPrevPortfolioId} = useResponseStore();
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(schema)
   });
@@ -32,7 +32,7 @@ const BackTestChart = ({trading, performance, trading_logs, portfolio_id}) => {
       console.log(response.data)
     },
     onSuccess : () => {
-      setSubmiting();
+      setPrevPortfolioId(portfolio_id)
     } });
 
   const onSubmit = (data) => {
@@ -47,13 +47,13 @@ const BackTestChart = ({trading, performance, trading_logs, portfolio_id}) => {
     <div className="w-full flex flex-col">
       <div className="w-full h-1/2 px-5">
         <div className='h-full rounded-xl shadow-xl border relative'>
-          <CoinPriceChart/>
+          <CoinPriceChart tradingLogs={trading_logs}/>
         </div>
       </div>
       <div className="w-full h-1/2 flex">
         <div className="w-3/5 h-full pl-5 pt-5 pb-1 pr-2">
           <div className='h-full rounded-xl shadow-xl border relative p-4'>
-             <TradingProfitRateChart />
+             <TradingProfitRateChart tradingLogs={trading_logs} />
           </div>
          
         </div>
@@ -67,15 +67,15 @@ const BackTestChart = ({trading, performance, trading_logs, portfolio_id}) => {
                 placeholder="Write your comment here..." 
                 maxLength={200} 
                 onChange={handleCommentChange}
-                disabled={submit}
+                disabled={prevPortfolioId !== portfolio_id ? false: true}
               />
               <div className="absolute bottom-2 right-2 text-sm text-gray-500">
                 {charCount}/200
               </div>
             </div>
             {errors.comment && <span className="text-red-500">{errors.comment.message}</span>}
-            <button disabled={submit} type="submit" className="w-full mt-auto bg-blue-500 text-white py-2 rounded">
-              {submit ? "submitted" : "Submit"}
+            <button disabled={prevPortfolioId !== portfolio_id ? false : true} type="submit" className="w-full mt-auto bg-blue-500 text-white py-2 rounded">
+              {prevPortfolioId !== portfolio_id ? "Submit" : "Submitted"}
             </button>
           </form>
         </div>
@@ -85,3 +85,4 @@ const BackTestChart = ({trading, performance, trading_logs, portfolio_id}) => {
 }
 
 export default BackTestChart;
+

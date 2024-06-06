@@ -26,8 +26,10 @@ function formatToJsonArray(tradingLogs) {
       }
     });
   
-    // 그룹화된 데이터를 배열로 변환하여 요구하는 형식으로 포맷
-    const formattedData = Object.values(groupedByDate).map(item => [item.date, item.매수, item.매도]);
+    // 그룹화된 데이터를 배열로 변환 후 날짜로 정렬하여 요구하는 형식으로 포맷
+    const formattedData = Object.values(groupedByDate)
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .map(item => [item.date, item.매수, item.매도]);
   
     // 요구하는 형식으로 첫 번째 행 추가
     formattedData.unshift(['date', '매수', '매도']);
@@ -35,17 +37,16 @@ function formatToJsonArray(tradingLogs) {
     return formattedData;
   }
   
+const CoinPriceChart = ({tradingLogs}) => {
 
+    // const { responseBackTest } = useResponseStore();
 
-const CoinPriceChart = () => {
+    // if (!responseBackTest || !responseBackTest.payload || !responseBackTest.payload.trading_logs) {
+    //   return <div>No trading data available.</div>;
+    // }
 
-    const { responseBackTest } = useResponseStore();
-
-    const {
-        trading_logs
-      } = responseBackTest.payload;
     
-    const formattedData = formatToJsonArray(trading_logs);
+    const formattedData = formatToJsonArray(tradingLogs);
 
     const option = {
 
@@ -105,7 +106,7 @@ const CoinPriceChart = () => {
             }
         ]
     }
-
+    
   return (
         <ReactEcharts option={option} style={{width:"100%", height:"100%"}} className="absolute top-0 right-0" />
   )

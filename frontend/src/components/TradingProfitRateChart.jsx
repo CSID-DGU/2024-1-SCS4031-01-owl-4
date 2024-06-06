@@ -2,15 +2,16 @@ import ReactEcharts from "echarts-for-react";
 import useResponseStore from '../utils/useResponseStore';
 import * as echarts from 'echarts';
 
-const TradingProfitRateChart = () => {
+const TradingProfitRateChart = ({tradingLogs}) => {
 
-  const { responseBackTest } = useResponseStore();
+  // const { responseBackTest } = useResponseStore();
 
-    const {
-        trading_logs
-      } = responseBackTest.payload;
+  // if (!responseBackTest || !responseBackTest.payload || !responseBackTest.payload.trading_logs) {
+  //   return <div>No trading data available.</div>;
+  // }
+  
     
-      const tradeDate = trading_logs
+      const tradeDate = tradingLogs
       .filter(log => log.type === '매도')
       .map(log => {
         const dateObj = new Date(log.date);
@@ -20,7 +21,7 @@ const TradingProfitRateChart = () => {
         return `${year}-${month}-${day}`;
       });
 
-    const tradeRate = trading_logs
+    const tradeRate = tradingLogs
     .filter(log => log.type === '매도')
     .map((log) => {
        return log.rate
