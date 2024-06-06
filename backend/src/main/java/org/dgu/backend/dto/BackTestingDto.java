@@ -113,6 +113,7 @@ public class BackTestingDto {
         private Trading trading;
         private Performance performance;
         private List<TradingLog> tradingLogs;
+        private Boolean isSaved;
 
         public void addId(UUID portfolioId) {
             this.portfolioId = portfolioId;
@@ -146,11 +147,12 @@ public class BackTestingDto {
         }
 
         public static BackTestingDto.BackTestingResponse of(Portfolio portfolio, TradingResult tradingResult, PerformanceResult performanceResult, List<org.dgu.backend.domain.TradingLog> tradingLogs) {
-            return BackTestingDto.BackTestingResponse.builder()
+            return BackTestingResponse.builder()
                     .portfolioId(portfolio.getPortfolioId())
                     .trading(Trading.of(tradingResult))
                     .performance(Performance.of(performanceResult))
                     .tradingLogs(TradingLog.ofTradingLogs(tradingLogs))
+                    .isSaved(portfolio.getIsSaved())
                     .build();
         }
     }
