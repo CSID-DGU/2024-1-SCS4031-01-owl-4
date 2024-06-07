@@ -24,6 +24,7 @@ public enum SuccessStatus implements BaseCode {
     // User
     SUCCESS_LOGOUT(HttpStatus.OK, "200", "유저 로그아웃에 성공했습니다."),
     SUCCESS_ADD_AGREEMENT(HttpStatus.CREATED, "201", "서비스 약관 동의 여부 등록에 성공했습니다."),
+    SUCCESS_GET_AGREEMENT(HttpStatus.OK, "200", "서비스 약관 동의 여부 조회에 성공했습니다."),
     // Portfolio
     SUCCESS_GET_PORTFOLIOS(HttpStatus.OK, "200", "포트폴리오 조회에 성공했습니다."),
     SUCCESS_GET_PORTFOLIO_DETAILS(HttpStatus.OK, "200", "포트폴리오 상세 조회에 성공했습니다."),
