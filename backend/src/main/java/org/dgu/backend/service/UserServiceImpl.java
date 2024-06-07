@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.dgu.backend.domain.UpbitKey;
 import org.dgu.backend.domain.User;
 import org.dgu.backend.dto.UserDto;
+import org.dgu.backend.exception.UserErrorResult;
+import org.dgu.backend.exception.UserException;
 import org.dgu.backend.repository.UpbitKeyRepository;
 import org.dgu.backend.util.AESUtil;
 import org.dgu.backend.util.EncryptionUtil;
@@ -35,6 +37,17 @@ public class UserServiceImpl implements UserService {
         String encryptedPrivateKey = encryptPrivateKey(keyPair);
 
         saveUpbitKey(user, encodedAccessKey, encodedSecretKey, encryptedPrivateKey, existUpbitKey);
+    }
+
+    // 서비스 약관 동의 여부를 등록하는 메서드
+    @Override
+    public void addUserAgreement(String authorizationHeader) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+        // 이미 등록한 경우
+        if (user.getIsAgree()) {
+            throw new UserException(UserErrorResult.ALREADY_AGREED);
+        }
+        user.updateAgreement();
     }
 
     // 암호화 및 인코딩 메서드
