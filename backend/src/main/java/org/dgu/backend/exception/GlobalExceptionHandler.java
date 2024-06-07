@@ -56,4 +56,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         UpbitErrorResult errorResult = e.getUpbitErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
+    // Encryption
+    @ExceptionHandler(EncryptionException.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handleEncryptionException(EncryptionException e) {
+        EncryptionErrorResult errorResult = e.getEncryptionErrorResult();
+        return ApiResponse.onFailure(errorResult);
+    }
 }

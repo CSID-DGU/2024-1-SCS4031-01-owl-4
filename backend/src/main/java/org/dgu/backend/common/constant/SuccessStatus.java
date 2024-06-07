@@ -33,7 +33,9 @@ public enum SuccessStatus implements BaseCode {
     // DashBoard
     SUCCESS_GET_USER_BALANCE(HttpStatus.OK, "200", "유저 업비트 잔고 조회에 성공했습니다"),
     SUCCESS_GET_USER_COINS(HttpStatus.OK, "200", "유저 보유 코인 조회에 성공했습니다"),
-    SUCCESS_GET_REPRESENTATIVE_COINS(HttpStatus.OK, "200", "대표 코인 조회에 성공했습니다");
+    SUCCESS_GET_REPRESENTATIVE_COINS(HttpStatus.OK, "200", "대표 코인 조회에 성공했습니다"),
+    // Upbit-Key
+    SUCCESS_ADD_UPBIT_KEYS(HttpStatus.CREATED, "201", "업비트 키 등록에 성공했습니다");
 
     private final HttpStatus httpStatus;
     private final String code;
