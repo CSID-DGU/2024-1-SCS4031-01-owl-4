@@ -23,4 +23,13 @@ public class UserController {
         userService.addUserUpbitKeys(authorizationHeader, userUpbitKeyRequest);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_ADD_UPBIT_KEYS);
     }
+
+    // 서비스 약관 동의 여부 등록 API
+    @PostMapping("/agreement")
+    public ResponseEntity<ApiResponse<Object>> addUserAgreement(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        userService.addUserAgreement(authorizationHeader);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_ADD_AGREEMENT);
+    }
 }

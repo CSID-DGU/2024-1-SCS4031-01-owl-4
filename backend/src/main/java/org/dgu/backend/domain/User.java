@@ -32,6 +32,9 @@ public class User extends BaseEntity {
     @Column(name = "current_portfolios_uuid", columnDefinition = "BINARY(16)")
     private UUID currentPortfolioId;
 
+    @Column(name = "is_agree", nullable = false)
+    private Boolean isAgree;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Portfolio> portfolios;
 
@@ -47,5 +50,10 @@ public class User extends BaseEntity {
         this.name = name;
         this.provider = provider;
         this.providerId = providerId;
+        this.isAgree = false;
+    }
+
+    public void updateAgreement() {
+        this.isAgree = true;
     }
 }
