@@ -82,6 +82,9 @@ jwt:
   refresh-token:
     expiration-time: ${REFRESH_TOKEN_EXPIRATION_TIME}
 
+aes:
+  secret: ${AES_SECRET}
+
 upbit-open-api:
   access-key: ${UPBIT_ACCESS_KEY}
   secret-key: ${UPBIT_SECRET_KEY}
