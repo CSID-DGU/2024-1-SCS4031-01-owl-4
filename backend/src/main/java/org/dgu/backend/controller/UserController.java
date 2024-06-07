@@ -32,4 +32,13 @@ public class UserController {
         userService.addUserAgreement(authorizationHeader);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_ADD_AGREEMENT);
     }
+
+    // 서비스 약관 동의 여부 조회 API
+    @GetMapping("/agreement")
+    public ResponseEntity<ApiResponse<UserDto.getUserAgreementResponse>> getUserAgreement(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        UserDto.getUserAgreementResponse getUserAgreementResponse = userService.getUserAgreement(authorizationHeader);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_AGREEMENT, getUserAgreementResponse);
+    }
 }
