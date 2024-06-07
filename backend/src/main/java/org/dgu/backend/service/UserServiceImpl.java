@@ -50,6 +50,13 @@ public class UserServiceImpl implements UserService {
         user.updateAgreement();
     }
 
+    // 서비스 약관 동의 여부를 조회하는 메서드
+    @Override
+    public UserDto.getUserAgreementResponse getUserAgreement(String authorizationHeader) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+        return UserDto.getUserAgreementResponse.of(user);
+    }
+
     // 암호화 및 인코딩 메서드
     private String encryptAndEncode(String data, KeyPair keyPair) {
         byte[] encryptedData = encryptionUtil.encrypt(data.getBytes(), keyPair.getPublic());
