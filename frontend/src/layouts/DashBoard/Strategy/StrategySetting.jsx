@@ -137,8 +137,8 @@ const StrategySetting = () => {
   }, [mutation.isPending, setLoading]);
 
   const onSubmit = (data) => {
-    // mutation.mutate(data);
-    console.log(data)
+    mutation.mutate(data);
+    // console.log(data)
   };
 
   return (
