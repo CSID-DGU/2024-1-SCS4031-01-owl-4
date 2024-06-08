@@ -77,8 +77,10 @@ const Portfolio = () => {
 
   useEffect(() => {
     if (!isLoading && data && data.length > 0) {
-      setItemsData(data);
-      setIsCurrentPage(data[0].portfolio_id);
+      const reversedData = [...data].reverse(); // Reverse the order of data
+      const sortedData = reversedData.sort((a, b) => b.is_marked - a.is_marked); // 체크된 항목을 우선 순위로 정렬
+      setItemsData(sortedData);
+      setIsCurrentPage(sortedData[0].portfolio_id);
     }
   }, [data, isLoading, setIsCurrentPage]);
 
@@ -189,9 +191,6 @@ const Portfolio = () => {
 
   const togglePortfolioDescriptionStyle = portfolioTextId !== 'description' ? "" : "border-b-[2px] border-violet-400 text-violet-400"
   const togglePortfolioCommentStyle = portfolioTextId === 'comment' ? "border-b-[2px] border-violet-400 text-violet-400" : ""
-
-
-  // console.log(data)
 
   return (
     <div className="w-full bg-slate-200 p-10">

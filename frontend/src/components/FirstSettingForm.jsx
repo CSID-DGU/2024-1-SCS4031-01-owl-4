@@ -1,19 +1,13 @@
-import { useFormContext, Controller } from 'react-hook-form';
-import { DatePicker } from "antd";
-import { MdTitle } from "react-icons/md";
-import { IoIosArrowDown } from "react-icons/io";
-import { BiSolidDollarCircle } from "react-icons/bi";
-import { PiCurrencyKrwFill } from "react-icons/pi";
+import { useFormContext } from 'react-hook-form';
 import { MdOutlineErrorOutline } from "react-icons/md";
 import { MdOutlineDescription } from "react-icons/md";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { useState } from 'react';
 import useResponseStore from '../utils/useResponseStore';
 
-const { RangePicker } = DatePicker;
 
 const FirstSettingForm = () => {
-  const { register, formState: { errors }, control, setValue } = useFormContext();
+  const { register, formState: { errors }} = useFormContext();
   const {description, title, setTitle,setDescription}= useResponseStore();
   
   return (

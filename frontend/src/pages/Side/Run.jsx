@@ -57,15 +57,16 @@ const Run = () => {
     trading,
     performance,
     trading_logs,
-    portfolio_id
+    portfolio_id,
+    is_saved
   } = recentBacktestingData;
   
-  
+  console.log(recentBacktestingData)
   return (
     <div className='w-full h-full bg-slate-200 p-10'>
       <div className='h-full bg-white rounded-xl flex p-3'>
         <BackTestTable trading = {trading} performance={performance} />
-        <BackTestChart trading = {trading} performance={performance} trading_logs={trading_logs} portfolio_id={portfolio_id} />
+        <BackTestChart trading = {trading} performance={performance} trading_logs={trading_logs} portfolio_id={portfolio_id} save= {is_saved} />
       </div>
    </div>
 

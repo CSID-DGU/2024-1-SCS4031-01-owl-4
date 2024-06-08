@@ -5,8 +5,9 @@ const useStore = create(
     persist(
         (set) => ({
             auth: false,
+            has_key: false,
             loginAuth: () => set({auth: true}),
-            logoutCheck: () => set({auth: false})
+            logoutCheck: () => set({auth: false}),
         }),
         {
             name: 'auth'

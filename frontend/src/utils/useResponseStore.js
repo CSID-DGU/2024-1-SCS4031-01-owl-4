@@ -16,6 +16,13 @@ const useResponseStore = create(
         sellingCondition: 3,
         buyingSplit: 20,
         stopLossPoint: 10,
+        isChecked: false,
+        access_key: '',
+        secret_key: '',
+        comment: '',
+        isppc: false,
+        issc: false,
+        ispic: false,
         setResponseBackTest: responseBackTest => set({responseBackTest}),
         setResponsePortfolio: responsePortfolio => set({responsePortfolio}),
         setLoading: () => set((state) => ({loading: !state.loading})),
@@ -29,7 +36,14 @@ const useResponseStore = create(
         setBuyingCondition: buyingCondition => set({buyingCondition}),
         setSellingCondition: sellingCondition => set({sellingCondition}),
         setBuyingSplit: buyingSplit => set({buyingSplit}),
-        setStopLossPoint: stopLossPoint => set({stopLossPoint})
+        setStopLossPoint: stopLossPoint => set({stopLossPoint}),
+        setIsChecked: isChecked => set({isChecked}),
+        setAccessKey: access_key => set({access_key}),
+        setSecretKey: secret_key => set({secret_key}),
+        setComment: comment => set({comment}),
+        setIsPPC: isppc => set({isppc}),
+        setIsSC: issc => set({issc}),
+        setIsPIC: ispic => set({ispic})
     })
 )
 

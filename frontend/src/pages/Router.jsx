@@ -6,6 +6,7 @@ import NotFound from './NotFound';
 import DashBoard from './DashBoard';
 import {Home, Portfolio, Chart, Table, Run, Strategy} from './Side/index.js'
 import PrivateRoutes from '../utils/PrivateRoutes';
+import Account from './Account.jsx';
 
 export const router = createBrowserRouter(createRoutesFromElements(
   <>
@@ -15,7 +16,12 @@ export const router = createBrowserRouter(createRoutesFromElements(
       <Route path='oauth2/authorization/kakao'/>
       <Route path='oauth2/authorization/naver'/>
     </Route>
-
+    
+    <Route element={<PrivateRoutes />}>
+      <Route path='account' element={<Account />}>
+      </Route>
+    </Route>
+    
     <Route element={<PrivateRoutes />}>
       <Route path='dashboard' element={<DashBoard/>} >
           <Route index element={<Home/>} />
