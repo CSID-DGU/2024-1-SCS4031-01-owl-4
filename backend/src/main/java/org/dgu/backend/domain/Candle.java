@@ -18,7 +18,7 @@ public class Candle {
     private Long id;
 
     @Column(name = "candles_name")
-    private String name;
+    private String candleName;
 
     @Column(name = "korean_name")
     private String koreanName;

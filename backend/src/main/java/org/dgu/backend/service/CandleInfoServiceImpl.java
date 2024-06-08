@@ -2,11 +2,12 @@ package org.dgu.backend.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.dgu.backend.domain.Candle;
 import org.dgu.backend.domain.CandleInfo;
 import org.dgu.backend.domain.Market;
 import org.dgu.backend.dto.UpbitDto;
+import org.dgu.backend.exception.UpbitErrorResult;
+import org.dgu.backend.exception.UpbitException;
 import org.dgu.backend.repository.CandleInfoRepository;
 import org.dgu.backend.repository.CandleRepository;
 import org.dgu.backend.repository.MarketRepository;
@@ -20,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Slf4j
 public class CandleInfoServiceImpl implements CandleInfoService {
 
     private final CandleInfoRepository candleInfoRepository;
@@ -29,19 +29,19 @@ public class CandleInfoServiceImpl implements CandleInfoService {
     private final RestTemplate restTemplate;
 
     @Override
-    public void getCandleInfo(String marketKoreanName, LocalDateTime to, int count, String candleType) {
-        Market market = marketRepository.findByKoreanName(marketKoreanName);
-        Candle candle = candleRepository.findByName(candleType);
-        String marketName = market.getName();
+    public void getCandleInfo(String koreanName, LocalDateTime to, int count, String candleName) {
+        Market market = marketRepository.findByKoreanName(koreanName);
+        Candle candle = candleRepository.findByCandleName(candleName);
+        String marketName = market.getMarketName();
 
         String url;
-        if (candleType.startsWith("minutes")) {
+        if (candleName.startsWith("minutes")) {
             // 분봉인 경우
-            int unit = Integer.parseInt(candleType.substring(7));
-            url = String.format("https://api.upbit.com/v1/candles/%s/%d?market=%s&count=%d", candleType.substring(0,7), unit, marketName, count);
+            int unit = Integer.parseInt(candleName.substring(7));
+            url = String.format("https://api.upbit.com/v1/candles/%s/%d?market=%s&count=%d", candleName.substring(0,7), unit, marketName, count);
         } else {
             // 그 외 (일봉, 주봉, 월봉)
-            url = String.format("https://api.upbit.com/v1/candles/%s?market=%s&count=%d", candleType, marketName, count);
+            url = String.format("https://api.upbit.com/v1/candles/%s?market=%s&count=%d", candleName, marketName, count);
         }
 
         if (to != null) {
@@ -67,7 +67,7 @@ public class CandleInfoServiceImpl implements CandleInfoService {
                 candleInfoRepository.save(candleInfo);
             }
         } else {
-            log.error("Failed to receive candle info");
+            throw new UpbitException(UpbitErrorResult.FAIL_GET_CANDLE_INFO);
         }
     }
 }
