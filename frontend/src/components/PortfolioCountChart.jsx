@@ -1,6 +1,11 @@
 import ReactEcharts from "echarts-for-react";
 
 const PortfolioCountChart = ({win}) => {
+   // win이 NaN일 경우 0으로 처리
+   const validWin = isNaN(win) ? 0 : win;
+
+   // 반올림된 값을 저장
+   const data = Math.ceil(validWin);
 
   const option = {
     series: [
@@ -80,7 +85,7 @@ const PortfolioCountChart = ({win}) => {
           },
           data: [
             {
-              value: Math.ceil(win),
+              value: data,
               name: 'Trade Rate'
             }
           ]

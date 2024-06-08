@@ -2,7 +2,7 @@ import { useFormContext, Controller } from "react-hook-form";
 import useResponseStore from "../utils/useResponseStore";
 import { AiOutlineDollarCircle } from "react-icons/ai";
 import { FaWonSign } from "react-icons/fa6";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { DatePicker } from "antd";
@@ -57,6 +57,10 @@ const TwoSettingForm = () => {
   } = useFormContext();
   const { fund, setFund, candle, setCandle } = useResponseStore();
   const [exchangeRate, setExchangeRate] = useState("usd");
+
+   useEffect(() => {
+    setValue("candle_name", "days");
+  }, [setValue]);
 
   return (
     <>

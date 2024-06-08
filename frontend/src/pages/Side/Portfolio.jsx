@@ -27,7 +27,7 @@ const Portfolio = () => {
   const { token } = useTokenStore();
   const { setIsCurrentPage } = usePortfolioOpenPageStore();
   const navigate = useNavigate();
-  const { responsePortfolio } = useResponseStore();
+  const { responsePortfolio, setResponsePortfolio, } = useResponseStore();
   const [portfolioDetailTradingData, setPortfolioDetailTradingData] = useState({});
   const [portfolioDetailPerformanceData, setPortfolioDetailPerformanceData] =useState({});
   const [portfolioTextId, setportfolioTextId] = useState('description');
@@ -76,14 +76,18 @@ const Portfolio = () => {
   }, [responsePortfolio]);
 
   useEffect(() => {
-    if (!isLoading && data && data.length > 0) {
+    if (!isLoading && data) {
       const reversedData = [...data].reverse(); // Reverse the order of data
       const sortedData = reversedData.sort((a, b) => b.is_marked - a.is_marked); // 체크된 항목을 우선 순위로 정렬
       setItemsData(sortedData);
-      setIsCurrentPage(sortedData[0].portfolio_id);
+      if (sortedData.length > 0) {
+        setIsCurrentPage(sortedData[0].portfolio_id);
+      } else {
+        setIsCurrentPage(null); // No items left
+        setResponsePortfolio({ trading: {}, performance: {}, comment: '', description: '' }); // responsePortfolio를 초기 상태로 설정
+      }
     }
-  }, [data, isLoading, setIsCurrentPage]);
-
+  }, [data, isLoading, setIsCurrentPage, setResponsePortfolio]);
   useEffect(() => {
     const filteredData = itemsData.filter((item) =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -135,6 +139,11 @@ const Portfolio = () => {
   
             if (currentPage > totalPagesAfterDeletion) {
               setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+            }
+            if (totalItemsAfterDeletion === 0) {
+              setItemsData([]); // 포트폴리오가 모두 삭제된 경우 itemsData를 빈 배열로 설정
+              setPaginatedData([]); // 화면 업데이트를 위해 paginatedData도 빈 배열로 설정
+              setResponsePortfolio({ trading: {}, performance: {}, comment: '', description: ''}); // responsePortfolio를 초기 상태로 설정
             }
           });
         }
@@ -192,6 +201,7 @@ const Portfolio = () => {
   const togglePortfolioDescriptionStyle = portfolioTextId !== 'description' ? "" : "border-b-[2px] border-violet-400 text-violet-400"
   const togglePortfolioCommentStyle = portfolioTextId === 'comment' ? "border-b-[2px] border-violet-400 text-violet-400" : ""
 
+  console.log(data)
   return (
     <div className="w-full bg-slate-200 p-10">
       <div className="w-full h-[788px] bg-white rounded-xl flex">
