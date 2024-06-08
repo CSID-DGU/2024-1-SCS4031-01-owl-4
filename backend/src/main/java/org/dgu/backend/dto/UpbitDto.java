@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
+import org.dgu.backend.domain.Market;
 
 public class UpbitDto {
     @Builder
@@ -21,6 +22,14 @@ public class UpbitDto {
 
         @JsonProperty("english_name")
         private String englishName;
+
+        public Market to() {
+            return Market.builder()
+                    .marketName(name)
+                    .koreanName(koreanName)
+                    .englishName(englishName)
+                    .build();
+        }
     }
 
     @Builder
