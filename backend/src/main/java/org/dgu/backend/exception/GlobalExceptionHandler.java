@@ -62,4 +62,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         EncryptionErrorResult errorResult = e.getEncryptionErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
+    // Chart
+    @ExceptionHandler(ChartException.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handleChartException(ChartException e) {
+        ChartErrorResult errorResult = e.getChartErrorResult();
+        return ApiResponse.onFailure(errorResult);
+    }
 }

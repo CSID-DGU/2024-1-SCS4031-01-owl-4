@@ -3,7 +3,7 @@ package org.dgu.backend.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dgu.backend.common.constant.Coin;
+import org.dgu.backend.constant.Coin;
 import org.dgu.backend.domain.UpbitKey;
 import org.dgu.backend.domain.User;
 import org.dgu.backend.domain.UserCoin;

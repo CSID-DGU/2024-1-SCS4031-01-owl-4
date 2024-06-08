@@ -3,7 +3,6 @@ package org.dgu.backend.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dgu.backend.domain.Market;
 import org.dgu.backend.dto.UpbitDto;
 import org.dgu.backend.repository.MarketRepository;
 import org.springframework.http.*;
@@ -39,8 +38,7 @@ public class MarketServiceImpl implements MarketService {
             for (UpbitDto.MarketResponse marketResponse : responseBody) {
                 // "KRW-"로 시작하는 가상화폐만 저장
                 if (marketResponse.getName().startsWith("KRW-")) {
-                    Market market = Market.toEntity(marketResponse);
-                    marketRepository.save(market);
+                    marketRepository.save(marketResponse.to());
                 }
             }
         } else {

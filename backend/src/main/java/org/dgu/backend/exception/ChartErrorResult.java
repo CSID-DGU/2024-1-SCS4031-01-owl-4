@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum BackTestingErrorResult implements BaseErrorCode {
-    NOT_FOUND_START_INDEX(HttpStatus.NOT_FOUND, "404", "시작 인덱스를 찾을 수 없습니다.");
+public enum ChartErrorResult implements BaseErrorCode {
+    NOT_FOUND_CHARTS(HttpStatus.NOT_FOUND, "404", "차트가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

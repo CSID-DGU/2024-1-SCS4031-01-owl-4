@@ -1,4 +1,4 @@
-package org.dgu.backend.common.constant;
+package org.dgu.backend.constant;
 
 public enum Coin {
     BITCOIN("KRW-BTC", "비트코인"),

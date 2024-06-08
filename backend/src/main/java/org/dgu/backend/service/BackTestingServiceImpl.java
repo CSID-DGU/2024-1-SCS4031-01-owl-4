@@ -32,7 +32,7 @@ public class BackTestingServiceImpl implements BackTestingService {
     // 백테스팅 결과를 생성하는 메서드
     @Override
     public BackTestingDto.BackTestingResponse createBackTestingResult(String authorizationHeader, BackTestingDto.StepInfo stepInfo) {
-        Candle candle = candleRepository.findByName(stepInfo.getCandleName());
+        Candle candle = candleRepository.findByCandleName(stepInfo.getCandleName());
         LocalDateTime startDate = dateUtil.convertToLocalDateTime(stepInfo.getStartDate());
         LocalDateTime endDate = dateUtil.convertToLocalDateTime(stepInfo.getEndDate());
 

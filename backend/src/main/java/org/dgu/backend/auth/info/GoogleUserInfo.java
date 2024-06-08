@@ -1,7 +1,7 @@
 package org.dgu.backend.auth.info;
 
 import lombok.AllArgsConstructor;
-import org.dgu.backend.common.constant.Provider;
+import org.dgu.backend.constant.Provider;
 
 import java.util.Map;
 
