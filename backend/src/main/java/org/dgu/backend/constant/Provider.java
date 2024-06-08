@@ -1,4 +1,4 @@
-package org.dgu.backend.common.constant;
+package org.dgu.backend.constant;
 
 public enum Provider {
     GOOGLE_PROVIDER("google"),
