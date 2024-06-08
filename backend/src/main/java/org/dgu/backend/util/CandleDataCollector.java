@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -17,16 +16,15 @@ import com.google.common.util.concurrent.RateLimiter;
 public class CandleDataCollector {
     private final CandleInfoService candleInfoService;
     private final int batchSize = 200;
-    private final LocalDateTime startTime = LocalDateTime.of(2018, Month.JANUARY, 1, 0, 0);
     private final RateLimiter rateLimiter = RateLimiter.create(10.0); // 초당 요청 허용량 10개로 제한
     private final long retryDelayMillis = 100; // 재시도 대기 시간 (0.1초)
 
-    public void collectData(String marketKoreanName, LocalDateTime to, String candleType) {
+    public void collectCandleData(String koreanName, LocalDateTime startDate, LocalDateTime endDate, String candleName) {
         // 캔들을 분 기준으로 변환
-        int candleInterval = calculateCandleInterval(candleType);
+        int candleInterval = calculateCandleInterval(candleName);
 
         // 시작 시간부터 종료 시간까지의 총 분 수 계산
-        long totalMinutes = Duration.between(startTime, to).toMinutes();
+        long totalMinutes = Duration.between(startDate, endDate).toMinutes();
 
         // 한 번의 API 요청에서 지나는 시간
         long oneAPI = (long) candleInterval * batchSize;
@@ -37,12 +35,12 @@ public class CandleDataCollector {
         CompletableFuture<Void>[] futures = new CompletableFuture[(int) numIterations];
 
         for (int i = 0; i < numIterations; i++) {
-            LocalDateTime currentStartTime = startTime.plusMinutes((long) i * oneAPI);
+            LocalDateTime currentStartTime = startDate.plusMinutes((long) i * oneAPI);
             LocalDateTime currentEndTime = currentStartTime.plusMinutes(oneAPI);
 
-            // 종료 시간이 endTime을 넘어가면 endTime으로 설정
-            if (currentEndTime.isAfter(to)) {
-                currentEndTime = to;
+            // 종료 시간이 endDate을 넘어가면 endDate으로 설정
+            if (currentEndTime.isAfter(endDate)) {
+                currentEndTime = endDate;
             }
 
             final LocalDateTime intervalEnd = currentEndTime;
@@ -55,7 +53,7 @@ public class CandleDataCollector {
                     rateLimiter.acquire();
 
                     try {
-                        candleInfoService.getCandleInfo(marketKoreanName, intervalEnd, batchSize, candleType);
+                        candleInfoService.getCandleInfo(koreanName, intervalEnd, batchSize, candleName);
                         requestSuccess = true; // 성공적으로 완료됨
                     } catch (Exception e) {
                         // 오류 발생 시 재시도
