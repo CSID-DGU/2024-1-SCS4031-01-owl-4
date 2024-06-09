@@ -25,4 +25,12 @@ public class ChartController {
         List<ChartDto.OHLCVResponse> ohlcvResponses = chartService.getOHLCVCharts(koreanName, candleName);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_OHLCV_CHART, ohlcvResponses);
     }
+
+    // 차트 선택 지표 목록을 조회하는 API
+    @GetMapping("/options")
+    public ResponseEntity<ApiResponse<List<ChartDto.ChartOptionResponse>>> getAllChartOptions() {
+
+        List<ChartDto.ChartOptionResponse> chartOptionResponses = chartService.getAllChartOptions();
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_ALL_CHART_OPTIONS, chartOptionResponses);
+    }
 }

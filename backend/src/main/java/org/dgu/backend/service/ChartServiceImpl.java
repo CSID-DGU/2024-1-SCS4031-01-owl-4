@@ -35,6 +35,18 @@ public class ChartServiceImpl implements ChartService {
         return fetchUpdatedCandleInfo(koreanName, candleName);
     }
 
+    // 차트 선택 지표 목록을 반환하는 메서드
+    @Override
+    public List<ChartDto.ChartOptionResponse> getAllChartOptions() {
+        List<Market> markets = marketRepository.findAll();
+        List<Candle> candles = candleRepository.findAll();
+
+        return markets.stream()
+                .flatMap(market -> candles.stream()
+                        .map(candle -> ChartDto.ChartOptionResponse.of(market, candle)))
+                .collect(Collectors.toList());
+    }
+
     // 캔들 정보 최신화 메서드
     @Transactional
     protected void updateCandleInfo(String koreanName, String candleName) {
