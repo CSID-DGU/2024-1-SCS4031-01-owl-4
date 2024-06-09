@@ -5,6 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dgu.backend.domain.UpbitKey;
 import org.dgu.backend.domain.User;
 import org.dgu.backend.exception.TokenErrorResult;
 import org.dgu.backend.exception.TokenException;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.security.PrivateKey;
 import java.util.Date;
 import java.util.UUID;
 
@@ -24,6 +26,7 @@ import java.util.UUID;
 public class JwtUtil {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
+    private final EncryptionUtil encryptionUtil;
     private final UserRepository userRepository;
 
     private SecretKey getSigningKey() {
@@ -61,7 +64,11 @@ public class JwtUtil {
     }
 
     // 업비트 통신을 위한 토큰을 발급하는 메서드
-    public String generateUpbitToken(String accessKey, String secretKey) {
+    public String generateUpbitToken(UpbitKey upbitKey) {
+        PrivateKey privateKey = encryptionUtil.getDecryptedPrivateKey(upbitKey.getPrivateKey());
+        String accessKey = encryptionUtil.decryptAndEncode(upbitKey.getAccessKey(), privateKey);
+        String secretKey = encryptionUtil.decryptAndEncode(upbitKey.getSecretKey(), privateKey);
+
         log.info("업비트 API 토큰이 발행되었습니다.");
 
         return Jwts.builder()

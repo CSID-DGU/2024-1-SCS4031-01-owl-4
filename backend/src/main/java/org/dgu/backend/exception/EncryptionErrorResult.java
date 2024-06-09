@@ -14,7 +14,8 @@ public enum EncryptionErrorResult implements BaseErrorCode {
     RSA_ENCRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "500", "RSA 암호화에 실패했습니다."),
     RSA_DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "500", "RSA 복호화에 실패했습니다."),
     AES_ENCRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "500", "AES 암호화에 실패했습니다."),
-    AES_DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "500", "AES 복호화에 실패했습니다.");
+    AES_DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "500", "AES 복호화에 실패했습니다."),
+    PRIVATE_KEY_DECRYPTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "500", "프라이빗 키 복호화에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
