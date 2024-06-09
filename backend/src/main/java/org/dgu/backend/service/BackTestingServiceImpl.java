@@ -7,6 +7,7 @@ import org.dgu.backend.dto.BackTestingDto;
 import org.dgu.backend.exception.PortfolioErrorResult;
 import org.dgu.backend.exception.PortfolioException;
 import org.dgu.backend.repository.*;
+import org.dgu.backend.util.CandleUtil;
 import org.dgu.backend.util.DateUtil;
 import org.dgu.backend.util.JwtUtil;
 import org.springframework.stereotype.Service;
@@ -15,14 +16,16 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class BackTestingServiceImpl implements BackTestingService {
     private final JwtUtil jwtUtil;
     private final DateUtil dateUtil;
+    private final CandleUtil candleUtil;
     private final BackTestingCalculator backTestingCalculator;
+    private final CandleInfoUpdater candleInfoUpdater;
     private final CandleInfoRepository candleInfoRepository;
     private final CandleRepository candleRepository;
+    private final MarketRepository marketRepository;
     private final PortfolioRepository portfolioRepository;
     private final PortfolioOptionRepository portfolioOptionRepository;
     private final TradingResultRepository tradingResultRepository;
@@ -32,12 +35,27 @@ public class BackTestingServiceImpl implements BackTestingService {
     // 백테스팅 결과를 생성하는 메서드
     @Override
     public BackTestingDto.BackTestingResponse createBackTestingResult(String authorizationHeader, BackTestingDto.StepInfo stepInfo) {
+        updateCandleInfo("비트코인", stepInfo.getCandleName());
+
+        return fetchBackTestingResult(authorizationHeader, stepInfo);
+    }
+
+    // 캔들 정보 최신화 메서드
+    @Transactional
+    protected void updateCandleInfo(String koreanName, String candleName) {
+        candleInfoUpdater.ensureCandleInfoUpToDate(koreanName, candleName);
+    }
+
+    // 최신화된 캔들 정보를 사용해 백테스팅 결과를 생성하는 메서드
+    @Transactional
+    protected BackTestingDto.BackTestingResponse fetchBackTestingResult(String authorizationHeader, BackTestingDto.StepInfo stepInfo) {
+        Market market = marketRepository.findByKoreanName("비트코인");
         Candle candle = candleRepository.findByCandleName(stepInfo.getCandleName());
         LocalDateTime startDate = dateUtil.convertToLocalDateTime(stepInfo.getStartDate());
         LocalDateTime endDate = dateUtil.convertToLocalDateTime(stepInfo.getEndDate());
 
-        List<CandleInfo> candles = candleInfoRepository.findFilteredCandleInfo(candle, startDate, endDate);
-        candles = backTestingCalculator.removeDuplicatedCandles(candles); // 중복 데이터 제거
+        List<CandleInfo> candles = candleInfoRepository.findFilteredCandleInfo(market, candle, startDate, endDate);
+        candles = candleUtil.removeDuplicatedCandles(candles);
 
         // 골든 크로스 지점 찾기
         List<LocalDateTime> goldenCrossPoints = backTestingCalculator.findGoldenCrossPoints(candles, stepInfo);
@@ -58,6 +76,7 @@ public class BackTestingServiceImpl implements BackTestingService {
 
     // 백테스팅 결과를 저장하는 메서드
     @Override
+    @Transactional
     public void saveBackTestingResult(String authorizationHeader, BackTestingDto.SavingRequest savingRequest) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -76,6 +95,7 @@ public class BackTestingServiceImpl implements BackTestingService {
 
     // 백테스팅 최근 결과를 반환하는 메서드
     @Override
+    @Transactional
     public BackTestingDto.BackTestingResponse getRecentBackTestingResult(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
@@ -90,7 +110,8 @@ public class BackTestingServiceImpl implements BackTestingService {
     }
 
     // 백테스팅 결과를 임시 저장하는 메서드
-    private void saveTempBackTestingResult(String authorizationHeader, BackTestingDto.StepInfo stepInfo, BackTestingDto.BackTestingResponse backTestingResponse) {
+    @Transactional
+    protected void saveTempBackTestingResult(String authorizationHeader, BackTestingDto.StepInfo stepInfo, BackTestingDto.BackTestingResponse backTestingResponse) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
 
         // 기존에 있던 거래 로그 삭제

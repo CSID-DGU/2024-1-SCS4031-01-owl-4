@@ -35,7 +35,7 @@ public class CandleInfoController {
             @RequestParam("end_date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam("candle_name") String candleName) {
 
-        candleDataCollector.collectCandleData(koreanName, startDate, endDate, candleName);
+        candleDataCollector.collectCandleData(koreanName, candleName, startDate, endDate);
 
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_CANDLE_INFOS);
     }
