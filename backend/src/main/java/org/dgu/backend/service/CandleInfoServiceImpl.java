@@ -28,6 +28,7 @@ public class CandleInfoServiceImpl implements CandleInfoService {
     private final CandleRepository candleRepository;
     private final RestTemplate restTemplate;
 
+    // 업비트 API를 통해 캔들 정보를 가져오는 메서드
     @Override
     public void getCandleInfo(String koreanName, LocalDateTime to, int count, String candleName) {
         Market market = marketRepository.findByKoreanName(koreanName);
