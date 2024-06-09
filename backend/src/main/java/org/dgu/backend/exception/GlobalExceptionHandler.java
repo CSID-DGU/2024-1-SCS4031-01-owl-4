@@ -75,4 +75,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         MarketErrorResult errorResult = e.getMarketErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
+    // Candle
+    @ExceptionHandler(CandleException.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handleCandleException(CandleException e) {
+        CandleErrorResult errorResult = e.getCandleErrorResult();
+        return ApiResponse.onFailure(errorResult);
+    }
 }

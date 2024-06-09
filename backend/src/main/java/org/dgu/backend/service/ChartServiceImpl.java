@@ -6,10 +6,7 @@ import org.dgu.backend.domain.Candle;
 import org.dgu.backend.domain.CandleInfo;
 import org.dgu.backend.domain.Market;
 import org.dgu.backend.dto.ChartDto;
-import org.dgu.backend.exception.ChartErrorResult;
-import org.dgu.backend.exception.ChartException;
-import org.dgu.backend.exception.MarketErrorResult;
-import org.dgu.backend.exception.MarketException;
+import org.dgu.backend.exception.*;
 import org.dgu.backend.repository.CandleInfoRepository;
 import org.dgu.backend.repository.CandleRepository;
 import org.dgu.backend.repository.MarketRepository;
@@ -46,6 +43,9 @@ public class ChartServiceImpl implements ChartService {
             throw new MarketException(MarketErrorResult.NOT_FOUND_MARKETS);
         }
         List<Candle> candles = candleRepository.findAll();
+        if (candles.isEmpty()) {
+            throw new CandleException(CandleErrorResult.NOT_FOUND_CANDLES);
+        }
 
         return markets.stream()
                 .flatMap(market -> candles.stream()
@@ -67,6 +67,9 @@ public class ChartServiceImpl implements ChartService {
             throw new MarketException(MarketErrorResult.NOT_FOUND_MARKET);
         }
         Candle candle = candleRepository.findByCandleName(candleName);
+        if (Objects.isNull(candle)) {
+            throw new CandleException(CandleErrorResult.NOT_FOUND_CANDLE);
+        }
         LocalDateTime startDate = candleUtil.getStartDateByCandleName(candleName);
 
         List<CandleInfo> candleInfos = candleInfoRepository.findByMarketAndCandleAndDateTimeAfter(market, candle, startDate);
