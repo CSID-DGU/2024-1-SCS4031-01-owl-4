@@ -16,6 +16,7 @@ import org.dgu.backend.repository.UserCoinRepository;
 import org.dgu.backend.util.JwtUtil;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -38,8 +39,11 @@ public class DashBoardServiceImpl implements DashBoardService {
     public DashBoardDto.UserAccountResponse getUserAccount(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UpbitKey upbitKey = upbitKeyRepository.findByUser(user);
+        if (Objects.isNull(upbitKey)) {
+            throw new UpbitException(UpbitErrorResult.NOT_FOUND_UPBIT_KEY);
+        }
 
-        String token = jwtUtil.generateUpbitToken(upbitKey.getAccessKey(), upbitKey.getSecretKey());
+        String token = jwtUtil.generateUpbitToken(upbitKey);
         String url = "https://api.upbit.com/v1/accounts";
         UpbitDto.Account[] responseBody = getUserAccountsAtUpbit(url, token);
         if (Objects.isNull(responseBody)) {
@@ -67,8 +71,11 @@ public class DashBoardServiceImpl implements DashBoardService {
     public List<DashBoardDto.UserCoinResponse> getUserCoins(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         UpbitKey upbitKey = upbitKeyRepository.findByUser(user);
+        if (Objects.isNull(upbitKey)) {
+            throw new UpbitException(UpbitErrorResult.NOT_FOUND_UPBIT_KEY);
+        }
 
-        String token = jwtUtil.generateUpbitToken(upbitKey.getAccessKey(), upbitKey.getSecretKey());
+        String token = jwtUtil.generateUpbitToken(upbitKey);
         String url = "https://api.upbit.com/v1/accounts";
         UpbitDto.Account[] responseBody = getUserAccountsAtUpbit(url, token);
         if (Objects.isNull(responseBody)) {
@@ -121,39 +128,54 @@ public class DashBoardServiceImpl implements DashBoardService {
 
     // 코인 가격 상승 여부를 판단하는 메서드
     private boolean isBalanceIncreased(UpbitDto.Account account, UserCoin userCoin) {
-        BigDecimal curBalance = BigDecimal.valueOf(account.getBalance())
-                .multiply(BigDecimal.valueOf(account.getAvgBuyPrice()));
 
-        return curBalance.compareTo(userCoin.getBalance()) > 0;
+        return BigDecimal.valueOf(account.getBalance()).compareTo(userCoin.getBalance()) > 0;
     }
 
     // 전체 계좌 조회 업비트 API와 통신하는 메서드
     private UpbitDto.Account[] getUserAccountsAtUpbit(String url, String token) {
+
         String authenticationToken = "Bearer " + token;
         HttpHeaders headers = new HttpHeaders();
         headers.set("accept", MediaType.APPLICATION_JSON_VALUE);
         headers.add("Authorization", authenticationToken);
-        ResponseEntity<UpbitDto.Account[]> responseEntity = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                UpbitDto.Account[].class
-        );
 
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<UpbitDto.Account[]> responseEntity = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    UpbitDto.Account[].class
+            );
+            return responseEntity.getBody();
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED && e.getResponseBodyAsString().contains("no_authorization_ip")) {
+                throw new UpbitException(UpbitErrorResult.UNAUTHORIZED_IP);
+            } else {
+                throw new UpbitException(UpbitErrorResult.UNAUTHORIZED_UPBIT_KEY);
+            }
+        }
     }
 
     // 시세 현재가 조회 업비트 API와 통신하는 메서드
     private UpbitDto.Ticker[] getTickerPriceAtUpbit(String url) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("accept", MediaType.APPLICATION_JSON_VALUE);
-        ResponseEntity<UpbitDto.Ticker[]> responseEntity = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                UpbitDto.Ticker[].class
-        );
 
-        return responseEntity.getBody();
+        try {
+            ResponseEntity<UpbitDto.Ticker[]> responseEntity = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    UpbitDto.Ticker[].class
+            );
+            return responseEntity.getBody();
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED && e.getResponseBodyAsString().contains("no_authorization_ip")) {
+                throw new UpbitException(UpbitErrorResult.UNAUTHORIZED_IP);
+            } else {
+                throw new UpbitException(UpbitErrorResult.UNAUTHORIZED_UPBIT_KEY);
+            }
+        }
     }
 }

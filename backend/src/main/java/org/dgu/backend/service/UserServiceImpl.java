@@ -8,13 +8,11 @@ import org.dgu.backend.dto.UserDto;
 import org.dgu.backend.exception.UserErrorResult;
 import org.dgu.backend.exception.UserException;
 import org.dgu.backend.repository.UpbitKeyRepository;
-import org.dgu.backend.util.AESUtil;
 import org.dgu.backend.util.EncryptionUtil;
 import org.dgu.backend.util.JwtUtil;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
-import java.util.Base64;
 
 @Service
 @Transactional
@@ -23,7 +21,6 @@ public class UserServiceImpl implements UserService {
     private final UpbitKeyRepository upbitKeyRepository;
     private final JwtUtil jwtUtil;
     private final EncryptionUtil encryptionUtil;
-    private final AESUtil aesUtil;
 
     // 유저 업비트 키를 등록하는 메서드
     @Override
@@ -32,9 +29,9 @@ public class UserServiceImpl implements UserService {
         UpbitKey existUpbitKey = upbitKeyRepository.findByUser(user);
 
         KeyPair keyPair = encryptionUtil.generateKeyPair();
-        String encodedAccessKey = encryptAndEncode(userUpbitKeyRequest.getAccessKey(), keyPair);
-        String encodedSecretKey = encryptAndEncode(userUpbitKeyRequest.getSecretKey(), keyPair);
-        String encryptedPrivateKey = encryptPrivateKey(keyPair);
+        String encodedAccessKey = encryptionUtil.encryptAndEncode(userUpbitKeyRequest.getAccessKey(), keyPair);
+        String encodedSecretKey = encryptionUtil.encryptAndEncode(userUpbitKeyRequest.getSecretKey(), keyPair);
+        String encryptedPrivateKey = encryptionUtil.encryptPrivateKey(keyPair);
 
         saveUpbitKey(user, encodedAccessKey, encodedSecretKey, encryptedPrivateKey, existUpbitKey);
     }
@@ -55,17 +52,6 @@ public class UserServiceImpl implements UserService {
     public UserDto.getUserAgreementResponse getUserAgreement(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
         return UserDto.getUserAgreementResponse.of(user);
-    }
-
-    // 암호화 및 인코딩 메서드
-    private String encryptAndEncode(String data, KeyPair keyPair) {
-        byte[] encryptedData = encryptionUtil.encrypt(data.getBytes(), keyPair.getPublic());
-        return Base64.getEncoder().encodeToString(encryptedData);
-    }
-
-    // 프라이빗 키 암호화 메서드
-    private String encryptPrivateKey(KeyPair keyPair) {
-        return aesUtil.encrypt(Base64.getEncoder().encodeToString(keyPair.getPrivate().getEncoded()));
     }
 
     // 업비트 키 저장 메서드
