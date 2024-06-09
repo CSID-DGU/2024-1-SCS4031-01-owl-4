@@ -15,13 +15,14 @@ import com.google.common.util.concurrent.RateLimiter;
 @RequiredArgsConstructor
 public class CandleDataCollector {
     private final CandleInfoService candleInfoService;
+    private final CandleUtil candleUtil;
     private final int batchSize = 200;
     private final RateLimiter rateLimiter = RateLimiter.create(10.0); // 초당 요청 허용량 10개로 제한
     private final long retryDelayMillis = 100; // 재시도 대기 시간 (0.1초)
 
-    public void collectCandleData(String koreanName, LocalDateTime startDate, LocalDateTime endDate, String candleName) {
+    public void collectCandleData(String koreanName, String candleName, LocalDateTime startDate, LocalDateTime endDate) {
         // 캔들을 분 기준으로 변환
-        int candleInterval = calculateCandleInterval(candleName);
+        int candleInterval = candleUtil.calculateCandleInterval(candleName);
 
         // 시작 시간부터 종료 시간까지의 총 분 수 계산
         long totalMinutes = Duration.between(startDate, endDate).toMinutes();
@@ -77,20 +78,6 @@ public class CandleDataCollector {
             System.out.println("모든 작업이 완료되었습니다.");
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-        }
-    }
-
-    // 캔들을 분 기준으로 변환하는 메서드
-    private int calculateCandleInterval(String candleType) {
-        switch (candleType) {
-            case "days":
-                return 1440; // 1일(24시간 * 60분)
-            case "weeks":
-                return 10080; // 1주(7일 * 24시간 * 60분)
-            case "months":
-                return 43200; // 1개월(30일 * 24시간 * 60분)
-            default: // minutesN 형식의 캔들 타입 처리
-                return Integer.parseInt(candleType.replace("minutes", ""));
         }
     }
 }

@@ -34,14 +34,6 @@ public class BackTestingCalculator {
     private static Long lowValueStrategy;
     private static Long highLossValueStrategy;
 
-    // 캔들 차트에서 중복 데이터를 제거하는 메서드
-    public List<CandleInfo> removeDuplicatedCandles(List<CandleInfo> candles) {
-        Set<LocalDateTime> uniqueDates = new HashSet<>();
-        return candles.stream()
-                .filter(candle -> uniqueDates.add(candle.getDateTime()))
-                .collect(Collectors.toList());
-    }
-
     // 지수 이동평균선을 계산하는 메서드
     public List<BackTestingDto.EMAInfo> calculateEMA(List<CandleInfo> candles, int date) {
         Double k = 2.0 / (date + 1);
