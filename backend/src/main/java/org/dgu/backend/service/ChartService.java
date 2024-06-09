@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ChartService {
     List<ChartDto.OHLCVResponse> getOHLCVCharts(String koreanName, String candleType);
+    List<ChartDto.ChartOptionResponse> getAllChartOptions();
 }

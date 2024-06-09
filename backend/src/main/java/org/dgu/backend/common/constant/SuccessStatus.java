@@ -39,7 +39,8 @@ public enum SuccessStatus implements BaseCode {
     // Upbit-Key
     SUCCESS_ADD_UPBIT_KEYS(HttpStatus.CREATED, "201", "업비트 키 등록에 성공했습니다"),
     // Chart
-    SUCCESS_GET_OHLCV_CHART(HttpStatus.OK, "200", "OHLCV 차트 조회에 성공했습니다.");
+    SUCCESS_GET_OHLCV_CHART(HttpStatus.OK, "200", "OHLCV 차트 조회에 성공했습니다."),
+    SUCCESS_GET_ALL_CHART_OPTIONS(HttpStatus.OK, "200", "차트 선택 지표 목록 조회에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

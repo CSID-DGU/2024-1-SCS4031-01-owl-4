@@ -6,8 +6,7 @@ import org.dgu.backend.domain.Candle;
 import org.dgu.backend.domain.CandleInfo;
 import org.dgu.backend.domain.Market;
 import org.dgu.backend.dto.ChartDto;
-import org.dgu.backend.exception.ChartErrorResult;
-import org.dgu.backend.exception.ChartException;
+import org.dgu.backend.exception.*;
 import org.dgu.backend.repository.CandleInfoRepository;
 import org.dgu.backend.repository.CandleRepository;
 import org.dgu.backend.repository.MarketRepository;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +35,24 @@ public class ChartServiceImpl implements ChartService {
         return fetchUpdatedCandleInfo(koreanName, candleName);
     }
 
+    // 차트 선택 지표 목록을 반환하는 메서드
+    @Override
+    public List<ChartDto.ChartOptionResponse> getAllChartOptions() {
+        List<Market> markets = marketRepository.findAll();
+        if (markets.isEmpty()) {
+            throw new MarketException(MarketErrorResult.NOT_FOUND_MARKETS);
+        }
+        List<Candle> candles = candleRepository.findAll();
+        if (candles.isEmpty()) {
+            throw new CandleException(CandleErrorResult.NOT_FOUND_CANDLES);
+        }
+
+        return markets.stream()
+                .flatMap(market -> candles.stream()
+                        .map(candle -> ChartDto.ChartOptionResponse.of(market, candle)))
+                .collect(Collectors.toList());
+    }
+
     // 캔들 정보 최신화 메서드
     @Transactional
     protected void updateCandleInfo(String koreanName, String candleName) {
@@ -45,7 +63,13 @@ public class ChartServiceImpl implements ChartService {
     @Transactional
     protected List<ChartDto.OHLCVResponse> fetchUpdatedCandleInfo(String koreanName, String candleName) {
         Market market = marketRepository.findByKoreanName(koreanName);
+        if (Objects.isNull(market)) {
+            throw new MarketException(MarketErrorResult.NOT_FOUND_MARKET);
+        }
         Candle candle = candleRepository.findByCandleName(candleName);
+        if (Objects.isNull(candle)) {
+            throw new CandleException(CandleErrorResult.NOT_FOUND_CANDLE);
+        }
         LocalDateTime startDate = candleUtil.getStartDateByCandleName(candleName);
 
         List<CandleInfo> candleInfos = candleInfoRepository.findByMarketAndCandleAndDateTimeAfter(market, candle, startDate);

@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.dgu.backend.domain.Candle;
 import org.dgu.backend.domain.CandleInfo;
+import org.dgu.backend.domain.Market;
 import org.dgu.backend.util.BigDecimalSerializer;
 
 import java.math.BigDecimal;
@@ -32,7 +34,7 @@ public class ChartDto {
         @JsonSerialize(using = BigDecimalSerializer.class)
         private BigDecimal volume;
 
-        public static ChartDto.OHLCVResponse of(CandleInfo candleInfo) {
+        public static OHLCVResponse of(CandleInfo candleInfo) {
             return OHLCVResponse.builder()
                     .date(String.valueOf(candleInfo.getDateTime()))
                     .openingPrice(BigDecimal.valueOf(candleInfo.getOpeningPrice()))
@@ -40,6 +42,29 @@ public class ChartDto {
                     .highPrice(BigDecimal.valueOf(candleInfo.getHighPrice()))
                     .closePrice(BigDecimal.valueOf(candleInfo.getTradePrice()))
                     .volume(BigDecimal.valueOf(candleInfo.getAccTradeVolume()).setScale(3, RoundingMode.HALF_UP))
+                    .build();
+        }
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class ChartOptionResponse {
+        private String englishName;
+        private String koreanName;
+        private String marketName;
+        private String candleName;
+        private String candleKoreanName;
+
+        public static ChartOptionResponse of(Market market, Candle candle) {
+            return ChartOptionResponse.builder()
+                    .englishName(market.getEnglishName())
+                    .koreanName(market.getKoreanName())
+                    .marketName(market.getMarketName())
+                    .candleName(candle.getCandleName())
+                    .candleKoreanName(candle.getKoreanName())
                     .build();
         }
     }
