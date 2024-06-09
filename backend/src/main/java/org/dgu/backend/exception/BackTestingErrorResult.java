@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum BackTestingErrorResult implements BaseErrorCode {
-    NOT_FOUND_START_INDEX(HttpStatus.NOT_FOUND, "404", "시작 인덱스를 찾을 수 없습니다.");
+    NOT_FOUND_START_INDEX(HttpStatus.NOT_FOUND, "404", "시작 인덱스를 찾을 수 없습니다."),
+    START_DATE_AFTER_END_DATE(HttpStatus.BAD_REQUEST, "400", "시작일이 종료일보다 늦습니다."),
+    N_DAY_LONGER_THAN_M_DAY(HttpStatus.BAD_REQUEST, "400", "N일이 M일보다 큽니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -4,8 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.domain.*;
 import org.dgu.backend.dto.BackTestingDto;
-import org.dgu.backend.exception.PortfolioErrorResult;
-import org.dgu.backend.exception.PortfolioException;
+import org.dgu.backend.exception.*;
 import org.dgu.backend.repository.*;
 import org.dgu.backend.util.CandleUtil;
 import org.dgu.backend.util.DateUtil;
@@ -53,8 +52,17 @@ public class BackTestingServiceImpl implements BackTestingService {
         Candle candle = candleRepository.findByCandleName(stepInfo.getCandleName());
         LocalDateTime startDate = dateUtil.convertToLocalDateTime(stepInfo.getStartDate());
         LocalDateTime endDate = dateUtil.convertToLocalDateTime(stepInfo.getEndDate());
+        if (startDate.isAfter(endDate)) {
+            throw new BackTestingException(BackTestingErrorResult.START_DATE_AFTER_END_DATE);
+        }
+        if (stepInfo.getNDate() > stepInfo.getMDate()) {
+            throw new BackTestingException(BackTestingErrorResult.N_DAY_LONGER_THAN_M_DAY);
+        }
 
         List<CandleInfo> candles = candleInfoRepository.findFilteredCandleInfo(market, candle, startDate, endDate);
+        if (candles.isEmpty()) {
+            throw new CandleException(CandleErrorResult.NOT_FOUND_CANDLES);
+        }
         candles = candleUtil.removeDuplicatedCandles(candles);
 
         // 골든 크로스 지점 찾기
