@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 import org.dgu.backend.domain.Market;
 
+import java.math.BigDecimal;
+
 public class UpbitDto {
     @Builder
     @Getter
@@ -82,9 +84,9 @@ public class UpbitDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Account {
         private String currency;
-        private Double balance;
-        private Double locked;
-        private Double avgBuyPrice;
+        private BigDecimal balance;
+        private BigDecimal locked;
+        private BigDecimal avgBuyPrice;
         private String unitCurrency;
     }
 

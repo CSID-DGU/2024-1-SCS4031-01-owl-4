@@ -20,6 +20,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -49,20 +50,10 @@ public class DashBoardServiceImpl implements DashBoardService {
         if (Objects.isNull(responseBody)) {
             throw new UpbitException(UpbitErrorResult.FAIL_ACCESS_USER_ACCOUNT);
         }
-
-        long accountSum = 0L;
-        for (UpbitDto.Account account : responseBody) {
-            if (account.getCurrency().equals("KRW")) {
-                accountSum += BigDecimal.valueOf(account.getBalance()).longValue();
-            } else {
-                accountSum += BigDecimal.valueOf(account.getBalance())
-                        .multiply(BigDecimal.valueOf(account.getAvgBuyPrice()))
-                        .longValue();
-            }
-        }
+        BigDecimal accountSum = getAccountSum(responseBody);
 
         return DashBoardDto.UserAccountResponse.builder()
-                .account(accountSum)
+                .account(accountSum.setScale(3, RoundingMode.HALF_UP))
                 .build();
     }
 
@@ -98,8 +89,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 
             DashBoardDto.UserCoinResponse userCoinResponse = DashBoardDto.UserCoinResponse.builder()
                     .coinName(coinName)
-                    .balance(BigDecimal.valueOf(account.getBalance()))
-                    .price(BigDecimal.valueOf(account.getAvgBuyPrice()))
+                    .balance(account.getBalance())
+                    .price(account.getAvgBuyPrice())
                     .isIncrease(isIncrease)
                     .build();
             userCoinResponses.add(userCoinResponse);
@@ -126,10 +117,25 @@ public class DashBoardServiceImpl implements DashBoardService {
         return representativeCoinResponses;
     }
 
+    // 현재 업비트 잔고를 계산하는 메서드
+    private BigDecimal getAccountSum(UpbitDto.Account[] responseBody) {
+        BigDecimal accountSum = BigDecimal.ZERO;
+        for (UpbitDto.Account account : responseBody) {
+            if (account.getCurrency().equals("KRW")) {
+                accountSum = accountSum.add(account.getBalance());
+            } else {
+                BigDecimal balance = account.getBalance();
+                BigDecimal avgBuyPrice = account.getAvgBuyPrice();
+                accountSum = accountSum.add(balance.multiply(avgBuyPrice));
+            }
+        }
+        return accountSum;
+    }
+
     // 코인 가격 상승 여부를 판단하는 메서드
     private boolean isBalanceIncreased(UpbitDto.Account account, UserCoin userCoin) {
 
-        return BigDecimal.valueOf(account.getBalance()).compareTo(userCoin.getBalance()) > 0;
+        return account.getBalance().compareTo(userCoin.getBalance()) > 0;
     }
 
     // 전체 계좌 조회 업비트 API와 통신하는 메서드

@@ -21,7 +21,8 @@ public class DashBoardDto {
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class UserAccountResponse {
-        private Long account;
+        @JsonSerialize(using = BigDecimalSerializer.class)
+        private BigDecimal account;
     }
 
     @Builder
