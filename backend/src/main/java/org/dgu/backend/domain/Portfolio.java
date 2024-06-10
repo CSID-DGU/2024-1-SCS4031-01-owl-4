@@ -37,12 +37,6 @@ public class Portfolio extends BaseEntity {
     @Column(name = "comment", length = 50)
     private String comment;
 
-    @Column(name = "trading_start_date", length = 20)
-    private LocalDateTime tradingStartDate;
-
-    @Column(name = "trading_end_date", length = 20)
-    private LocalDateTime tradingEndDate;
-
     @Column(name = "saved_at", length = 20)
     private LocalDateTime savedAt;
 
@@ -51,6 +45,9 @@ public class Portfolio extends BaseEntity {
 
     @Column(name = "is_marked", nullable = false)
     private Boolean isMarked;
+
+    @Column(name = "is_trade", nullable = false)
+    private Boolean isTrade;
 
     @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
     private PortfolioOption portfolioOption;
@@ -64,6 +61,9 @@ public class Portfolio extends BaseEntity {
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TradingLog> tradingLogs;
 
+    @OneToOne(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TradingOption tradingOption;
+
     @Builder
     public Portfolio(User user, String title, String description) {
         this.user = user;
@@ -72,6 +72,7 @@ public class Portfolio extends BaseEntity {
         this.description = description;
         this.isSaved = false;
         this.isMarked = false;
+        this.isTrade = false;
     }
 
     public void savePortfolio(String comment) {
@@ -98,5 +99,13 @@ public class Portfolio extends BaseEntity {
 
     public void updateComment(String comment) {
         this.comment = comment;
+    }
+
+    public void startTrade() {
+        this.isTrade = true;
+    }
+
+    public void stopTrade() {
+        this.isTrade = false;
     }
 }

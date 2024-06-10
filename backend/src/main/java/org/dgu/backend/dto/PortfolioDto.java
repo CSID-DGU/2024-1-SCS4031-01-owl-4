@@ -11,7 +11,6 @@ import org.dgu.backend.domain.Portfolio;
 import org.dgu.backend.domain.PortfolioOption;
 import org.dgu.backend.domain.TradingResult;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class PortfolioDto {
@@ -29,7 +28,7 @@ public class PortfolioDto {
         private Boolean isMarked;
         private Boolean isTrade;
 
-        public static PortfolioDto.PortfolioInfos of(Portfolio portfolio, PortfolioOption portfolioOption, UUID currentPortfolioId) {
+        public static PortfolioDto.PortfolioInfos of(Portfolio portfolio, PortfolioOption portfolioOption) {
             return PortfolioInfos.builder()
                     .portfolioId(portfolio.getPortfolioId())
                     .title(portfolio.getTitle())
@@ -37,7 +36,7 @@ public class PortfolioDto {
                     .endDate(String.valueOf(portfolioOption.getEndDate()))
                     .candleName(portfolioOption.getCandleName())
                     .isMarked(portfolio.getIsMarked())
-                    .isTrade(Objects.equals(portfolio.getPortfolioId(), currentPortfolioId))
+                    .isTrade(portfolio.getIsTrade())
                     .build();
         }
     }
