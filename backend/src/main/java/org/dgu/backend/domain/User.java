@@ -29,9 +29,6 @@ public class User extends BaseEntity {
     @Column(name = "provider_id", nullable = false, length = 50)
     private String providerId;
 
-    @Column(name = "current_portfolios_uuid", columnDefinition = "BINARY(16)")
-    private UUID currentPortfolioId;
-
     @Column(name = "is_agree", nullable = false)
     private Boolean isAgree;
 
@@ -43,6 +40,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserCoin> userCoins;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TradingOption tradingOption;
 
     @Builder
     public User(UUID userId, String name, String provider, String providerId) {
