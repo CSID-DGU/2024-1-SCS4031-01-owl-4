@@ -4,4 +4,5 @@ import org.dgu.backend.dto.TradingDto;
 
 public interface TradingService {
     void registerAutoTrading(String authorizationHeader, TradingDto.AutoTradingRequest autoTradingRequest);
+    void removeAutoTrading(String authorizationHeader, String portfolioId);
 }

@@ -23,4 +23,14 @@ public class TradingController {
         tradingService.registerAutoTrading(authorizationHeader, autoTradingRequest);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_START_TRADING);
     }
+
+    // 자동매매 삭제 API
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<Object>> removeAutoTrading(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam("portfolio_id") String portfolioId) {
+
+        tradingService.removeAutoTrading(authorizationHeader, portfolioId);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_DELETE_TRADING);
+    }
 }

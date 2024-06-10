@@ -18,6 +18,7 @@ import org.dgu.backend.util.JwtUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -28,6 +29,7 @@ public class TradingServiceImpl implements TradingService {
     private final TradingOptionRepository tradingOptionRepository;
     private final JwtUtil jwtUtil;
 
+    // 자동매매 등록 메서드
     @Override
     public void registerAutoTrading(String authorizationHeader, TradingDto.AutoTradingRequest autoTradingRequest) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
@@ -52,19 +54,36 @@ public class TradingServiceImpl implements TradingService {
         tradingOptionRepository.save(tradingOption);
     }
 
+    // 자동매매 삭제 메서드
+    @Override
+    public void removeAutoTrading(String authorizationHeader, String portfolioId) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+        validateUser(user);
+
+        Portfolio portfolio = portfolioRepository.findByPortfolioId(UUID.fromString(portfolioId))
+                .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
+        if (!portfolio.getIsTrade()) {
+            throw new TradingException(TradingErrorResult.IS_NOT_TRADE_PORTFOLIO);
+        }
+
+        TradingOption existingTradingOption = tradingOptionRepository.findByUser(user);
+        cancelAutoTrading(portfolio);
+        tradingOptionRepository.deleteTradingOptionById(existingTradingOption.getId());
+    }
+
     private void deleteExistingTradingOptionIfExist(User user) {
         TradingOption existingTradingOption = tradingOptionRepository.findByUser(user);
         if (!Objects.isNull(existingTradingOption)) {
             // 기존 자동매매 등록 취소 처리
-            cancelAutoTrading(existingTradingOption);
+            Portfolio existPortfolio = existingTradingOption.getPortfolio();
+            cancelAutoTrading(existPortfolio);
             tradingOptionRepository.deleteTradingOptionById(existingTradingOption.getId());
         }
     }
 
-    private void cancelAutoTrading(TradingOption existingTradingOption) {
-        Portfolio existPortfolio = existingTradingOption.getPortfolio();
-        existPortfolio.stopTrade();
-        portfolioRepository.saveAndFlush(existPortfolio);
+    private void cancelAutoTrading(Portfolio portfolio) {
+        portfolio.stopTrade();
+        portfolioRepository.saveAndFlush(portfolio);
     }
 
     private void validateUser(User user) {
