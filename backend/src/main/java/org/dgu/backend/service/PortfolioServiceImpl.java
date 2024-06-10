@@ -33,12 +33,12 @@ public class PortfolioServiceImpl implements PortfolioService {
         List<Portfolio> portfolios = portfolioRepository.findAllSavedByUser(user); // 저장된 포트폴리오만 가져옴
 
         List<PortfolioDto.PortfolioInfos> portfolioInfoGroups = new ArrayList<>();
-        UUID currentPortfolioId = user.getCurrentPortfolioId();
 
         for (Portfolio portfolio: portfolios) {
-            PortfolioOption portfolioOption = portfolioOptionRepository.findByPortfolio(portfolio);
+            PortfolioOption portfolioOption = portfolioOptionRepository.findByPortfolio(portfolio)
+                    .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO));
 
-            portfolioInfoGroups.add(PortfolioDto.PortfolioInfos.of(portfolio, portfolioOption, currentPortfolioId));
+            portfolioInfoGroups.add(PortfolioDto.PortfolioInfos.of(portfolio, portfolioOption));
         }
 
         return portfolioInfoGroups;
@@ -54,7 +54,8 @@ public class PortfolioServiceImpl implements PortfolioService {
 
         TradingResult tradingResult = tradingResultRepository.findByPortfolio(portfolio);
         PerformanceResult performanceResult = performanceResultRepository.findByPortfolio(portfolio);
-        PortfolioOption portfolioOption = portfolioOptionRepository.findByPortfolio(portfolio);
+        PortfolioOption portfolioOption = portfolioOptionRepository.findByPortfolio(portfolio)
+                .orElseThrow(() -> new PortfolioException(PortfolioErrorResult.NOT_FOUND_PORTFOLIO_OPTIONS));
 
         return PortfolioDto.PortfolioDetailInfos.of(portfolio, tradingResult, performanceResult, portfolioOption);
     }
