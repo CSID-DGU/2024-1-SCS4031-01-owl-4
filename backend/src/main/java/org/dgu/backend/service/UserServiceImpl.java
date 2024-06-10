@@ -13,11 +13,13 @@ import org.dgu.backend.util.JwtUtil;
 import org.springframework.stereotype.Service;
 
 import java.security.KeyPair;
+import java.util.Objects;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private final DashBoardService dashBoardService;
     private final UpbitKeyRepository upbitKeyRepository;
     private final JwtUtil jwtUtil;
     private final EncryptionUtil encryptionUtil;
@@ -34,6 +36,9 @@ public class UserServiceImpl implements UserService {
         String encryptedPrivateKey = encryptionUtil.encryptPrivateKey(keyPair);
 
         saveUpbitKey(user, encodedAccessKey, encodedSecretKey, encryptedPrivateKey, existUpbitKey);
+
+        // 업비트 키가 정상적으로 입력되었는지 확인
+        dashBoardService.getUserAccount(authorizationHeader);
     }
 
     // 서비스 약관 동의 여부를 등록하는 메서드
@@ -56,20 +61,17 @@ public class UserServiceImpl implements UserService {
 
     // 업비트 키 저장 메서드
     private void saveUpbitKey(User user, String encodedAccessKey, String encodedSecretKey, String encryptedPrivateKey, UpbitKey existUpbitKey) {
-        // 기존 키 있는 경우 업데이트
-        if (existUpbitKey != null) {
-            existUpbitKey.updateAccessKey(encodedAccessKey);
-            existUpbitKey.updateSecretKey(encodedSecretKey);
-            existUpbitKey.updatePrivateKey(encryptedPrivateKey);
-            upbitKeyRepository.save(existUpbitKey);
-        } else {
-            UpbitKey upbitKey = UpbitKey.builder()
-                    .user(user)
-                    .accessKey(encodedAccessKey)
-                    .secretKey(encodedSecretKey)
-                    .privateKey(encryptedPrivateKey)
-                    .build();
-            upbitKeyRepository.save(upbitKey);
+        // 기존 키가 있으면 삭제
+        if (!Objects.isNull(existUpbitKey)) {
+            upbitKeyRepository.deleteUpbitKeyById(existUpbitKey.getId());
         }
+
+        UpbitKey upbitKey = UpbitKey.builder()
+                .user(user)
+                .accessKey(encodedAccessKey)
+                .secretKey(encodedSecretKey)
+                .privateKey(encryptedPrivateKey)
+                .build();
+        upbitKeyRepository.save(upbitKey);
     }
 }
