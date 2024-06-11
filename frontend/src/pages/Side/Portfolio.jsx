@@ -14,6 +14,8 @@ import { MdDescription } from "react-icons/md";
 import { MdComment } from "react-icons/md";
 import PortfolioProfitChart from "../../components/PortfolioProfitChart";
 import PortfolioCountChart from "../../components/PortfolioCountChart";
+import { IoOptions } from "react-icons/io5";
+import AgreeAutoPurchase from "../../components/AgreeAutoPurchase";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -27,11 +29,16 @@ const Portfolio = () => {
   const { token } = useTokenStore();
   const { setIsCurrentPage } = usePortfolioOpenPageStore();
   const navigate = useNavigate();
-  const { responsePortfolio, setResponsePortfolio, } = useResponseStore();
-  const [portfolioDetailTradingData, setPortfolioDetailTradingData] = useState({});
-  const [portfolioDetailPerformanceData, setPortfolioDetailPerformanceData] =useState({});
-  const [portfolioTextId, setportfolioTextId] = useState('description');
-  
+  const { responsePortfolio, setResponsePortfolio } = useResponseStore();
+  const [portfolioDetailTradingData, setPortfolioDetailTradingData] = useState(
+    {}
+  );
+  const [portfolioDetailPerformanceData, setPortfolioDetailPerformanceData] =
+    useState({});
+  const [portfolioOptionData, setPortfolioOptionData] = useState({});
+
+  const [portfolioTextId, setportfolioTextId] = useState("description");
+
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["portfolios"],
     queryFn: async () => {
@@ -50,7 +57,6 @@ const Portfolio = () => {
 
   const mutation = useMutation({
     mutationFn: async (portfolio_ids) => {
-
       for (let index = 0; index < portfolio_ids.length; index++) {
         const response = await axios.delete(
           "http://localhost:8081/api/v1/portfolios?portfolio_id=" +
@@ -73,21 +79,29 @@ const Portfolio = () => {
   useEffect(() => {
     setPortfolioDetailTradingData(responsePortfolio.trading || {});
     setPortfolioDetailPerformanceData(responsePortfolio.performance || {});
+    setPortfolioOptionData(responsePortfolio.option || {});
   }, [responsePortfolio]);
 
   useEffect(() => {
     if (!isLoading && data) {
-      const reversedData = [...data].reverse(); // Reverse the order of data
-      const sortedData = reversedData.sort((a, b) => b.is_marked - a.is_marked); // 체크된 항목을 우선 순위로 정렬
+      const reversedData = [...data].reverse();
+      const sortedData = reversedData.sort((a, b) => b.is_marked - a.is_marked);
       setItemsData(sortedData);
       if (sortedData.length > 0) {
         setIsCurrentPage(sortedData[0].portfolio_id);
       } else {
-        setIsCurrentPage(null); // No items left
-        setResponsePortfolio({ trading: {}, performance: {}, comment: '', description: '' }); // responsePortfolio를 초기 상태로 설정
+        setIsCurrentPage(null);
+        setResponsePortfolio({
+          trading: {},
+          performance: {},
+          comment: "",
+          description: "",
+          option: {},
+        });
       }
     }
   }, [data, isLoading, setIsCurrentPage, setResponsePortfolio]);
+
   useEffect(() => {
     const filteredData = itemsData.filter((item) =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -122,7 +136,7 @@ const Portfolio = () => {
     if (selectedItems.length === 0) {
       return console.log("no delete data");
     }
-  
+
     mutation.mutate(
       selectedItems.map((item) => {
         console.log(item.portfolio_id);
@@ -132,21 +146,30 @@ const Portfolio = () => {
         onSuccess: () => {
           setSelectedItems([]);
           refetch().then(() => {
-            const totalItemsAfterDeletion = itemsData.filter((item) =>
-              item.title.toLowerCase().includes(searchQuery.toLowerCase())
-            ).length - selectedItems.length;
-            const totalPagesAfterDeletion = Math.ceil(totalItemsAfterDeletion / ITEMS_PER_PAGE);
-  
+            const totalItemsAfterDeletion =
+              itemsData.filter((item) =>
+                item.title.toLowerCase().includes(searchQuery.toLowerCase())
+              ).length - selectedItems.length;
+            const totalPagesAfterDeletion = Math.ceil(
+              totalItemsAfterDeletion / ITEMS_PER_PAGE
+            );
+
             if (currentPage > totalPagesAfterDeletion) {
               setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
             }
             if (totalItemsAfterDeletion === 0) {
               setItemsData([]); // 포트폴리오가 모두 삭제된 경우 itemsData를 빈 배열로 설정
               setPaginatedData([]); // 화면 업데이트를 위해 paginatedData도 빈 배열로 설정
-              setResponsePortfolio({ trading: {}, performance: {}, comment: '', description: ''}); // responsePortfolio를 초기 상태로 설정
+              setResponsePortfolio({
+                trading: {},
+                performance: {},
+                comment: "",
+                description: "",
+                option: {},
+              }); // responsePortfolio를 초기 상태로 설정
             }
           });
-        }
+        },
       }
     );
   };
@@ -167,8 +190,8 @@ const Portfolio = () => {
   };
 
   const handlePortfolioText = (id) => {
-    return setportfolioTextId(id)
-  }
+    return setportfolioTextId(id);
+  };
 
   const {
     initial_capital,
@@ -180,6 +203,7 @@ const Portfolio = () => {
     average_positive_trade,
     average_negative_trade,
   } = portfolioDetailTradingData;
+
   const {
     total_rate,
     win_rate,
@@ -190,6 +214,15 @@ const Portfolio = () => {
     high_loss_value_strategy,
   } = portfolioDetailPerformanceData;
 
+  const {
+    buying_point,
+    mdate,
+    ndate,
+    selling_point,
+    stop_loss_point,
+    trading_unit,
+  } = portfolioOptionData;
+
   const toggleSearchFormStyle = searchToggle
     ? "bg-blue-200 cursor-pointer"
     : "w-full bg-white border border-slate-300";
@@ -198,10 +231,19 @@ const Portfolio = () => {
     ? "left-[-20%] delay-300"
     : "left-[-5%]";
 
-  const togglePortfolioDescriptionStyle = portfolioTextId !== 'description' ? "" : "border-b-[2px] border-violet-400 text-violet-400"
-  const togglePortfolioCommentStyle = portfolioTextId === 'comment' ? "border-b-[2px] border-violet-400 text-violet-400" : ""
+  const togglePortfolioDescriptionStyle =
+    portfolioTextId !== "description"
+      ? ""
+      : "border-b-[2px] border-violet-400 text-violet-400";
+  const togglePortfolioCommentStyle =
+    portfolioTextId === "comment"
+      ? "border-b-[2px] border-violet-400 text-violet-400"
+      : "";
+  const togglePortfolioOptionStyle =
+    portfolioTextId === "option"
+      ? "border-b-[2px] border-violet-400 text-violet-400"
+      : "";
 
-  console.log(data)
   return (
     <div className="w-full bg-slate-200 p-10">
       <div className="w-full h-[788px] bg-white rounded-xl flex">
@@ -292,30 +334,107 @@ const Portfolio = () => {
             <div className="w-full h-[300px] flex justify-between items-center">
               <div className="w-full h-full border shadow-lg flex flex-col rounded-lg">
                 <ul className="basis-[80px] flex items-center font-bold text-md border-b-[1px] border-slate-300">
-                  <li className={`flex items-center h-full ml-5 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioDescriptionStyle} hover:duration-200`}
-                  onClick={() => handlePortfolioText('description')}>
-                  <MdDescription className="mr-2 size-[20px]" />
-                  Description
+                  <li
+                    className={`flex select-none cursor-pointer items-center h-full ml-5 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioDescriptionStyle} hover:duration-200`}
+                    onClick={() => handlePortfolioText("description")}
+                  >
+                    <MdDescription className="mr-2 size-[20px] select-none" />
+                    Description
                   </li>
-                  <li className={`flex items-center h-full ml-5 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioCommentStyle} hover:duration-200`}
-                  onClick={() => handlePortfolioText('comment')}>
-                  <MdComment className="mr-2 size-[20px]" />
-                  Comment
+                  <li
+                    className={`flex cursor-pointer items-center h-full select-none ml-5 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioCommentStyle} hover:duration-200`}
+                    onClick={() => handlePortfolioText("comment")}
+                  >
+                    <MdComment className="mr-2 size-[20px] select-none" />
+                    Comment
+                  </li>
+                  <li
+                    className={`flex cursor-pointer items-center h-full select-none ml-5 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioOptionStyle} hover:duration-200`}
+                    onClick={() => handlePortfolioText("option")}
+                  >
+                    <IoOptions className="mr-2 size-[20px] select-none" />
+                    Option
                   </li>
                 </ul>
                 <div className="w-full h-full p-5">
-                  <textarea className="w-full h-full border border-slate-300 rounded-md outline-none p-3" disabled={true}
-                   value={portfolioTextId === 'comment' ? responsePortfolio.comment : responsePortfolio.description}> 
-                  </textarea>
+                  {portfolioTextId === "option" ? (
+                    <div className="w-full h-full flex justify-between">
+                      <div className="w-[45%] h-full flex flex-col justify-between border-r-2">
+                        <div className="flex">
+                          <div className="p-3 w-[45%] bg-white rounded-lg border shadow-lg">
+                            Buying Point
+                          </div>
+                          <div className="px-5 py-3 w-[40%] bg-white rounded-lg border shadow-lg ml-5">
+                            {buying_point} Percent
+                          </div>
+                        </div>
+                        <div className="flex">
+                          <div className="p-3 w-[45%] bg-white rounded-lg border shadow-lg">
+                            Selling Point
+                          </div>
+                          <div className="px-5 py-3 w-[40%] bg-white rounded-lg border shadow-lg ml-5">
+                            {selling_point} Percent
+                          </div>
+                        </div>
+                        <div className="flex">
+                          <div className="p-3 w-[45%] bg-white rounded-lg border shadow-lg">
+                            Stop Loss Point
+                          </div>
+                          <div className="px-5 py-3 w-[40%] bg-white rounded-lg border shadow-lg ml-5">
+                            {stop_loss_point} Percent
+                          </div>
+                        </div>
+                      </div>
+                      <div className="w-[52%] h-full flex flex-col justify-between">
+                        <div className="flex">
+                          <div className="p-3 w-[55%] bg-white rounded-lg border shadow-lg">
+                            First Moving Average
+                          </div>
+                          <div className="px-5 py-3 w-[30%] bg-white rounded-lg border shadow-lg ml-5">
+                            {mdate} DAY
+                          </div>
+                        </div>
+                        <div className="flex">
+                          <div className="p-3 w-[55%] bg-white rounded-lg border shadow-lg">
+                            Second Moving Average
+                          </div>
+                          <div className="px-5 py-3 w-[30%] bg-white rounded-lg border shadow-lg ml-5">
+                            {ndate} DAY
+                          </div>
+                        </div>
+                        <div className="flex">
+                          <div className="p-3 w-[55%] bg-white rounded-lg border shadow-lg">
+                            Buying Split
+                          </div>
+                          <div className="px-5 py-3 w-[30%] bg-white rounded-lg border shadow-lg ml-5">
+                            {trading_unit} Count
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <textarea
+                      className="w-full h-full border border-slate-300 rounded-md outline-none p-3"
+                      disabled={true}
+                      value={
+                        portfolioTextId === "comment"
+                          ? responsePortfolio.comment
+                          : responsePortfolio.description
+                      }
+                    ></textarea>
+                  )}
                 </div>
               </div>
             </div>
             <div className="w-full h-[300px] flex justify-between items-center mt-7">
               <div className="w-[47.5%] h-full border shadow-lg flex justify-center items-center rounded-lg">
-                <PortfolioProfitChart positiveTrade = {average_positive_trade} negativeTrade = {average_negative_trade} />
+                <PortfolioProfitChart
+                  positiveTrade={average_positive_trade}
+                  negativeTrade={average_negative_trade}
+                />
               </div>
               <div className="w-[47.5%] h-full border shadow-lg flex justify-center items-cente rounded-lg">
-                <PortfolioCountChart win = {win_rate} />
+                <PortfolioCountChart win={win_rate} />
               </div>
             </div>
             <div className="w-full h-[400px] flex justify-between items-center mt-7">
@@ -323,8 +442,12 @@ const Portfolio = () => {
                 <span className="ml-3 mt-3 font-bold text-xl">Trading</span>
                 <div className="border-2 border-slate-200 border-dashed mt-3 mx-3"></div>
                 <div className="flex items-center mt-3 px-3 text-sm text-slate-600">
-                  <div className="w-3/5 border bg-slate-100 shadow-lg rounded text-center mr-1">Content</div>
-                  <div className="w-2/5 border bg-slate-100 shadow-lg rounded text-center ml-1">Value</div>
+                  <div className="w-3/5 border bg-slate-100 shadow-lg rounded text-center mr-1">
+                    Content
+                  </div>
+                  <div className="w-2/5 border bg-slate-100 shadow-lg rounded text-center ml-1">
+                    Value
+                  </div>
                 </div>
                 <div className="w-full h-full p-3 flex">
                   <div className="w-3/5 mr-1 shadow-lg rounded border flex flex-col justify-evenly items-start font-bold text-sm pl-2">
@@ -353,8 +476,12 @@ const Portfolio = () => {
                 <span className="ml-3 mt-3 font-bold text-xl">Performance</span>
                 <div className="border-2 border-slate-200 border-dashed mt-3 mx-3"></div>
                 <div className="flex items-center mt-3 px-3 text-sm text-slate-600">
-                  <div className="w-3/5 border bg-slate-100 shadow-lg rounded text-center mr-1">Content</div>
-                  <div className="w-2/5 border bg-slate-100 shadow-lg rounded text-center ml-1">Value</div>
+                  <div className="w-3/5 border bg-slate-100 shadow-lg rounded text-center mr-1">
+                    Content
+                  </div>
+                  <div className="w-2/5 border bg-slate-100 shadow-lg rounded text-center ml-1">
+                    Value
+                  </div>
                 </div>
                 <div className="w-full h-full p-3 flex">
                   <div className="w-3/5 mr-1 shadow-lg rounded border flex flex-col justify-evenly items-start font-bold text-sm pl-2">
@@ -385,9 +512,12 @@ const Portfolio = () => {
                 딥러닝 차트
               </div>
             </div>
+            <div className="w-full h-[320px] border flex justify-center items-center p-5 mt-5 shadow-xl rounded-xl ">
+              <AgreeAutoPurchase />
+            </div>
             <div className="w-full h-[300px] border flex justify-between items-center p-5 mt-5">
               <div className="w-full h-full border shadow-lg flex justify-center items-center">
-                자동 구매 약관 동의
+                자동구매 로그
               </div>
             </div>
           </div>

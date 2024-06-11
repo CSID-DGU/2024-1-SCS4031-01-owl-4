@@ -94,7 +94,7 @@ const StartFirstSettingForm = () => {
           >
             {issc ? <FaCheck className="text-white" /> : ""}
           </div>
-          <span className={`ml-3 group-hover:text-violet-400`}>
+          <span className={`ml-3 group-hover:text-violet-400 select-none`}>
             BAMOWL 서비스 이용에 대한 약관동의
           </span>
           <FaRegQuestionCircle className="size-[15px] absolute z-10 top-[33%] left-[50%] text-slate-400" />
@@ -117,7 +117,7 @@ const StartFirstSettingForm = () => {
           >
             {ispic ? <FaCheck className="text-white" /> : ""}
           </div>
-          <span className={`ml-3 group-hover:text-violet-400`}>
+          <span className={`ml-3 group-hover:text-violet-400 select-none`}>
             개인정보 수집 및 이용에 대한 약관동의
           </span>
           <FaRegQuestionCircle className="size-[15px] absolute z-10 top-[33%] left-[50%] text-slate-400" />
@@ -140,7 +140,7 @@ const StartFirstSettingForm = () => {
           >
             {isppc ? <FaCheck className="text-white" /> : ""}
           </div>
-          <span className={`ml-3 group-hover:text-violet-400`}>
+          <span className={`ml-3 group-hover:text-violet-400 select-none`}>
             개인정보 취급 및 위탁에 대한 약관동의
           </span>
           <FaRegQuestionCircle className="size-[15px] absolute z-10 top-[33%] left-[50%] text-slate-400" />

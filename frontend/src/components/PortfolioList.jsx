@@ -32,6 +32,7 @@ function formatDate(dateString) {
                 }
             });
             setResponsePortfolio(response.data.payload);
+            console.log(response.data.payload)
             return response.data.payload || [];
         },
         enabled: isCurrentPage === item.portfolio_id

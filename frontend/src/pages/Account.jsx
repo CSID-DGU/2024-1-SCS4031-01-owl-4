@@ -95,11 +95,11 @@ const Account = () => {
             </span>
           </div>
           <div className="mt-7 px-1 flex w-full justify-center items-center">
-            <div className={`rounded-full text-base font-bold border-2 py-2 px-3 ${currentStepIndex+1 === 1 ? "border-violet-600 text-violet-600":"border-green-500 text-green-500"}`}>
-              1
+            <div className={`rounded-full text-base font-bold border-2 py-2 px-3 ${currentStepIndex+1 === 1 ? "border-violet-600 text-violet-600":""} ${currentStepIndex+1 === 2 && isChecked ? "border-green-500 text-green-500": "border-red-500 text-red-500"}}`}>
+              <span className={`${currentStepIndex+1 === 1 ? "border-violet-600 text-violet-600":""} ${currentStepIndex+1 === 2 && isChecked ? "text-green-500": "text-red-500"}`}>1</span>
             </div>
-            <MdArrowForwardIos className={`size-[30px] ml-5 ${currentStepIndex+1 === 1 ? "text-violet-600":"text-green-500"}`} />
-            <div className={`rounded-full text-base font-bold border-2 py-2 px-3 ml-5 ${currentStepIndex+1 === 2 ? "border-violet-600 text-violet-600":""} ${currentStepIndex+1 === 1 ? "border-slate-400 text-slate-400":""} ${currentStepIndex+1 === 3 ? "border-green-500 text-green-500":""}`}>
+            <MdArrowForwardIos className={`size-[30px] ml-5 ${currentStepIndex+1 === 1 ? "text-violet-600":""} ${currentStepIndex+1 === 2 && isChecked ? "border-green-500 text-green-500": "border-red-500 text-red-500"}`} />
+            <div className={`rounded-full text-base font-bold border-2 py-2 px-3 ml-5 ${currentStepIndex+1 === 2 ? "border-violet-600 text-violet-600":""} ${currentStepIndex+1 === 1 ? "border-slate-400 text-slate-400":""}`}>
               2
             </div>
           </div>
@@ -157,3 +157,4 @@ const Account = () => {
 };
 
 export default Account;
+

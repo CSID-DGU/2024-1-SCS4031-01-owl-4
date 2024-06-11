@@ -2,11 +2,15 @@ import { useFormContext } from "react-hook-form";
 import useResponseStore from "../utils/useResponseStore";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import { FaRegCheckCircle } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa";
+import { useState } from "react";
 
 const StartSecondSettingForm = () => {
   const { access_key, secret_key, setAccessKey, setSecretKey } =
     useResponseStore();
-
+  const [showAPI, setShowAPI] = useState(false);
+  const [showAPISecret, setShowAPISecret] = useState(false);
   const {
     register,
     formState: { errors },
@@ -19,13 +23,19 @@ const StartSecondSettingForm = () => {
           서비스 이용을 위해
         </span>
         <h1 className="font-bold text-lg mt-1">
-          <a href="https://upbit.com/service_center/open_api_guide" className=" text-blue-600 border-b-2 border-blue-600">UPbit</a>의 API 키를 입력해주세요.
+          <a
+            href="https://upbit.com/service_center/open_api_guide"
+            className=" text-blue-600 border-b-2 border-blue-600"
+          >
+            UPbit
+          </a>
+          의 API 키를 입력해주세요.
         </h1>
       </div>
       <h1 className="font-bold text-slate-400 mt-4">ACCESS KEY</h1>
       <div className="w-full relative transition-all mt-2">
         <input
-          type="password"
+          type={showAPI ? "text" : "password"}
           className={`peer outline-none mt-2 w-full border-[1.5px] rounded-lg pl-10 py-2 duration-300 
               ${
                 errors["access_key"] || access_key.length
@@ -43,7 +53,7 @@ const StartSecondSettingForm = () => {
         />
 
         <div
-          className={`absolute left-2 top-4 size-[25px] rounded-full border-[1.5px] flex items-center justify-center font-bold text-lg
+          className={`absolute left-2 top-4 size-[25px] rounded-full border-[1.5px] flex items-center justify-center font-bold text-lg select-none
               ${
                 errors["access_key"] || access_key.length
                   ? ""
@@ -59,20 +69,40 @@ const StartSecondSettingForm = () => {
         </div>
         <MdOutlineErrorOutline
           className={`absolute top-5 right-3 duration-300 ${
-            errors["secret_key"] ? "" : "text-transparent"
-          } ${!secret_key.length ? "text-red-500" : "text-transparent"}`}
+            errors["access_key"] ? "" : "text-transparent"
+          } ${!access_key.length ? "text-red-500" : "text-transparent"}`}
         />
         <FaRegCheckCircle
           className={`absolute top-5 right-3 duration-300 ${
-            secret_key.length ? "text-green-500" : "text-transparent"
+            access_key.length ? "text-green-500" : "text-transparent"
           }`}
         />
+        {showAPI ? (
+          <FaEye
+            className={`absolute top-5 text-slate-400 duration-300
+              ${
+                errors["access_key"] || access_key.length
+                  ? "right-10"
+                  : "right-3"
+              } `}
+            onClick={() => setShowAPI(false)}
+          />
+        ) : (
+          <FaEyeSlash
+            className={`absolute top-5 text-slate-400 duration-300
+              ${
+                errors["access_key"] || access_key.length
+                  ? "right-10"
+                  : "right-5"
+              }`}
+            onClick={() => setShowAPI(true)}
+          />
+        )}
       </div>
-
-      <h1 className="font-bold text-slate-400 mt-7">SECRET KEY</h1>
+      <h1 className="font-bold text-slate-400 mt-7 select-none">SECRET KEY</h1>
       <div className="w-full relative transition-all mt-2">
         <input
-          type="password"
+          type={showAPISecret? "text":"password"}
           className={`peer outline-none mt-2 w-full border-[1.5px] rounded-lg pl-10 py-2 duration-300 
               ${
                 errors["secret_key"] || secret_key.length
@@ -90,7 +120,7 @@ const StartSecondSettingForm = () => {
         />
 
         <div
-          className={`absolute left-2 top-4 size-[25px] rounded-full border-[1.5px] flex items-center justify-center font-bold text-lg
+          className={`absolute left-2 top-4 size-[25px] rounded-full border-[1.5px] flex items-center justify-center font-bold text-lg select-none
               ${
                 errors["secret_key"] || secret_key.length
                   ? ""
@@ -114,8 +144,28 @@ const StartSecondSettingForm = () => {
             secret_key.length ? "text-green-500" : "text-transparent"
           }`}
         />
+        {showAPISecret ? (
+          <FaEye
+            className={`absolute top-5 text-slate-400 duration-300
+              ${
+                errors["secret_key"] || secret_key.length
+                  ? "right-10"
+                  : "right-3"
+              } `}
+            onClick={() => setShowAPISecret(false)}
+          />
+        ) : (
+          <FaEyeSlash
+            className={`absolute top-5 text-slate-400 duration-300
+              ${
+                errors["secret_key"] || secret_key.length
+                  ? "right-10"
+                  : "right-5"
+              }`}
+            onClick={() => setShowAPISecret(true)}
+          />
+        )}
       </div>
-
     </div>
   );
 };

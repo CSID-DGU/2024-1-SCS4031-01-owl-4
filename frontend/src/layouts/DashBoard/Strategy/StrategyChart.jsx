@@ -109,10 +109,10 @@ const StrategyChart = () => {
         name: "Day",
         data: ohlcvData.map((data) => data.slice(1)),
         itemStyle: {
-          color: "#F23645",
-          color0: "#089981",
-          borderColor: "#F23645",
-          borderColor0: "#089981",
+          color: "#089981",
+          color0: "#F23645",
+          borderColor: "#089981",
+          borderColor0: "#F23645",
         },
       },
       {

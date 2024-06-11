@@ -86,7 +86,7 @@ const TwoSettingForm = () => {
 
           <div className="w-full mt-1 py-2 flex">
             <button
-              className={`flex justify-center p-1 items-center rounded-xl border-[1.5px] ${
+              className={`flex justify-center py-1 px-2 items-center rounded-xl border-[1.5px] ${
                 exchangeRate === "usd"
                   ? "bg-indigo-500 text-white font-bold"
                   : "border-slate-400 text-slate-400 hover:border-violet-400 hover:text-violet-400"
@@ -97,7 +97,7 @@ const TwoSettingForm = () => {
               <span className="ml-2">USD</span>
             </button>
             <button
-              className={`flex justify-center p-1 items-center rounded-xl border-[1.5px] ml-2 ${
+              className={`flex justify-center py-1 px-2 items-center rounded-xl border-[1.5px] ml-2 ${
                 exchangeRate === "krw"
                   ? "bg-indigo-500 text-white font-bold"
                   : "border-slate-400 text-slate-400 hover:border-violet-400 hover:text-violet-400"
@@ -114,7 +114,9 @@ const TwoSettingForm = () => {
               <span className="ml-2">KRW</span>
             </button>
           </div>
+          <div className="flex">
 
+          </div>
           <div className="w-2/3 relative transition-all">
             <input
               type="number"

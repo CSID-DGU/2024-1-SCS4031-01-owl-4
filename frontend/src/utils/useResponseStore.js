@@ -23,6 +23,8 @@ const useResponseStore = create(
         isppc: false,
         issc: false,
         ispic: false,
+        coin_name: '비트코인',
+        market_name: 'KRW-BTC',
         setResponseBackTest: responseBackTest => set({responseBackTest}),
         setResponsePortfolio: responsePortfolio => set({responsePortfolio}),
         setLoading: () => set((state) => ({loading: !state.loading})),
@@ -43,7 +45,9 @@ const useResponseStore = create(
         setComment: comment => set({comment}),
         setIsPPC: isppc => set({isppc}),
         setIsSC: issc => set({issc}),
-        setIsPIC: ispic => set({ispic})
+        setIsPIC: ispic => set({ispic}),
+        setCoinName: coin_name => set({coin_name}),
+        setMarketName: market_name => set({market_name})
     })
 )
 

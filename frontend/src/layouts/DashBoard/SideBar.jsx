@@ -43,7 +43,7 @@ const SideBar = () => {
               <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-red-500 ${path === undefined && open ? "bg-red-500": " "} ${path === undefined && !open ? "bg-red-500" : ""}`}>
                 <BsGridFill className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === undefined && open ? "text-white": " "} ${path === undefined && !open ? "text-white" : ""}`} />
               </div>
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-red-600 ${path === undefined && open ? "text-red-600": " "} `}>HOME</span>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-red-600 select-none ${path === undefined && open ? "text-red-600": " "} `}>HOME</span>
             </Link>
             </li>
 
@@ -52,7 +52,7 @@ const SideBar = () => {
               <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-blue-500 ${path === 'chart' && open ? "bg-blue-500": " "} ${path === 'chart' && !open ? "bg-blue-500" : ""}`}>
                 <MdCandlestickChart className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'chart' && open ? "text-white": " "} ${path === 'chart' && !open ? "text-white" : ""}`} />
               </div>
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-blue-600 ${path === 'chart' && open ? "text-blue-600": " "} `}>CHART</span>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-blue-600 select-none ${path === 'chart' && open ? "text-blue-600": " "} `}>CHART</span>
             </Link>
             </li>
 
@@ -61,7 +61,7 @@ const SideBar = () => {
               <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-lime-500 ${path === 'table' && open ? "bg-lime-500": " "} ${path === 'table' && !open ? "bg-lime-500" : ""}`}>
                 <TbTableFilled className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'table' && open ? "text-white": " "} ${path === 'table' && !open ? "text-white" : ""}`} />
               </div>
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-lime-600 ${path === 'table' && open ? "text-lime-600": " "} `}>Table</span>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-lime-600 select-none ${path === 'table' && open ? "text-lime-600": " "} `}>Table</span>
             </Link>
             </li>
 
@@ -70,7 +70,7 @@ const SideBar = () => {
               <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-indigo-600 ${path === 'strategy' && open ? "bg-indigo-600": " "} ${path === 'strategy' && !open ? "bg-indigo-600" : ""}`}>
                 <BsFillClipboard2PlusFill className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'strategy' && open ? "text-white": " "} ${path === 'strategy' && !open ? "text-white" : ""}`} />
               </div>
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-indigo-700 ${path === 'strategy' && open ? "text-indigo-700": " "} `}>STRATEGY</span>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-indigo-700 select-none ${path === 'strategy' && open ? "text-indigo-700": " "} `}>STRATEGY</span>
             </Link>
             </li>
 
@@ -79,7 +79,7 @@ const SideBar = () => {
               <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-violet-500 ${path === 'run' && open ? "bg-violet-500": " "} ${path === 'run' && !open ? "bg-violet-500" : ""}`}>
                 <BsCpuFill className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'run' && open ? "text-white": " "} ${path === 'run' && !open ? "text-white" : ""}`} />
               </div>
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-violet-600 ${path === 'run' && open ? "text-violet-600": " "} `}>RUN</span>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-violet-600 select-none ${path === 'run' && open ? "text-violet-600": " "} `}>RUN</span>
             </Link>
             </li>
 
@@ -88,7 +88,7 @@ const SideBar = () => {
               <div className={`size-[35px] flex justify-center items-center rounded-lg text-black group-hover:bg-pink-500 ${path === 'portfolio' && open ? "bg-pink-500": " "} ${path === 'portfolio' && !open ? "bg-pink-500" : ""}`}>
                 <BsClipboard2DataFill className={`size-[25px] relative top-0 left-0 group-hover:text-white ${path === 'portfolio' && open ? "text-white": " "} ${path === 'portfolio' && !open ? "text-white" : ""}`} />
               </div>
-              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-pink-600 ${path === 'portfolio' && open ? "text-pink-600": " "} `}>PORTFOLIO</span>
+              <span className={`ml-3 absolute top-1 left-8 ${spanMenuStyle} text-base text-black font-bold group-hover:text-pink-600 select-none ${path === 'portfolio' && open ? "text-pink-600": " "} `}>PORTFOLIO</span>
             </Link>
             </li>
 

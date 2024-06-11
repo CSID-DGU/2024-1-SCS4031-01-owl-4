@@ -11,8 +11,10 @@ import useResponseStore from "../../../utils/useResponseStore.js";
 import { MdOutlineDescription } from "react-icons/md";
 import Modal from "../../../components/Modal.jsx";
 import { useNavigate } from "react-router-dom";
-import { IoCloseCircleSharp } from "react-icons/io5";
-import { FaArrowLeft } from "react-icons/fa";
+import { IoSend } from "react-icons/io5";
+import { FaArrowRotateRight } from "react-icons/fa6";
+import { BsSendXFill } from "react-icons/bs";
+import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
 
 const schema = z.object({
   comment: z
@@ -30,6 +32,7 @@ const BackTestChart = ({
 }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [countdown, setCountdown] = useState(5);
   const { token } = useTokenStore();
   const { prevPortfolioId, setPrevPortfolioId, comment, setComment } =
     useResponseStore();
@@ -62,6 +65,22 @@ const BackTestChart = ({
       setComment("");
     },
   });
+
+  useEffect(() => {
+    let timer;
+    if (open) {
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [open]);
+
+  useEffect(() => {
+    if (countdown === 0) {
+      setOpen(false);
+    }
+  }, [countdown]);
 
   const onSubmit = (data) => {
     mutation.mutate({ ...data, portfolio_id });
@@ -124,44 +143,72 @@ const BackTestChart = ({
                 />
               )}
             </div>
-
-            <button
-              disabled={prevPortfolioId === portfolio_id || save ? true : false}
-              type="submit"
-              className="w-full mt-auto bg-blue-500 text-white py-2 rounded"
-            >
-              {prevPortfolioId === portfolio_id || save
-                ? "Submitted"
-                : "Submit"}
-            </button>
+            <div className="flex w-full justify-between">
+              <button
+                type="button"
+                onClick={() => navigate("../strategy")}
+                className="group flex items-center justify-start w-[20%] h-10 bg-red-500 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-32 hover:rounded-lg active:translate-x-1 active:translate-y-1"
+              >
+                <div className="flex items-center justify-center w-full transition-all duration-300 group-hover:justify-start group-hover:px-3">
+                  <FaArrowRotateRight className="text-white size-[20px] animate-spin" />
+                </div>
+                <div className="absolute right-5 transform translate-x-full opacity-0 text-white text-lg font-semibold transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                  Restart
+                </div>
+              </button>
+              <button
+                className={`rounded-lg relative top-0 left-0 w-[50%] h-10 cursor-pointer flex items-center border  ${
+                  prevPortfolioId === portfolio_id || save
+                    ? "border-slate-200 bg-slate-200 group hover:bg-slate-200 active:bg-slate-200 active:border-slate-200"
+                    : "border-green-500 bg-green-500 group hover:bg-green-500 active:bg-green-500 active:border-green-500"
+                }`}
+                disabled={
+                  prevPortfolioId === portfolio_id || save ? true : false
+                }
+                type="submit"
+              >
+                <span
+                  className={`font-semibold ml-8 transform group-hover:translate-x-20 transition-all duration-300 group-hover:text-transparent ${
+                    prevPortfolioId === portfolio_id || save
+                      ? "text-slate-400"
+                      : "text-white"
+                  }`}
+                >
+                  {prevPortfolioId === portfolio_id || save
+                    ? "Submitted"
+                    : "Submit"}
+                </span>
+                <span
+                  className={`absolute right-0 h-full w-10 rounded-lg flex items-center justify-center transform group-hover:translate-x-0 group-hover:w-full transition-all duration-300 ${
+                    prevPortfolioId === portfolio_id || save
+                      ? "bg-slate-300"
+                      : "bg-green-500"
+                  }`}
+                >
+                  {prevPortfolioId === portfolio_id || save ? (
+                    <BsSendXFill className="text-slate-400" />
+                  ) : (
+                    <IoSend className="text-white" />
+                  )}
+                </span>
+              </button>
+            </div>
           </form>
         </div>
       </div>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <div className="w-[450px] h-[250px] flex flex-col justify-center items-center">
-          <h1 className="font-bold text-xl">Submit Successful</h1>
-          <div className="w-2/3 flex justify-between mt-10">
-            <button
-              type="button"
-              className="text-center w-32 rounded-2xl h-12 relative font-sans text-black text-xl font-semibold group bg-slate-200 flex items-center justify-center"
-              onClick={() => setOpen(false)}
-            >
-              <div className="bg-red-500 rounded-xl h-10 w-1/4 flex items-center justify-center absolute left-1 top-[4px] group-hover:w-[120px] z-10 duration-500 text-white">
-                <FaArrowLeft />
-              </div>
-              <p className="translate-x-2 text-lg">Back</p>
-            </button>
-            <button
-              type="button"
-              className="text-center w-32 rounded-2xl h-12 relative font-sans text-black text-xl font-semibold group bg-slate-200 flex items-center justify-start"
-              onClick={() => navigate("../portfolio")}
-            >
-              <div className="bg-green-500 rounded-xl h-10 w-1/4 flex items-center justify-center absolute rotate-180 right-1 top-[4px] group-hover:w-[120px] z-10 duration-500 text-white">
-                <FaArrowLeft />
-              </div>
-              <p className="translate-x-2 text-lg ml-1">Portfolio</p>
-            </button>
+        <div className="w-[350px] h-[150px] relative flex flex-col justify-center items-center p-5">
+          <h1 className="font-bold text-xl text-green-500 select-none">
+            Submit Successful
+          </h1>
+          <div className="flex items-center cursor-pointer mt-3 relative">
+            <span className="select-none">다음으로</span>
+            <MdOutlineKeyboardDoubleArrowRight className="animate-ping ml-3 text-green-500" />
           </div>
+          <p className="text-xs absolute bottom-0 right-0 text-slate-400 mt-2">
+            <span className="font-bold text-slate-600 select-none">{countdown}</span>초 후에
+            닫힙니다.
+          </p>
         </div>
       </Modal>
     </div>
