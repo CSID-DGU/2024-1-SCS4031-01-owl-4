@@ -45,7 +45,7 @@ public class CandleInfoUpdater {
         int candleInterval = candleUtil.calculateCandleInterval(candleName);
         LocalDateTime startDate;
         if (Objects.isNull(latestCandleInfo)) {
-            startDate = dateUtil.convertToLocalDateTime("2019-01-01T00:00:00");
+            startDate = dateUtil.convertToLocalDateTime("2018-01-01T00:00:00");
         } else {
             startDate = latestCandleInfo.getDateTime();
             if (startDate.plusMinutes(candleInterval).isAfter(LocalDateTime.now())) {
