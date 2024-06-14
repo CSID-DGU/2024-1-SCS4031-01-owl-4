@@ -84,7 +84,8 @@ public class UpbitDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class Account {
         private String currency;
-        private BigDecimal balance;
+        @JsonProperty("balance")
+        private BigDecimal coinCount;
         private BigDecimal locked;
         private BigDecimal avgBuyPrice;
         private String unitCurrency;
