@@ -11,6 +11,7 @@ import org.dgu.backend.exception.UpbitException;
 import org.dgu.backend.repository.CandleInfoRepository;
 import org.dgu.backend.repository.CandleRepository;
 import org.dgu.backend.repository.MarketRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +23,10 @@ import java.time.format.DateTimeFormatter;
 @Transactional
 @RequiredArgsConstructor
 public class CandleInfoServiceImpl implements CandleInfoService {
-
+    @Value("${upbit.url.candle-minute}")
+    private String UPBIT_URL_CANDLE_MINUTE;
+    @Value("${upbit.url.candle-etc}")
+    private String UPBIT_URL_CANDLE_ETC;
     private final CandleInfoRepository candleInfoRepository;
     private final MarketRepository marketRepository;
     private final CandleRepository candleRepository;
@@ -39,10 +43,10 @@ public class CandleInfoServiceImpl implements CandleInfoService {
         if (candleName.startsWith("minutes")) {
             // 분봉인 경우
             int unit = Integer.parseInt(candleName.substring(7));
-            url = String.format("https://api.upbit.com/v1/candles/%s/%d?market=%s&count=%d", candleName.substring(0,7), unit, marketName, count);
+            url = String.format(UPBIT_URL_CANDLE_MINUTE, candleName.substring(0,7), unit, marketName, count);
         } else {
             // 그 외 (일봉, 주봉, 월봉)
-            url = String.format("https://api.upbit.com/v1/candles/%s?market=%s&count=%d", candleName, marketName, count);
+            url = String.format(UPBIT_URL_CANDLE_ETC, candleName, marketName, count);
         }
 
         if (to != null) {
