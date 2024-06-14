@@ -26,13 +26,25 @@ public class UserCoin extends BaseEntity {
     @Column(name = "coin_name", nullable = false, length = 50)
     private String coinName;
 
+    @Column(name = "coin_count", precision = 20, scale = 10, nullable = false)
+    private BigDecimal coinCount;
+
+    @Column(name = "price", nullable = false)
+    private BigDecimal price;
+
     @Column(name = "balance", nullable = false)
     private BigDecimal balance;
 
+    @Column(name = "rate", nullable = false)
+    private BigDecimal rate;
+
     @Builder
-    public UserCoin(User user, String coinName, BigDecimal balance) {
+    public UserCoin(User user, String coinName,  BigDecimal coinCount, BigDecimal price, BigDecimal balance, BigDecimal rate) {
         this.user = user;
         this.coinName = coinName;
+        this.coinCount = coinCount;
+        this.price = price;
         this.balance = balance;
+        this.rate = rate;
     }
 }

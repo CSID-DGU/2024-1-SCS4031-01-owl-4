@@ -33,16 +33,22 @@ public class DashBoardDto {
     public static class UserCoinResponse {
         private String coinName;
         @JsonSerialize(using = BigDecimalSerializer.class)
-        private BigDecimal balance;
+        private BigDecimal coinCount;
         @JsonSerialize(using = BigDecimalSerializer.class)
         private BigDecimal price;
+        @JsonSerialize(using = BigDecimalSerializer.class)
+        private BigDecimal balance;
         private Boolean isIncrease;
+        private BigDecimal rate;
 
         public UserCoin to(User user) {
             return UserCoin.builder()
                     .user(user)
                     .coinName(coinName)
+                    .coinCount(coinCount)
+                    .price(price)
                     .balance(balance)
+                    .rate(rate)
                     .build();
         }
     }
