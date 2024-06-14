@@ -85,6 +85,10 @@ jwt:
 aes:
   secret: ${AES_SECRET}
 
-upbit-open-api:
-  access-key: ${UPBIT_ACCESS_KEY}
-  secret-key: ${UPBIT_SECRET_KEY}
+upbit:
+  url:
+    market: ${UPBIT_URL_MARKET}
+    ticker: ${UPBIT_URL_TICKER}
+    account: ${UPBIT_URL_ACCOUNT}
+    candle-minute: ${UPBIT_URL_CANDLE_MINUTE}
+    candle-etc: ${UPBIT_URL_CANDLE_ETC}

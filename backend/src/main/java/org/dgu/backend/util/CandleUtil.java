@@ -39,7 +39,7 @@ public class CandleUtil {
             case "minutes10" -> now.minusMonths(10);
             case "minutes15" -> now.minusMonths(15);
             case "minutes30" -> now.minusMonths(30);
-            default -> LocalDateTime.of(2019, 1, 1, 0, 0);
+            default -> LocalDateTime.of(2018, 1, 1, 0, 0);
         };
     }
 
