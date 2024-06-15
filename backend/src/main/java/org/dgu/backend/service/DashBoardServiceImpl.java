@@ -10,19 +10,13 @@ import org.dgu.backend.domain.User;
 import org.dgu.backend.domain.UserCoin;
 import org.dgu.backend.dto.DashBoardDto;
 import org.dgu.backend.dto.UpbitDto;
-import org.dgu.backend.exception.MarketErrorResult;
-import org.dgu.backend.exception.MarketException;
-import org.dgu.backend.exception.UpbitErrorResult;
-import org.dgu.backend.exception.UpbitException;
+import org.dgu.backend.exception.*;
 import org.dgu.backend.repository.MarketRepository;
 import org.dgu.backend.repository.UpbitKeyRepository;
 import org.dgu.backend.repository.UserCoinRepository;
 import org.dgu.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -39,8 +33,8 @@ public class DashBoardServiceImpl implements DashBoardService {
     private String UPBIT_URL_ACCOUNT;
     @Value("${upbit.url.ticker}")
     private String UPBIT_URL_TICKER;
-    private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
+    private final UpbitApiClient upbitApiClient;
     private final UpbitKeyRepository upbitKeyRepository;
     private final UserCoinRepository userCoinRepository;
     private final MarketRepository marketRepository;
@@ -88,8 +82,8 @@ public class DashBoardServiceImpl implements DashBoardService {
         if (Objects.isNull(market)) {
             throw new MarketException(MarketErrorResult.NOT_FOUND_MARKET);
         }
-        UpbitDto.Ticker[] ticker = getTickerPriceAtUpbit(UPBIT_URL_TICKER + marketName);
-        BigDecimal curPrice = BigDecimal.valueOf(ticker[0].getPrice());
+        UpbitDto.Ticker[] ticker = upbitApiClient.getTickerPriceAtUpbit(UPBIT_URL_TICKER + marketName);
+        BigDecimal curPrice = ticker[0].getPrice();
         BigDecimal curCoinCount = account.getCoinCount();
         boolean isIncrease = false;
         BigDecimal rate = BigDecimal.ZERO;
@@ -119,7 +113,7 @@ public class DashBoardServiceImpl implements DashBoardService {
     public List<DashBoardDto.RepresentativeCoinResponse> getRepresentativeCoins() {
         List<DashBoardDto.RepresentativeCoinResponse> representativeCoinResponses = new ArrayList<>();
         for (Coin coin : Coin.values()) {
-            UpbitDto.Ticker[] ticker = getTickerPriceAtUpbit(UPBIT_URL_TICKER + coin.getMarketName());
+            UpbitDto.Ticker[] ticker = upbitApiClient.getTickerPriceAtUpbit(UPBIT_URL_TICKER + coin.getMarketName());
             representativeCoinResponses.add(DashBoardDto.RepresentativeCoinResponse.of(ticker[0], coin.getKoreanName(), coin.getEnglishName()));
         }
 
@@ -135,8 +129,8 @@ public class DashBoardServiceImpl implements DashBoardService {
             } else {
                 // 현재가를 가져옴
                 String marketName = "KRW-" + account.getCurrency();
-                UpbitDto.Ticker[] ticker = getTickerPriceAtUpbit(UPBIT_URL_TICKER + marketName);
-                BigDecimal curPrice = BigDecimal.valueOf(ticker[0].getPrice());
+                UpbitDto.Ticker[] ticker = upbitApiClient.getTickerPriceAtUpbit(UPBIT_URL_TICKER + marketName);
+                BigDecimal curPrice = ticker[0].getPrice();
                 BigDecimal userCoinCount = account.getCoinCount();
                 accountSum = accountSum.add(curPrice.multiply(userCoinCount));
             }
@@ -158,63 +152,10 @@ public class DashBoardServiceImpl implements DashBoardService {
     private UpbitDto.Account[] getUpbitAccounts(User user) {
         UpbitKey upbitKey = upbitKeyRepository.findByUser(user);
         if (Objects.isNull(upbitKey)) {
-            throw new UpbitException(UpbitErrorResult.NOT_FOUND_UPBIT_KEY);
+            throw new UserException(UserErrorResult.NOT_FOUND_KEY);
         }
 
         String token = jwtUtil.generateUpbitToken(upbitKey);
-        UpbitDto.Account[] responseBody = getUserAccountsAtUpbit(UPBIT_URL_ACCOUNT, token);
-        if (Objects.isNull(responseBody)) {
-            throw new UpbitException(UpbitErrorResult.FAIL_ACCESS_USER_ACCOUNT);
-        }
-        return responseBody;
-    }
-
-    // 전체 계좌 조회 업비트 API와 통신하는 메서드
-    private UpbitDto.Account[] getUserAccountsAtUpbit(String url, String token) {
-        String authenticationToken = "Bearer " + token;
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("accept", MediaType.APPLICATION_JSON_VALUE);
-        headers.add("Authorization", authenticationToken);
-
-        try {
-            ResponseEntity<UpbitDto.Account[]> responseEntity = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    new HttpEntity<>(headers),
-                    UpbitDto.Account[].class
-            );
-            return responseEntity.getBody();
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED && e.getResponseBodyAsString().contains("no_authorization_ip")) {
-                throw new UpbitException(UpbitErrorResult.UNAUTHORIZED_IP);
-            } else {
-                throw new UpbitException(UpbitErrorResult.UNAUTHORIZED_UPBIT_KEY);
-            }
-        }
-    }
-
-    // 시세 현재가 조회 업비트 API와 통신하는 메서드
-    private UpbitDto.Ticker[] getTickerPriceAtUpbit(String url) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("accept", MediaType.APPLICATION_JSON_VALUE);
-
-        try {
-            ResponseEntity<UpbitDto.Ticker[]> responseEntity = restTemplate.exchange(
-                    url,
-                    HttpMethod.GET,
-                    new HttpEntity<>(headers),
-                    UpbitDto.Ticker[].class
-            );
-            if (Objects.isNull(responseEntity.getBody()[0])) {
-                throw new UpbitException(UpbitErrorResult.FAIL_ACCESS_COIN_INFO);
-            }
-            return responseEntity.getBody();
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED && e.getResponseBodyAsString().contains("no_authorization_ip")) {
-                throw new UpbitException(UpbitErrorResult.UNAUTHORIZED_IP);
-            } else {
-                throw new UpbitException(UpbitErrorResult.UNAUTHORIZED_UPBIT_KEY);
-            }
-        }
+        return upbitApiClient.getUserAccountsAtUpbit(UPBIT_URL_ACCOUNT, token);
     }
 }
