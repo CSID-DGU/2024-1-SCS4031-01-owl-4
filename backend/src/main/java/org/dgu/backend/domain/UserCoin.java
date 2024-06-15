@@ -23,8 +23,14 @@ public class UserCoin extends BaseEntity {
     @JoinColumn(name = "users_id", foreignKey = @ForeignKey(name = "users_coins_fk_users_id"))
     private User user;
 
-    @Column(name = "coin_name", nullable = false, length = 50)
-    private String coinName;
+    @Column(name = "market_name", nullable = false, length = 50)
+    private String marketName;
+
+    @Column(name = "korean_name", nullable = false, length = 50)
+    private String koreanName;
+
+    @Column(name = "english_name", nullable = false, length = 50)
+    private String englishName;
 
     @Column(name = "coin_count", precision = 20, scale = 10, nullable = false)
     private BigDecimal coinCount;
@@ -39,9 +45,11 @@ public class UserCoin extends BaseEntity {
     private BigDecimal rate;
 
     @Builder
-    public UserCoin(User user, String coinName,  BigDecimal coinCount, BigDecimal price, BigDecimal balance, BigDecimal rate) {
+    public UserCoin(User user, String marketName, String koreanName, String englishName, BigDecimal coinCount, BigDecimal price, BigDecimal balance, BigDecimal rate) {
         this.user = user;
-        this.coinName = coinName;
+        this.marketName = marketName;
+        this.koreanName = koreanName;
+        this.englishName = englishName;
         this.coinCount = coinCount;
         this.price = price;
         this.balance = balance;
