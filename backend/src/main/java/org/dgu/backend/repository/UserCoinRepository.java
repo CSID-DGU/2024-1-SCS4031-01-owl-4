@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface UserCoinRepository extends JpaRepository<UserCoin,Long> {
-    UserCoin findByCoinName(String coinName);
+    UserCoin findByMarketName(String marketName);
 }

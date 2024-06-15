@@ -31,7 +31,9 @@ public class DashBoardDto {
     @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class UserCoinResponse {
-        private String coinName;
+        private String marketName;
+        private String koreanName;
+        private String englishName;
         @JsonSerialize(using = BigDecimalSerializer.class)
         private BigDecimal coinCount;
         @JsonSerialize(using = BigDecimalSerializer.class)
@@ -44,7 +46,9 @@ public class DashBoardDto {
         public UserCoin to(User user) {
             return UserCoin.builder()
                     .user(user)
-                    .coinName(coinName)
+                    .marketName(marketName)
+                    .koreanName(koreanName)
+                    .englishName(englishName)
                     .coinCount(coinCount)
                     .price(price)
                     .balance(balance)
@@ -60,6 +64,7 @@ public class DashBoardDto {
     public static class RepresentativeCoinResponse {
         private String marketName;
         private String koreanName;
+        private String englishName;
         @JsonSerialize(using = BigDecimalSerializer.class)
         private BigDecimal price;
         @JsonSerialize(using = BigDecimalSerializer.class)
@@ -68,10 +73,11 @@ public class DashBoardDto {
         private BigDecimal changeRate;
         private Boolean isIncrease;
 
-        public static DashBoardDto.RepresentativeCoinResponse of(UpbitDto.Ticker ticker, String koreanName) {
+        public static DashBoardDto.RepresentativeCoinResponse of(UpbitDto.Ticker ticker, String koreanName, String englishName) {
             return RepresentativeCoinResponse.builder()
                     .marketName(ticker.getMarket())
                     .koreanName(koreanName)
+                    .englishName(englishName)
                     .changePrice(BigDecimal.valueOf(ticker.getPrice()))
                     .changeRate(BigDecimal.valueOf(ticker.getChangeRate()).setScale(5, RoundingMode.HALF_UP))
                     .isIncrease(ticker.getChange().equals("RISE"))

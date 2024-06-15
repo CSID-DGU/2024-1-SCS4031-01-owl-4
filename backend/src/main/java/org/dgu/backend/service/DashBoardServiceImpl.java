@@ -4,13 +4,17 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dgu.backend.constant.Coin;
+import org.dgu.backend.domain.Market;
 import org.dgu.backend.domain.UpbitKey;
 import org.dgu.backend.domain.User;
 import org.dgu.backend.domain.UserCoin;
 import org.dgu.backend.dto.DashBoardDto;
 import org.dgu.backend.dto.UpbitDto;
+import org.dgu.backend.exception.MarketErrorResult;
+import org.dgu.backend.exception.MarketException;
 import org.dgu.backend.exception.UpbitErrorResult;
 import org.dgu.backend.exception.UpbitException;
+import org.dgu.backend.repository.MarketRepository;
 import org.dgu.backend.repository.UpbitKeyRepository;
 import org.dgu.backend.repository.UserCoinRepository;
 import org.dgu.backend.util.JwtUtil;
@@ -39,6 +43,7 @@ public class DashBoardServiceImpl implements DashBoardService {
     private final JwtUtil jwtUtil;
     private final UpbitKeyRepository upbitKeyRepository;
     private final UserCoinRepository userCoinRepository;
+    private final MarketRepository marketRepository;
 
     // 유저 업비트 잔고를 반환하는 메서드
     @Override
@@ -66,20 +71,24 @@ public class DashBoardServiceImpl implements DashBoardService {
     private List<DashBoardDto.UserCoinResponse> processUserCoins(UpbitDto.Account[] accounts, User user) {
         List<DashBoardDto.UserCoinResponse> userCoinResponses = new ArrayList<>();
         for (UpbitDto.Account account : accounts) {
-            String coinName = account.getCurrency();
+            String marketName = account.getCurrency();
             // 현금은 제외
-            if (!coinName.equals("KRW")) {
-                userCoinResponses.add(processSingleCoin(account, user, coinName));
+            if (!marketName.equals("KRW")) {
+                userCoinResponses.add(processSingleCoin(account, user, marketName));
             }
         }
         return userCoinResponses;
     }
 
     // 단일 코인 정보를 처리하는 메서드
-    private DashBoardDto.UserCoinResponse processSingleCoin(UpbitDto.Account account, User user, String coinName) {
-        coinName = "KRW-" + coinName;
-        UserCoin userCoin = userCoinRepository.findByCoinName(coinName);
-        UpbitDto.Ticker[] ticker = getTickerPriceAtUpbit(UPBIT_URL_TICKER + coinName);
+    private DashBoardDto.UserCoinResponse processSingleCoin(UpbitDto.Account account, User user, String marketName) {
+        marketName = "KRW-" + marketName;
+        UserCoin userCoin = userCoinRepository.findByMarketName(marketName);
+        Market market = marketRepository.findByMarketName(marketName);
+        if (Objects.isNull(market)) {
+            throw new MarketException(MarketErrorResult.NOT_FOUND_MARKET);
+        }
+        UpbitDto.Ticker[] ticker = getTickerPriceAtUpbit(UPBIT_URL_TICKER + marketName);
         BigDecimal curPrice = BigDecimal.valueOf(ticker[0].getPrice());
         BigDecimal curCoinCount = account.getCoinCount();
         boolean isIncrease = false;
@@ -91,7 +100,9 @@ public class DashBoardServiceImpl implements DashBoardService {
         }
 
         DashBoardDto.UserCoinResponse userCoinResponse = DashBoardDto.UserCoinResponse.builder()
-                .coinName(coinName)
+                .marketName(marketName)
+                .koreanName(market.getKoreanName())
+                .englishName(market.getEnglishName())
                 .coinCount(curCoinCount)
                 .price(curPrice)
                 .balance(curPrice.multiply(curCoinCount).setScale(4, RoundingMode.HALF_UP))
@@ -109,7 +120,7 @@ public class DashBoardServiceImpl implements DashBoardService {
         List<DashBoardDto.RepresentativeCoinResponse> representativeCoinResponses = new ArrayList<>();
         for (Coin coin : Coin.values()) {
             UpbitDto.Ticker[] ticker = getTickerPriceAtUpbit(UPBIT_URL_TICKER + coin.getMarketName());
-            representativeCoinResponses.add(DashBoardDto.RepresentativeCoinResponse.of(ticker[0], coin.getKoreanName()));
+            representativeCoinResponses.add(DashBoardDto.RepresentativeCoinResponse.of(ticker[0], coin.getKoreanName(), coin.getEnglishName()));
         }
 
         return representativeCoinResponses;
@@ -123,8 +134,8 @@ public class DashBoardServiceImpl implements DashBoardService {
                 accountSum = accountSum.add(account.getCoinCount());
             } else {
                 // 현재가를 가져옴
-                String coinName = "KRW-" + account.getCurrency();
-                UpbitDto.Ticker[] ticker = getTickerPriceAtUpbit(UPBIT_URL_TICKER + coinName);
+                String marketName = "KRW-" + account.getCurrency();
+                UpbitDto.Ticker[] ticker = getTickerPriceAtUpbit(UPBIT_URL_TICKER + marketName);
                 BigDecimal curPrice = BigDecimal.valueOf(ticker[0].getPrice());
                 BigDecimal userCoinCount = account.getCoinCount();
                 accountSum = accountSum.add(curPrice.multiply(userCoinCount));
