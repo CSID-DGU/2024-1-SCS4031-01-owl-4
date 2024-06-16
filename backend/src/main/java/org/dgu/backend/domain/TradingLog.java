@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.dgu.backend.common.BaseEntity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -33,7 +34,7 @@ public class TradingLog extends BaseEntity {
     private Long capital;
 
     @Column(name = "coin", nullable = false)
-    private Double coin;
+    private BigDecimal coin;
 
     @Column(name = "coin_price", nullable = false)
     private Long coinPrice;
@@ -42,7 +43,7 @@ public class TradingLog extends BaseEntity {
     private Double rate;
 
     @Builder
-    public TradingLog(Portfolio portfolio, String type, LocalDateTime date, Long capital, Double coin, Long coinPrice, Double rate){
+    public TradingLog(Portfolio portfolio, String type, LocalDateTime date, Long capital, BigDecimal coin, Long coinPrice, Double rate){
         this.portfolio = portfolio;
         this.type = type;
         this.date = date;

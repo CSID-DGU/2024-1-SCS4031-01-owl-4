@@ -78,7 +78,7 @@ public class DashBoardDto {
                     .marketName(ticker.getMarket())
                     .koreanName(koreanName)
                     .englishName(englishName)
-                    .changePrice(BigDecimal.valueOf(ticker.getPrice()))
+                    .changePrice(ticker.getPrice())
                     .changeRate(BigDecimal.valueOf(ticker.getChangeRate()).setScale(5, RoundingMode.HALF_UP))
                     .isIncrease(ticker.getChange().equals("RISE"))
                     .build();
