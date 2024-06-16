@@ -1,5 +1,6 @@
 package org.dgu.backend.service;
 
+import com.nimbusds.jose.shaded.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.dgu.backend.dto.UpbitDto;
 import org.dgu.backend.exception.UpbitErrorResult;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -44,17 +46,16 @@ public class UpbitApiClient {
     }
 
     // HTTP POST 주문 요청을 보내고 결과를 처리하는 메서드
-    private <T> T sendHttpPostRequest(String url, Class<T> responseType, String token, Object requestBody) {
+    private <T> T sendHttpPostRequest(String url, Class<T> responseType, String token, Map<String, String> params) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("accept", MediaType.APPLICATION_JSON_VALUE);
-        headers.add("Authorization", "Bearer " + token);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+        headers.set("Authorization", "Bearer " + token);
 
         try {
             ResponseEntity<T> responseEntity = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
-                    new HttpEntity<>(requestBody, headers),
+                    new HttpEntity<>(new Gson().toJson(params), headers),
                     responseType
             );
             if (Objects.isNull(responseEntity.getBody())) {
@@ -82,7 +83,7 @@ public class UpbitApiClient {
 
     // 전체 계좌 조회 업비트 API와 통신하는 메서드
     public UpbitDto.Account[] getUserAccountsAtUpbit(String url, String token) {
-        return sendHttpGetRequest(url, UpbitDto.Account[].class, Optional.ofNullable(token));
+        return sendHttpGetRequest(url, UpbitDto.Account[].class, Optional.of(token));
     }
 
     // 시세 현재가 조회 업비트 API와 통신하는 메서드
@@ -91,7 +92,7 @@ public class UpbitApiClient {
     }
 
     // 주문 생성 업비트 API와 통신하는 메서드
-    public UpbitDto.OrderResponse[] createNewOrder(String url, String token, UpbitDto.OrderRequest request) {
-        return sendHttpPostRequest(url, UpbitDto.OrderResponse[].class, token, request);
+    public UpbitDto.OrderResponse[] createNewOrder(String url, String token, Map<String, String> params) {
+        return sendHttpPostRequest(url, UpbitDto.OrderResponse[].class, token, params);
     }
 }

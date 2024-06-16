@@ -78,6 +78,23 @@ public class JwtUtil {
                 .compact();
     }
 
+    // 업비트 주문 요청 위한 토큰을 발급하는 메서드
+    public String generateUpbitOrderToken(UpbitKey upbitKey, String queryHash) {
+        PrivateKey privateKey = encryptionUtil.getDecryptedPrivateKey(upbitKey.getPrivateKey());
+        String accessKey = encryptionUtil.decryptAndEncode(upbitKey.getAccessKey(), privateKey);
+        String secretKey = encryptionUtil.decryptAndEncode(upbitKey.getSecretKey(), privateKey);
+
+        log.info("업비트 주문 요청 API 토큰이 발행되었습니다.");
+
+        return Jwts.builder()
+                .claim("access_key", accessKey)
+                .claim("nonce", UUID.randomUUID().toString())
+                .claim("query_hash", queryHash)
+                .claim("query_hash_alg", "SHA512")
+                .signWith(getUpbitSigningKey(secretKey))
+                .compact();
+    }
+
     // 응답 헤더에서 액세스 토큰을 반환하는 메서드
     public String getTokenFromHeader(String authorizationHeader) {
         return authorizationHeader.substring(7);

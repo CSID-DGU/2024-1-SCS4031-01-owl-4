@@ -11,7 +11,6 @@ import org.dgu.backend.domain.PortfolioOption;
 import org.dgu.backend.domain.TradingOption;
 import org.dgu.backend.domain.User;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -31,9 +30,11 @@ public class TradingDto {
             return TradingOption.builder()
                     .user(user)
                     .portfolio(portfolio)
-                    .startCapital(BigDecimal.valueOf(fund))
-                    .tradingUnitPrice(BigDecimal.valueOf(fund / portfolioOption.getTradingUnit()))
-                    .remainedBuyingCount(portfolioOption.getTradingUnit())
+                    .initialCapital(fund)
+                    .currentCapital(fund)
+                    .tradingUnitPrice(fund / portfolioOption.getTradingUnit())
+                    .tradingCount(portfolioOption.getTradingUnit())
+                    .buyingCount(0)
                     .startDate(startDate)
                     .endDate(endDate)
                     .build();

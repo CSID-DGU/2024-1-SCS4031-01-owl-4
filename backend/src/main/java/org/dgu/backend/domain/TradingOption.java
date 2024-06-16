@@ -28,17 +28,26 @@ public class TradingOption extends BaseEntity {
     @JoinColumn(name = "portfolios_id", foreignKey = @ForeignKey(name = "trading_options_fk_portfolios_id"))
     private Portfolio portfolio;
 
-    @Column(name = "start_capital", nullable = false)
-    private BigDecimal startCapital;
+    @Column(name = "initial_capital", nullable = false)
+    private Long initialCapital;
+
+    @Column(name = "current_capital", nullable = false)
+    private Long currentCapital;
 
     @Column(name = "avg_price")
-    private BigDecimal avgPrice;
+    private Double avgPrice;
 
     @Column(name = "trading_unit_price", nullable = false)
-    private BigDecimal tradingUnitPrice;
+    private Long tradingUnitPrice;
 
-    @Column(name = "remained_buying_count", nullable = false)
-    private int remainedBuyingCount;
+    @Column(name = "coin_count", nullable = false, scale = 10)
+    private BigDecimal coinCount;
+
+    @Column(name = "trading_count", nullable = false)
+    private int tradingCount;
+
+    @Column(name = "buying_count", nullable = false)
+    private int buyingCount;
 
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
@@ -47,17 +56,24 @@ public class TradingOption extends BaseEntity {
     private LocalDateTime endDate;
 
     @Builder
-    public TradingOption(User user, Portfolio portfolio, BigDecimal startCapital, BigDecimal tradingUnitPrice, int remainedBuyingCount, LocalDateTime startDate, LocalDateTime endDate) {
+    public TradingOption(User user, Portfolio portfolio, Long initialCapital, Long currentCapital, Long tradingUnitPrice, int tradingCount, int buyingCount, LocalDateTime startDate, LocalDateTime endDate) {
         this.user = user;
         this.portfolio = portfolio;
-        this.startCapital = startCapital;
+        this.initialCapital = initialCapital;
+        this.currentCapital = currentCapital;
         this.tradingUnitPrice = tradingUnitPrice;
-        this.remainedBuyingCount = remainedBuyingCount;
+        this.coinCount = BigDecimal.ZERO;
+        this.tradingCount = tradingCount;
+        this.buyingCount = buyingCount;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public void updateAvgPrice(BigDecimal avgPrice) {
+    public void updateAvgPrice(Double avgPrice) {
         this.avgPrice = avgPrice;
+    }
+
+    public void updateCoinCount(BigDecimal coinCount) {
+        this.coinCount = coinCount;
     }
 }

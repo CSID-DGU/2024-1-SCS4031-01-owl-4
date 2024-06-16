@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import org.dgu.backend.domain.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +71,7 @@ public class BackTestingDto {
         private LocalDateTime date;
         private String action;
         private Double coinPrice;
-        private Double coin;
+        private BigDecimal coin;
         private Long capital;
         private Double rate;
         private Long income;
@@ -79,12 +81,12 @@ public class BackTestingDto {
             this.rate = rate;
         }
 
-        public static BackTestingDto.BackTestingResult of(LocalDateTime date, String action, Double coinPrice, Double coin, Long capital, Double rate, Long income, Integer tradingPeriod) {
+        public static BackTestingDto.BackTestingResult of(LocalDateTime date, String action, Double coinPrice, BigDecimal coin, Long capital, Double rate, Long income, Integer tradingPeriod) {
             return BackTestingDto.BackTestingResult.builder()
                     .date(date)
                     .action(action)
                     .coinPrice(coinPrice)
-                    .coin(coin)
+                    .coin(coin.setScale(3, RoundingMode.HALF_UP))
                     .capital(capital)
                     .rate(rate)
                     .income(income)
@@ -222,7 +224,7 @@ public class BackTestingDto {
         private String type;
         private LocalDateTime date;
         private Long capital;
-        private Double coin;
+        private BigDecimal coin;
         private Long coinPrice;
         private Double rate;
 

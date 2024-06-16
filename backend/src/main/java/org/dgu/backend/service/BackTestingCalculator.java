@@ -8,6 +8,8 @@ import org.dgu.backend.exception.BackTestingException;
 import org.dgu.backend.util.NumberUtil;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +24,7 @@ public class BackTestingCalculator {
     private static Double buyingPoint;
     private static Double sellingPoint;
     private static Double stopLossPoint;
-    private static Double coin;
+    private static BigDecimal coin;
     private static LocalDateTime startDate;
     private static int buyingCnt;
     private static int positiveTradeCount;
@@ -102,8 +104,8 @@ public class BackTestingCalculator {
     // 거래를 실행하는 메서드
     private void executeTrade(List<CandleInfo> candles, int startIndex, int tradingCnt, List<BackTestingDto.BackTestingResult> backTestingResults) {
         // 초기 세팅
-        coin = 0.0;
-        executeBuy(candles.get(startIndex).getDateTime(), candles.get(startIndex).getTradePrice(), backTestingResults);
+        coin = BigDecimal.ZERO;
+        executeBuy("BUY", candles.get(startIndex).getDateTime(), candles.get(startIndex).getTradePrice(), backTestingResults);
         buyingCnt = 1;
         List<Double> tradePrices = new ArrayList<>();
         tradePrices.add(candles.get(startIndex).getTradePrice());
@@ -118,56 +120,80 @@ public class BackTestingCalculator {
                 startDate = currentDate;
             }
 
-            Long initialCapital = capital + tradingUnit * (buyingCnt);
+            Long initialCapital = capital + tradingUnit * buyingCnt;
             Double curRate = calculateRate(capital, initialCapital, currentPrice, coin);
+            String action = determineAction(currentPrice, avgPrice, tradingCnt, buyingCnt, buyingPoint, sellingPoint, stopLossPoint, curRate);
             // 매수 처리
-            if (buyingCnt < tradingCnt && currentPrice < avgPrice * (100 - buyingPoint) / 100) {
-                executeBuy(currentDate, currentPrice, backTestingResults);
+            if (action.equals("BUY")) {
+                executeBuy(action, currentDate, currentPrice, backTestingResults);
                 buyingCnt++;
                 tradePrices.add(currentPrice);
                 avgPrice = tradePrices.stream().mapToDouble(Double::doubleValue).sum() / buyingCnt;
             }
-            // 전체 자본 대비 수익률을 기준으로 한 익절 처리
-            else if (curRate > sellingPoint) {
-                executeSell(currentDate, currentPrice, backTestingResults);
+            // 익절 처리
+            else if (action.equals("SELL")) {
+                executeSell(action, currentDate, currentPrice, backTestingResults);
                 break;
             }
-            // 전체 자본 대비 수익률을 기준으로 한 손절 처리
-            else if (curRate < -stopLossPoint) {
-                executeStopLoss(currentDate, currentPrice, backTestingResults);
+            // 손절 처리
+            else if (action.equals("STOP_LOSS")) {
+                executeStopLoss(action, currentDate, currentPrice, backTestingResults);
                 break;
+            }
+
+            // 마지막 남은 코인 매도 처리
+            if (i == candles.size() - 1 && !Objects.equals(coin, BigDecimal.ZERO)) {
+                executeSell(action, currentDate, currentPrice, backTestingResults);
             }
         }
     }
 
+    // 액션을 판단하는 메서드
+    public String determineAction(Double currentPrice, Double avgPrice, int tradingCnt, int buyingCnt, Double buyingPoint, Double sellingPoint, Double stopLossPoint, Double curRate) {
+        // 매수 조건 판단
+        if (buyingCnt < tradingCnt && currentPrice < avgPrice * (100 - buyingPoint) / 100) {
+            return "BUY";
+        }
+        // 익절 조건 판단
+        else if (curRate > sellingPoint) {
+            return "SELL";
+        }
+        // 손절 조건 판단
+        else if (curRate < -stopLossPoint) {
+            return "STOP_LOSS";
+        }
+
+        return "STAY";
+    }
+
     // 매수 처리 메서드
-    private void executeBuy(LocalDateTime currentDate, Double currentPrice, List<BackTestingDto.BackTestingResult> backTestingResults) {
-        coin += tradingUnit / currentPrice;
+    private void executeBuy(String action, LocalDateTime currentDate, Double currentPrice, List<BackTestingDto.BackTestingResult> backTestingResults) {
+        coin = coin.add(BigDecimal.valueOf(tradingUnit).divide(BigDecimal.valueOf(currentPrice), 10, RoundingMode.HALF_UP));
         capital -= tradingUnit;
 
-        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "BUY", currentPrice, coin, capital, 0.0, 0L, null));
+        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, action, currentPrice, coin, capital, 0.0, 0L, null));
     }
 
     // 익절 처리 메서드
-    private void executeSell(LocalDateTime currentDate, Double currentPrice, List<BackTestingDto.BackTestingResult> backTestingResults) {
+    private void executeSell(String action, LocalDateTime currentDate, Double currentPrice, List<BackTestingDto.BackTestingResult> backTestingResults) {
         Long initialCapital = capital + tradingUnit * buyingCnt;
-        capital += (long) (currentPrice * coin);
-        coin = 0.0;
+        capital += (BigDecimal.valueOf(currentPrice).multiply(coin)).longValue();
+        coin = BigDecimal.ZERO;
         Long income = capital - initialCapital;
         Double rate = ((double) income / initialCapital) * 100;
 
-        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "SELL", currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
+        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, action, currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
     }
 
     // 손절 처리 메서드
-    private void executeStopLoss(LocalDateTime currentDate, Double currentPrice, List<BackTestingDto.BackTestingResult> backTestingResults) {
+    private void executeStopLoss(String action, LocalDateTime currentDate, Double currentPrice, List<BackTestingDto.BackTestingResult> backTestingResults) {
         Long initialCapital = capital + tradingUnit * buyingCnt;
-        capital += (long) (currentPrice * coin);
-        coin = 0.0;
+        capital += (BigDecimal.valueOf(currentPrice).multiply(coin)).longValue();
+        coin = BigDecimal.ZERO;
         Long income = capital - initialCapital;
         Double rate = ((double) income / initialCapital) * 100;
 
-        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, "STOP_LOSS", currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
+        backTestingResults.add(BackTestingDto.BackTestingResult.of(currentDate, action, currentPrice, coin, capital, rate, income, currentDate.compareTo(startDate)));
     }
 
     // 시작 인덱스를 찾는 메서드
@@ -284,8 +310,8 @@ public class BackTestingCalculator {
     }
 
     // 수익률을 계산하는 메서드
-    private Double calculateRate(Long capital, Long initialCapital, Double currentPrice, Double coin) {
-        Double currentAssetValue = capital + (currentPrice * coin);
+    public Double calculateRate(Long capital, Long initialCapital, Double currentPrice, BigDecimal coin) {
+        Double currentAssetValue = (double) (capital + (BigDecimal.valueOf(currentPrice).multiply(coin)).longValue());
 
         return ((currentAssetValue - initialCapital) / initialCapital) * 100;
     }

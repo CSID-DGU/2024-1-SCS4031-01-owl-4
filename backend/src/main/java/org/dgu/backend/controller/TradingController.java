@@ -5,6 +5,7 @@ import org.dgu.backend.common.ApiResponse;
 import org.dgu.backend.common.constant.SuccessStatus;
 import org.dgu.backend.dto.TradingDto;
 import org.dgu.backend.service.TradingService;
+import org.dgu.backend.service.UpbitAutoTrader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class TradingController {
     private final TradingService tradingService;
+    private final UpbitAutoTrader upbitAutoTrader;
 
     // 자동매매 등록 API
     @PostMapping
@@ -32,5 +34,11 @@ public class TradingController {
 
         tradingService.removeAutoTrading(authorizationHeader, portfolioId);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_DELETE_TRADING);
+    }
+
+    // 자동매매 수동 테스트 API
+    @GetMapping("/test")
+    public void test() {
+        upbitAutoTrader.performAutoTrading();
     }
 }
