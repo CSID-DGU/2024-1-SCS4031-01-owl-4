@@ -8,6 +8,7 @@ import lombok.*;
 import org.dgu.backend.domain.Market;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class UpbitDto {
     @Builder
@@ -86,8 +87,8 @@ public class UpbitDto {
         private String currency;
         @JsonProperty("balance")
         private BigDecimal coinCount;
-        private BigDecimal locked;
-        private BigDecimal avgBuyPrice;
+        private Double locked;
+        private Double avgBuyPrice;
         private String unitCurrency;
     }
 
@@ -99,11 +100,62 @@ public class UpbitDto {
     public static class Ticker {
         private String market;
         @JsonProperty("trade_price")
-        private Double price;
+        private BigDecimal price;
         private String change;
         @JsonProperty("signed_change_rate")
         private Double changeRate;
         @JsonProperty("signed_change_price")
         private Double changePrice;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public static class OrderRequest {
+        private String market;
+        private String side;
+        private BigDecimal volume;
+        private Double price;
+        private String ordType;
+
+        public static OrderRequest of(String market, String side, BigDecimal volume, Double price, String ordType) {
+            return OrderRequest.builder()
+                    .market(market)
+                    .side(side)
+                    .volume(volume)
+                    .price(price)
+                    .ordType(ordType)
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+    public static class OrderResponse {
+        private String uuid;
+        private String side;
+        private String ordType;
+        private String price;
+        private String state;
+        private String market;
+        @JsonProperty("created_at")
+        private LocalDateTime createdAt;
+        private String volume;
+        @JsonProperty("remaining_volume")
+        private String remainingVolume;
+        @JsonProperty("reserved_fee")
+        private String reservedFee;
+        @JsonProperty("remaining_fee")
+        private String remainingFee;
+        @JsonProperty("paid_fee")
+        private String paidFee;
+        private String locked;
+        @JsonProperty("executed_volume")
+        private String executedVolume;
+        @JsonProperty("trades_count")
+        private Integer tradesCount;
     }
 }
