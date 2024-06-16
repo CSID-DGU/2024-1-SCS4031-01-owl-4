@@ -151,7 +151,7 @@ public class BackTestingCalculator {
     // 액션을 판단하는 메서드
     public String determineAction(Double currentPrice, Double avgPrice, int tradingCnt, int buyingCnt, Double buyingPoint, Double sellingPoint, Double stopLossPoint, Double curRate) {
         // 매수 조건 판단
-        if (buyingCnt < tradingCnt && currentPrice < avgPrice * (100 - buyingPoint) / 100 && capital >= tradingUnit) {
+        if (buyingCnt < tradingCnt && currentPrice < avgPrice * (100 - buyingPoint) / 100) {
             return "BUY";
         }
         // 익절 조건 판단
