@@ -5,14 +5,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dgu.backend.constant.Coin;
 import org.dgu.backend.domain.Market;
-import org.dgu.backend.domain.UpbitKey;
 import org.dgu.backend.domain.User;
 import org.dgu.backend.domain.UserCoin;
 import org.dgu.backend.dto.DashBoardDto;
 import org.dgu.backend.dto.UpbitDto;
-import org.dgu.backend.exception.*;
+import org.dgu.backend.exception.MarketErrorResult;
+import org.dgu.backend.exception.MarketException;
 import org.dgu.backend.repository.MarketRepository;
-import org.dgu.backend.repository.UpbitKeyRepository;
 import org.dgu.backend.repository.UserCoinRepository;
 import org.dgu.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,13 +28,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class DashBoardServiceImpl implements DashBoardService {
-    @Value("${upbit.url.account}")
-    private String UPBIT_URL_ACCOUNT;
     @Value("${upbit.url.ticker}")
     private String UPBIT_URL_TICKER;
     private final JwtUtil jwtUtil;
     private final UpbitApiClient upbitApiClient;
-    private final UpbitKeyRepository upbitKeyRepository;
     private final UserCoinRepository userCoinRepository;
     private final MarketRepository marketRepository;
 
@@ -43,7 +39,7 @@ public class DashBoardServiceImpl implements DashBoardService {
     @Override
     public DashBoardDto.UserAccountResponse getUserAccount(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
-        UpbitDto.Account[] accounts = getUpbitAccounts(user);
+        UpbitDto.Account[] accounts = upbitApiClient.getUpbitAccounts(user);
 
         BigDecimal accountSum = getAccountSum(accounts);
 
@@ -56,7 +52,7 @@ public class DashBoardServiceImpl implements DashBoardService {
     @Override
     public List<DashBoardDto.UserCoinResponse> getUserCoins(String authorizationHeader) {
         User user = jwtUtil.getUserFromHeader(authorizationHeader);
-        UpbitDto.Account[] accounts = getUpbitAccounts(user);
+        UpbitDto.Account[] accounts = upbitApiClient.getUpbitAccounts(user);
 
         return processUserCoins(accounts, user);
     }
@@ -158,16 +154,5 @@ public class DashBoardServiceImpl implements DashBoardService {
         return currentValue.subtract(pastValue)
                 .divide(pastValue, 6, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal("100"));
-    }
-
-    // 유저 업비트 계좌 정보를 조회하는 메서드
-    private UpbitDto.Account[] getUpbitAccounts(User user) {
-        UpbitKey upbitKey = upbitKeyRepository.findByUser(user);
-        if (Objects.isNull(upbitKey)) {
-            throw new UserException(UserErrorResult.NOT_FOUND_KEY);
-        }
-
-        String token = jwtUtil.generateUpbitToken(upbitKey);
-        return upbitApiClient.getUserAccountsAtUpbit(UPBIT_URL_ACCOUNT, token);
     }
 }
