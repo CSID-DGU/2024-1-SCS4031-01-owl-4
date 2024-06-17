@@ -8,7 +8,6 @@ import lombok.*;
 import org.dgu.backend.domain.Market;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 public class UpbitDto {
     @Builder
@@ -137,12 +136,13 @@ public class UpbitDto {
     public static class OrderResponse {
         private String uuid;
         private String side;
+        @JsonProperty("ord_type")
         private String ordType;
         private String price;
         private String state;
         private String market;
         @JsonProperty("created_at")
-        private LocalDateTime createdAt;
+        private String createdAt;
         private String volume;
         @JsonProperty("remaining_volume")
         private String remainingVolume;
@@ -157,5 +157,7 @@ public class UpbitDto {
         private String executedVolume;
         @JsonProperty("trades_count")
         private Integer tradesCount;
+        @JsonProperty("time_in_force")
+        private Integer timeInForce;
     }
 }

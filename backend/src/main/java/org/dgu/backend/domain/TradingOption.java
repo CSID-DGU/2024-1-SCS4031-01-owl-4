@@ -40,7 +40,7 @@ public class TradingOption extends BaseEntity {
     @Column(name = "trading_unit_price", nullable = false)
     private Long tradingUnitPrice;
 
-    @Column(name = "coin_count", nullable = false, scale = 10)
+    @Column(name = "coin_count", nullable = false, precision = 30, scale = 15)
     private BigDecimal coinCount;
 
     @Column(name = "trading_count", nullable = false)
@@ -56,7 +56,7 @@ public class TradingOption extends BaseEntity {
     private LocalDateTime endDate;
 
     @Builder
-    public TradingOption(User user, Portfolio portfolio, Long initialCapital, Long currentCapital, Long tradingUnitPrice, int tradingCount, int buyingCount, LocalDateTime startDate, LocalDateTime endDate) {
+    public TradingOption(User user, Portfolio portfolio, Long initialCapital, Long currentCapital, Long tradingUnitPrice, int tradingCount, LocalDateTime startDate, LocalDateTime endDate) {
         this.user = user;
         this.portfolio = portfolio;
         this.initialCapital = initialCapital;
@@ -64,9 +64,17 @@ public class TradingOption extends BaseEntity {
         this.tradingUnitPrice = tradingUnitPrice;
         this.coinCount = BigDecimal.ZERO;
         this.tradingCount = tradingCount;
-        this.buyingCount = buyingCount;
+        this.buyingCount = 0;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    public void updateCurrentCapital(Long currentCapital) {
+        this.currentCapital = currentCapital;
+    }
+
+    public void updateInitialCapital(Long initialCapital) {
+        this.initialCapital = initialCapital;
     }
 
     public void updateAvgPrice(Double avgPrice) {
@@ -75,5 +83,13 @@ public class TradingOption extends BaseEntity {
 
     public void updateCoinCount(BigDecimal coinCount) {
         this.coinCount = coinCount;
+    }
+
+    public void resetBuyingCount() {
+        this.buyingCount= 0;
+    }
+
+    public void plusBuyingCount() {
+        this.buyingCount++;
     }
 }
