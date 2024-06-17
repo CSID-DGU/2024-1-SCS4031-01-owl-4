@@ -112,9 +112,21 @@ public class DashBoardServiceImpl implements DashBoardService {
     @Override
     public List<DashBoardDto.RepresentativeCoinResponse> getRepresentativeCoins() {
         List<DashBoardDto.RepresentativeCoinResponse> representativeCoinResponses = new ArrayList<>();
+        int requestCount = 0;
+
         for (Coin coin : Coin.values()) {
             UpbitDto.Ticker[] ticker = upbitApiClient.getTickerPriceAtUpbit(UPBIT_URL_TICKER + coin.getMarketName());
             representativeCoinResponses.add(DashBoardDto.RepresentativeCoinResponse.of(ticker[0], coin.getKoreanName(), coin.getEnglishName()));
+
+            requestCount++;
+            if (requestCount % 10 == 0) {
+                try {
+                    Thread.sleep(1000); // 1초 대기
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         return representativeCoinResponses;

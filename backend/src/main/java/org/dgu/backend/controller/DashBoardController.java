@@ -37,7 +37,7 @@ public class DashBoardController {
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_USER_COINS, userCoins);
     }
 
-    // 대표 코인 5개 조회 API
+    // 대표 코인 12개 조회 API
     @GetMapping("/coins/representative")
     public ResponseEntity<ApiResponse<List<DashBoardDto.RepresentativeCoinResponse>>> getRepresentativeCoins() {
 
