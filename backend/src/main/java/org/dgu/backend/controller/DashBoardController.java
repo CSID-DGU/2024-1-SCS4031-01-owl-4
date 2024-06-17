@@ -7,9 +7,11 @@ import org.dgu.backend.dto.ChartDto;
 import org.dgu.backend.dto.DashBoardDto;
 import org.dgu.backend.service.ChartService;
 import org.dgu.backend.service.DashBoardService;
+import org.dgu.backend.util.DateUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -18,6 +20,7 @@ import java.util.List;
 public class DashBoardController {
     private final DashBoardService dashBoardService;
     private final ChartService chartService;
+    private final DateUtil dateUtil;
 
     // 유저 업비트 잔고 조회 API
     @GetMapping("/accounts")
@@ -46,10 +49,19 @@ public class DashBoardController {
     }
 
     // 비트코인 차트 (일봉) 조회 API
-    @GetMapping("/bit-charts")
+    @GetMapping("/bit-charts/days")
     public ResponseEntity<ApiResponse<List<ChartDto.OHLCVResponse>>> getBitcoinDayCharts() {
 
-        List<ChartDto.OHLCVResponse> ohlcvResponses = chartService.getOHLCVCharts("비트코인", "days");
+        List<ChartDto.OHLCVResponse> ohlcvResponses = chartService.getOHLCVCharts("비트코인", "days", null);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_BITCOIN_DAY_CHARTS, ohlcvResponses);
+    }
+
+    // 비트코인 차트 (1분봉) 조회 API
+    @GetMapping("/bit-charts/minutes1")
+    public ResponseEntity<ApiResponse<List<ChartDto.OHLCVResponse>>> getBitcoinOneMinuteCharts() {
+
+        LocalDateTime startDate = dateUtil.calculateDailyStartDate();
+        List<ChartDto.OHLCVResponse> ohlcvResponses = chartService.getOHLCVCharts("비트코인", "minutes1", startDate);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_BITCOIN_ONE_MINUTE_CHARTS, ohlcvResponses);
     }
 }

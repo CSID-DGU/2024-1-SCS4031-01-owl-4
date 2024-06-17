@@ -34,15 +34,15 @@ public class BackTestingServiceImpl implements BackTestingService {
     // 백테스팅 결과를 생성하는 메서드
     @Override
     public BackTestingDto.BackTestingResponse createBackTestingResult(String authorizationHeader, BackTestingDto.StepInfo stepInfo) {
-        updateCandleInfo("비트코인", stepInfo.getCandleName());
+        updateCandleInfo("비트코인", stepInfo.getCandleName(), null);
 
         return fetchBackTestingResult(authorizationHeader, stepInfo);
     }
 
     // 캔들 정보 최신화 메서드
     @Transactional
-    protected void updateCandleInfo(String koreanName, String candleName) {
-        candleInfoUpdater.ensureCandleInfoUpToDate(koreanName, candleName);
+    protected void updateCandleInfo(String koreanName, String candleName, LocalDateTime startDate) {
+        candleInfoUpdater.ensureCandleInfoUpToDate(koreanName, candleName, startDate);
     }
 
     // 최신화된 캔들 정보를 사용해 백테스팅 결과를 생성하는 메서드
