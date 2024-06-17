@@ -71,6 +71,18 @@ public class TradingServiceImpl implements TradingService {
         cancelAutoTrading(portfolio);
         tradingOptionRepository.deleteTradingOptionById(existingTradingOption.getId());
     }
+
+    // 자동매매 거래 로그 조회 메서드
+    @Override
+    public List<TradingDto.TradingLog> getUserTradingLogs(String authorizationHeader) {
+        User user = jwtUtil.getUserFromHeader(authorizationHeader);
+        validateUser(user);
+
+        List<UserTradingLog> userTradingLogs = userTradingLogRepository.findAllByUser(user);
+
+        return TradingDto.TradingLog.ofTradingLogs(userTradingLogs);
+    }
+
     // 거래 실행 메서드
     @Override
     public void executeTrade(User user, PortfolioOption portfolioOption, TradingOption tradingOption, Double curPrice) throws UpbitException, UserException {
