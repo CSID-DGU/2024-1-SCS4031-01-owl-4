@@ -30,7 +30,7 @@ public class CandleInfoUpdater {
     private final DateUtil dateUtil;
 
     // 현재 시각을 기준으로 캔들 정보를 최신화하는 메서드
-    public void ensureCandleInfoUpToDate(String koreanName, String candleName) {
+    public void ensureCandleInfoUpToDate(String koreanName, String candleName, LocalDateTime startDate) {
         Market market = marketRepository.findByKoreanName(koreanName);
         if (Objects.isNull(market)) {
             throw new MarketException(MarketErrorResult.NOT_FOUND_MARKET);
@@ -40,16 +40,17 @@ public class CandleInfoUpdater {
             throw new CandleException(CandleErrorResult.NOT_FOUND_CANDLE);
         }
 
-        // 가장 최근 캔들 차트
-        CandleInfo latestCandleInfo = candleInfoRepository.findTopByMarketAndCandleOrderByTimestampDesc(market, candle);
-        int candleInterval = candleUtil.calculateCandleInterval(candleName);
-        LocalDateTime startDate;
-        if (Objects.isNull(latestCandleInfo)) {
-            startDate = dateUtil.convertToLocalDateTime("2018-01-01T00:00:00");
-        } else {
-            startDate = latestCandleInfo.getDateTime();
-            if (startDate.plusMinutes(candleInterval).isAfter(LocalDateTime.now())) {
-                return;
+        if (Objects.isNull(startDate)) {
+            // 가장 최근 캔들 차트
+            CandleInfo latestCandleInfo = candleInfoRepository.findTopByMarketAndCandleOrderByTimestampDesc(market, candle);
+            int candleInterval = candleUtil.calculateCandleInterval(candleName);
+            if (Objects.isNull(latestCandleInfo)) {
+                startDate = dateUtil.convertToLocalDateTime("2018-01-01T00:00:00");
+            } else {
+                startDate = latestCandleInfo.getDateTime();
+                if (startDate.plusMinutes(candleInterval).isAfter(LocalDateTime.now())) {
+                    return;
+                }
             }
         }
 

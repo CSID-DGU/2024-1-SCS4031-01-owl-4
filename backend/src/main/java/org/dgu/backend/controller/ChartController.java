@@ -22,7 +22,7 @@ public class ChartController {
             @RequestParam("coin_name") String koreanName,
             @RequestParam("candle_name") String candleName) {
 
-        List<ChartDto.OHLCVResponse> ohlcvResponses = chartService.getOHLCVCharts(koreanName, candleName);
+        List<ChartDto.OHLCVResponse> ohlcvResponses = chartService.getOHLCVCharts(koreanName, candleName, null);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_OHLCV_CHART, ohlcvResponses);
     }
 

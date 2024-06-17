@@ -29,10 +29,10 @@ public class ChartServiceImpl implements ChartService {
 
     // OHLCV 차트를 반환하는 메서드
     @Override
-    public List<ChartDto.OHLCVResponse> getOHLCVCharts(String koreanName, String candleName) {
-        updateCandleInfo(koreanName, candleName);
+    public List<ChartDto.OHLCVResponse> getOHLCVCharts(String koreanName, String candleName, LocalDateTime startDate) {
+        updateCandleInfo(koreanName, candleName, startDate);
 
-        return fetchUpdatedCandleInfo(koreanName, candleName);
+        return fetchUpdatedCandleInfo(koreanName, candleName, startDate);
     }
 
     // 차트 선택 지표 목록을 반환하는 메서드
@@ -55,13 +55,13 @@ public class ChartServiceImpl implements ChartService {
 
     // 캔들 정보 최신화 메서드
     @Transactional
-    protected void updateCandleInfo(String koreanName, String candleName) {
-        candleInfoUpdater.ensureCandleInfoUpToDate(koreanName, candleName);
+    protected void updateCandleInfo(String koreanName, String candleName, LocalDateTime startDate) {
+        candleInfoUpdater.ensureCandleInfoUpToDate(koreanName, candleName, startDate);
     }
 
     // 최신화된 캔들 정보를 반환하는 메서드
     @Transactional
-    protected List<ChartDto.OHLCVResponse> fetchUpdatedCandleInfo(String koreanName, String candleName) {
+    protected List<ChartDto.OHLCVResponse> fetchUpdatedCandleInfo(String koreanName, String candleName, LocalDateTime startDate) {
         Market market = marketRepository.findByKoreanName(koreanName);
         if (Objects.isNull(market)) {
             throw new MarketException(MarketErrorResult.NOT_FOUND_MARKET);
@@ -70,7 +70,9 @@ public class ChartServiceImpl implements ChartService {
         if (Objects.isNull(candle)) {
             throw new CandleException(CandleErrorResult.NOT_FOUND_CANDLE);
         }
-        LocalDateTime startDate = candleUtil.getStartDateByCandleName(candleName);
+        if (Objects.isNull(startDate)) {
+            startDate = candleUtil.getStartDateByCandleName(candleName);
+        }
 
         List<CandleInfo> candleInfos = candleInfoRepository.findByMarketAndCandleAndDateTimeAfter(market, candle, startDate);
         if (candleInfos.isEmpty()) {
