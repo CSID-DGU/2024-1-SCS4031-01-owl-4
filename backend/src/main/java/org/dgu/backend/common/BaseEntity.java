@@ -8,11 +8,13 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 @Getter
 public abstract class BaseEntity {
+
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
@@ -22,4 +24,15 @@ public abstract class BaseEntity {
     @Column(name = "updated_at")
     @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusHours(9);
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now(ZoneId.of("Asia/Seoul")).plusHours(9);
+    }
 }
