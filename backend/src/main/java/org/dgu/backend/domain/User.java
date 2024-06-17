@@ -44,6 +44,9 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private TradingOption tradingOption;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserTradingLog> userTradingLogs;
+
     @Builder
     public User(UUID userId, String name, String provider, String providerId) {
         this.userId = userId;
