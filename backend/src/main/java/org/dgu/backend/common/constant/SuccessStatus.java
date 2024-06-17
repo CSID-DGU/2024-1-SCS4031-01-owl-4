@@ -45,7 +45,8 @@ public enum SuccessStatus implements BaseCode {
     SUCCESS_GET_ALL_CHART_OPTIONS(HttpStatus.OK, "200", "차트 선택 지표 목록 조회에 성공했습니다."),
     // Trading
     SUCCESS_START_TRADING(HttpStatus.CREATED, "201", "자동매매 등록에 성공했습니다."),
-    SUCCESS_DELETE_TRADING(HttpStatus.CREATED, "201", "자동매매 삭제에 성공했습니다.");
+    SUCCESS_DELETE_TRADING(HttpStatus.OK, "200", "자동매매 삭제에 성공했습니다."),
+    SUCCESS_GET_TRADING_LOGS(HttpStatus.OK, "200", "자동매매 거래 로그 조회에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
