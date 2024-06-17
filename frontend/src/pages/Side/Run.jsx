@@ -4,8 +4,8 @@ import useResponseStore from '../../utils/useResponseStore';
 import axios from 'axios';
 import { useQuery } from "@tanstack/react-query";
 import useTokenStore from "../../utils/token";
-
-
+import Loading from "../../components/Loading"
+import noDataOwl from "../../assets/images/noDataOwl.png"
 const Run = () => {
 
   const { token } = useTokenStore();
@@ -29,11 +29,19 @@ const Run = () => {
   const { responseBackTest } = useResponseStore();
 
   if(isRecentDataLoading){
-    return <div>Load Recent BackTesting Data</div>
+    return <div className='w-full h-full bg-slate-200 p-10'>
+      <div className='h-full bg-white rounded-xl flex justify-center items-center'>
+        <Loading />
+      </div>
+    </div>
   }
 
   if(!recentBacktestingData){
-    return <div>No Recent BackTesting Data</div>
+    return <div className='w-full h-full bg-slate-200 p-10'>
+    <div className='h-full bg-white rounded-xl flex justify-center items-center'>
+      <img src={noDataOwl} alt="No Recent Data" className='size-[300px]' />
+    </div>
+  </div>
   }
 
   if (responseBackTest?.payload) {

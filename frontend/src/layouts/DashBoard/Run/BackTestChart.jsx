@@ -32,7 +32,7 @@ const BackTestChart = ({
 }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
   const { token } = useTokenStore();
   const { prevPortfolioId, setPrevPortfolioId, comment, setComment } =
     useResponseStore();
@@ -104,7 +104,7 @@ const BackTestChart = ({
             onSubmit={handleSubmit(onSubmit)}
             className="w-full h-full border rounded-xl shadow-xl p-3 flex flex-col relative"
           >
-            <h1 className="font-bold text-2xl text-slate-400 ml-4 mt-3">
+            <h1 className="font-bold text-2xl text-slate-400 ml-4 mt-3 select-none">
               Comment
             </h1>
 
@@ -130,7 +130,7 @@ const BackTestChart = ({
                 }
               />
 
-              <div className="absolute bottom-3 right-5 text-slate-400">
+              <div className="absolute bottom-3 right-5 text-slate-400 select-none">
                 {comment.length}/150
               </div>
               {comment.length ? (
@@ -157,10 +157,10 @@ const BackTestChart = ({
                 </div>
               </button>
               <button
-                className={`rounded-lg relative top-0 left-0 w-[50%] h-10 cursor-pointer flex items-center border  ${
+                className={`rounded-lg relative top-0 left-0 w-[50%] h-10 flex items-center border  ${
                   prevPortfolioId === portfolio_id || save
                     ? "border-slate-200 bg-slate-200 group hover:bg-slate-200 active:bg-slate-200 active:border-slate-200"
-                    : "border-green-500 bg-green-500 group hover:bg-green-500 active:bg-green-500 active:border-green-500"
+                    : "border-green-500 bg-green-500 group hover:bg-green-500 active:bg-green-500 active:border-green-500 cursor-pointer"
                 }`}
                 disabled={
                   prevPortfolioId === portfolio_id || save ? true : false
@@ -168,10 +168,10 @@ const BackTestChart = ({
                 type="submit"
               >
                 <span
-                  className={`font-semibold ml-8 transform group-hover:translate-x-20 transition-all duration-300 group-hover:text-transparent ${
+                  className={`font-semibold ml-8 select-none  ${
                     prevPortfolioId === portfolio_id || save
                       ? "text-slate-400"
-                      : "text-white"
+                      : "text-white transform group-hover:translate-x-20 transition-all duration-300 group-hover:text-transparent"
                   }`}
                 >
                   {prevPortfolioId === portfolio_id || save
@@ -179,10 +179,10 @@ const BackTestChart = ({
                     : "Submit"}
                 </span>
                 <span
-                  className={`absolute right-0 h-full w-10 rounded-lg flex items-center justify-center transform group-hover:translate-x-0 group-hover:w-full transition-all duration-300 ${
+                  className={`absolute right-0 h-full w-10 rounded-lg flex items-center justify-center ${
                     prevPortfolioId === portfolio_id || save
                       ? "bg-slate-300"
-                      : "bg-green-500"
+                      : "bg-green-500 transform group-hover:translate-x-0 group-hover:w-full transition-all duration-300"
                   }`}
                 >
                   {prevPortfolioId === portfolio_id || save ? (
@@ -202,12 +202,11 @@ const BackTestChart = ({
             Submit Successful
           </h1>
           <div className="flex items-center cursor-pointer mt-3 relative">
-            <span className="select-none">다음으로</span>
+            <span className="select-none" onClick={() => setOpen(false)}>Continue</span>
             <MdOutlineKeyboardDoubleArrowRight className="animate-ping ml-3 text-green-500" />
           </div>
           <p className="text-xs absolute bottom-0 right-0 text-slate-400 mt-2">
-            <span className="font-bold text-slate-600 select-none">{countdown}</span>초 후에
-            닫힙니다.
+            Closes in <span className="font-bold text-slate-600 select-none">{countdown}</span> seconds
           </p>
         </div>
       </Modal>

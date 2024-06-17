@@ -14,7 +14,9 @@ import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
 import { FaRegArrowAltCircleLeft } from "react-icons/fa";
 import useResponseStore from "../utils/useResponseStore.js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Modal from '../components/Modal.jsx'
+import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
 
 const formSchema = z.object({
   access_key: z.string().nonempty({ message: "Access Key is required" }),
@@ -22,13 +24,15 @@ const formSchema = z.object({
 });
 
 const Account = () => {
-  const {isChecked} = useResponseStore();
+  const {isChecked, setErrKeyState, setShowAPI, setShowAPISecret, setErrIpState} = useResponseStore();
   const navigate = useNavigate();
   const { token } = useTokenStore();
+  const [open, setOpen] = useState(false);
+  const [countdown, setCountdown] = useState(3);
 
   const methods = useForm({
     resolver: zodResolver(formSchema),
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   const { formState } = methods;
@@ -43,16 +47,28 @@ const Account = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      // const response2 = await axios.post("http://localhost:8081/api/v1/users/upbit-keys",data,{
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // })
-      // console.log(response2)
-      return response1
+      const response2 = await axios.post("http://localhost:8081/api/v1/users/upbit-keys",data,{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      return {response1, response2}
     },
     onSuccess : () => {
       navigate("/dashboard")
+    },
+    onError: (err) => {
+      const message = err.response.data.message
+      if(message === '올바른 업비트 키가 아닙니다.') {
+        setErrKeyState(true)
+        setShowAPI(true)
+        setShowAPISecret(true)
+      }
+      if(message === '허용되지 않은 IP 주소입니다.') {
+        setErrIpState(true)
+        setShowAPI(true)
+        setShowAPISecret(true)
+      }
     }
   })
 
@@ -70,6 +86,30 @@ const Account = () => {
     }
   })
 
+  useEffect(() => {
+    let timer;
+  
+    if (open) {
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    }
+  
+    return () => {
+      clearInterval(timer);
+    };
+  }, [open]);
+  
+  useEffect(() => {
+    if (countdown === 0) {
+      setOpen(false);
+      setCountdown(3);
+    }
+    if(!open) {
+      setCountdown(3);
+    }
+  }, [countdown,open]);
+
   const onSubmit = (data) => {
     if(isChecked) mutationData.mutate(data)
   };
@@ -80,6 +120,9 @@ const Account = () => {
         {currentStepIndex+1 === 2 ? <button className="absolute top-5 right-8 text-slate-400" 
         onClick={() => {
           if(isChecked) mutation.mutate()
+          else {
+        setOpen(true)
+        }
           }}>건너뛰기 →
           </button>
           :""}
@@ -130,7 +173,12 @@ const Account = () => {
                   <button
                     disabled={isSubmitting}
                     type="button"
-                    onClick={isLastStep ? methods.handleSubmit(onSubmit) : next}
+                    onClick={isLastStep ?() => {
+                      if(isChecked) methods.handleSubmit(onSubmit)
+                        else {
+                          setOpen(true)
+                        }
+                      } : next}
                     className={`group flex items-center justify-start w-11 h-11 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-32 hover:rounded-lg active:translate-x-1 active:translate-y-1 ${
                       isSubmitting ? "bg-slate-500" : "bg-violet-500"
                     }`}
@@ -152,9 +200,24 @@ const Account = () => {
           </div>
         </div>
       </main>
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <div className="w-[350px] h-[150px] relative flex flex-col justify-center items-center p-5">
+          <h1 className="font-bold text-xl text-red-500 select-none">
+            Terms not accepted
+          </h1>
+          <div className="flex items-center cursor-pointer mt-3 relative">
+            <span className="select-none font-bold opacity-60" onClick={() => setOpen(false)}>Go back</span>
+            <MdOutlineKeyboardDoubleArrowRight className="animate-ping ml-3 text-red-500" />
+          </div>
+          <p className="text-xs absolute bottom-0 right-0 text-slate-400 mt-2">
+          Closes in <span className="font-bold text-slate-600 select-none">{countdown}</span> seconds
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };
 
 export default Account;
+
 

@@ -94,9 +94,9 @@ const StartFirstSettingForm = () => {
           >
             {issc ? <FaCheck className="text-white" /> : ""}
           </div>
-          <span className={`ml-3 group-hover:text-violet-400 select-none`}>
+          <a className={`ml-3 group-hover:text-violet-400 select-none`} href="https://plip.kr/pcc/8cee2838-0d64-4001-a358-6a21e46c9e1d/consent/2.html" target="_blank">
             BAMOWL 서비스 이용에 대한 약관동의
-          </span>
+          </a>
           <FaRegQuestionCircle className="size-[15px] absolute z-10 top-[33%] left-[50%] text-slate-400" />
         </div>
         <div
@@ -117,9 +117,9 @@ const StartFirstSettingForm = () => {
           >
             {ispic ? <FaCheck className="text-white" /> : ""}
           </div>
-          <span className={`ml-3 group-hover:text-violet-400 select-none`}>
+          <a className={`ml-3 group-hover:text-violet-400 select-none`} href="https://plip.kr/pcc/8cee2838-0d64-4001-a358-6a21e46c9e1d/consent/3.html" target="_blank">
             개인정보 수집 및 이용에 대한 약관동의
-          </span>
+          </a>
           <FaRegQuestionCircle className="size-[15px] absolute z-10 top-[33%] left-[50%] text-slate-400" />
         </div>
         <div
@@ -140,9 +140,9 @@ const StartFirstSettingForm = () => {
           >
             {isppc ? <FaCheck className="text-white" /> : ""}
           </div>
-          <span className={`ml-3 group-hover:text-violet-400 select-none`}>
-            개인정보 취급 및 위탁에 대한 약관동의
-          </span>
+          <a className={`ml-3 group-hover:text-violet-400 select-none`} href="https://plip.kr/pcc/8cee2838-0d64-4001-a358-6a21e46c9e1d/privacy/1.html" target="_blank">
+            개인정보 처리 및 위탁에 대한 약관동의
+          </a>
           <FaRegQuestionCircle className="size-[15px] absolute z-10 top-[33%] left-[50%] text-slate-400" />
         </div>
       </div>
@@ -151,3 +151,4 @@ const StartFirstSettingForm = () => {
 };
 
 export default StartFirstSettingForm;
+

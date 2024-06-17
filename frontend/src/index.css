@@ -50,3 +50,19 @@ input[type="number"] {
       @apply text-white text-lg absolute inset-0 flex items-center justify-center;
   }
 }
+
+/* Tailwind CSS 사용자 정의 설정 */
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .rotateY-0 {
+    transform: rotateY(0deg);
+  }
+  .rotateY-45 {
+    transform: rotateY(45deg);
+  }
+  .rotateY--45 {
+    transform: rotateY(-45deg);
+  }
+}

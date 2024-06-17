@@ -16,10 +16,19 @@ import PortfolioProfitChart from "../../components/PortfolioProfitChart";
 import PortfolioCountChart from "../../components/PortfolioCountChart";
 import { IoOptions } from "react-icons/io5";
 import AgreeAutoPurchase from "../../components/AgreeAutoPurchase";
-
+import Modal from "../../components/Modal";
+import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
+import buyingCoin from "../../assets/images/buyingCoin.png";
+import sellingCoin from "../../assets/images/sellingCoin.png";
+import stopLossPoint from "../../assets/images/stopLossPoint.png";
+import MA from "../../assets/images/MA.png";
+import buyingSplit from "../../assets/images/buyingSplit.png";
+import noDataOwl from "../../assets/images/noDataOwl.png";
 const ITEMS_PER_PAGE = 5;
 
 const Portfolio = () => {
+  const [open, setOpen] = useState(false);
+  const [countdown, setCountdown] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchToggle, setSearchToggle] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -37,7 +46,7 @@ const Portfolio = () => {
     useState({});
   const [portfolioOptionData, setPortfolioOptionData] = useState({});
 
-  const [portfolioTextId, setportfolioTextId] = useState("description");
+  const [portfolioTextId, setportfolioTextId] = useState("option");
 
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["portfolios"],
@@ -75,6 +84,25 @@ const Portfolio = () => {
       refetch();
     },
   });
+
+  useEffect(() => {
+    let timer;
+    if (open) {
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [open]);
+
+  useEffect(() => {
+    if (countdown === 0) {
+      setOpen(false);
+    }
+    if (!open) {
+      setCountdown(3);
+    }
+  }, [countdown, open]);
 
   useEffect(() => {
     setPortfolioDetailTradingData(responsePortfolio.trading || {});
@@ -133,10 +161,7 @@ const Portfolio = () => {
   };
 
   const handleDeleteSelected = () => {
-    if (selectedItems.length === 0) {
-      return console.log("no delete data");
-    }
-
+    setOpen(true);
     mutation.mutate(
       selectedItems.map((item) => {
         console.log(item.portfolio_id);
@@ -158,15 +183,15 @@ const Portfolio = () => {
               setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
             }
             if (totalItemsAfterDeletion === 0) {
-              setItemsData([]); // 포트폴리오가 모두 삭제된 경우 itemsData를 빈 배열로 설정
-              setPaginatedData([]); // 화면 업데이트를 위해 paginatedData도 빈 배열로 설정
+              setItemsData([]);
+              setPaginatedData([]);
               setResponsePortfolio({
                 trading: {},
                 performance: {},
                 comment: "",
                 description: "",
                 option: {},
-              }); // responsePortfolio를 초기 상태로 설정
+              });
             }
           });
         },
@@ -280,6 +305,7 @@ const Portfolio = () => {
                 before:w-0 before:h-0 before:bg-red-500 before:absolute before:top-4 before:right-4 before:rounded-full
                 hover:before:w-full hover:before:h-full hover:before:duration-300 hover:before:translate-x-4 hover:before:-translate-y-4"
                   onClick={handleDeleteSelected}
+                  disabled={selectedItems.length === 0}
                 >
                   <MdDelete className="relative size-[20px] z-10 group-hover:text-white" />
                 </button>
@@ -330,199 +356,259 @@ const Portfolio = () => {
           </div>
         </div>
         <div className="w-3/5 h-full py-5 pr-5 pl-2">
-          <div className="w-full h-full bg-white rounded-xl shadow-xl border p-5 overflow-x-hidden">
-            <div className="w-full h-[300px] flex justify-between items-center">
-              <div className="w-full h-full border shadow-lg flex flex-col rounded-lg">
-                <ul className="basis-[80px] flex items-center font-bold text-md border-b-[1px] border-slate-300">
-                  <li
-                    className={`flex select-none cursor-pointer items-center h-full ml-5 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioDescriptionStyle} hover:duration-200`}
-                    onClick={() => handlePortfolioText("description")}
-                  >
-                    <MdDescription className="mr-2 size-[20px] select-none" />
-                    Description
-                  </li>
-                  <li
-                    className={`flex cursor-pointer items-center h-full select-none ml-5 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioCommentStyle} hover:duration-200`}
-                    onClick={() => handlePortfolioText("comment")}
-                  >
-                    <MdComment className="mr-2 size-[20px] select-none" />
-                    Comment
-                  </li>
-                  <li
-                    className={`flex cursor-pointer items-center h-full select-none ml-5 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioOptionStyle} hover:duration-200`}
-                    onClick={() => handlePortfolioText("option")}
-                  >
-                    <IoOptions className="mr-2 size-[20px] select-none" />
-                    Option
-                  </li>
-                </ul>
-                <div className="w-full h-full p-5">
-                  {portfolioTextId === "option" ? (
-                    <div className="w-full h-full flex justify-between">
-                      <div className="w-[45%] h-full flex flex-col justify-between border-r-2">
-                        <div className="flex">
-                          <div className="p-3 w-[45%] bg-white rounded-lg border shadow-lg">
-                            Buying Point
+          {itemsData.length === 0 ? (
+            <div className="w-full h-full bg-white flex justify-center items-center rounded-xl shadow-xl border p-5">
+              <img src={noDataOwl} alt="No Data" className="size-[300px]" />
+            </div>
+          ) : (
+            <div className="w-full h-full bg-white rounded-xl shadow-xl border p-5 overflow-x-hidden">
+              <div className="w-full h-[350px] flex justify-between items-center">
+                <div className="w-full h-full border shadow-lg flex flex-col rounded-lg">
+                  <ul className="basis-[80px] flex items-center font-bold text-md border-b-[1px] border-slate-300">
+                    <li
+                      className={`flex cursor-pointer items-center h-full select-none ml-5 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioOptionStyle} hover:duration-200`}
+                      onClick={() => handlePortfolioText("option")}
+                    >
+                      <IoOptions className="mr-2 size-[20px] select-none" />
+                      Option
+                    </li>
+                    <li
+                      className={`flex select-none cursor-pointer items-center h-full ml-7 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioDescriptionStyle} hover:duration-200`}
+                      onClick={() => handlePortfolioText("description")}
+                    >
+                      <MdDescription className="mr-2 size-[20px] select-none" />
+                      Description
+                    </li>
+                    <li
+                      className={`flex cursor-pointer items-center h-full select-none ml-7 hover:border-b-[2px] hover:border-violet-400 hover:text-violet-400 ${togglePortfolioCommentStyle} hover:duration-200`}
+                      onClick={() => handlePortfolioText("comment")}
+                    >
+                      <MdComment className="mr-2 size-[20px] select-none" />
+                      Comment
+                    </li>
+                  </ul>
+                  <div className="w-full h-full p-5">
+                    {portfolioTextId === "option" ? (
+                      <div className="w-full h-full flex justify-between">
+                        <div className="w-[50%] h-full flex flex-col justify-between">
+                          <div className="w-full flex justify-between items-center rounded-lg shadow-lg border p-2 ">
+                            <h1 className="font-bold ml-5 text-xl w-2/3">
+                              Moving Average
+                            </h1>
+                            <h1 className="font-bold text-xl w-1/3">
+                              {mdate} DAY
+                            </h1>
+                            <img
+                              src={MA}
+                              alt="buyingPointImg"
+                              className="size-[50px]"
+                            />
                           </div>
-                          <div className="px-5 py-3 w-[40%] bg-white rounded-lg border shadow-lg ml-5">
-                            {buying_point} Percent
+                          <div className="w-full flex justify-between items-center rounded-lg shadow-lg border p-2 ">
+                            <h1 className="font-bold ml-5 text-xl w-2/3">
+                              Moving Average
+                            </h1>
+                            <h1 className="font-bold text-xl w-1/3">
+                              {ndate} DAY
+                            </h1>
+                            <img
+                              src={MA}
+                              alt="buyingPointImg"
+                              className="size-[50px]"
+                            />
+                          </div>
+                          <div className="w-full flex justify-between items-center rounded-lg shadow-lg border p-2">
+                            <h1 className="font-bold ml-5 text-xl w-2/3">
+                              Buying Split
+                            </h1>
+                            <h1 className="font-bold text-xl w-1/3">
+                              {trading_unit} Unit
+                            </h1>
+                            <img
+                              src={buyingSplit}
+                              alt="buyingPointImg"
+                              className="size-[50px]"
+                            />
                           </div>
                         </div>
-                        <div className="flex">
-                          <div className="p-3 w-[45%] bg-white rounded-lg border shadow-lg">
-                            Selling Point
+                        <div className="w-[45%] h-full flex flex-col justify-between">
+                          <div className="w-full flex justify-between items-center rounded-lg shadow-lg border p-2">
+                            <h1 className=" w-2/3 font-bold ml-5 text-xl">
+                              Buying
+                            </h1>
+                            <h1 className=" w-1/3 font-bold text-xl">
+                              {buying_point}%
+                            </h1>
+                            <img
+                              src={buyingCoin}
+                              alt="buyingPointImg"
+                              className="size-[50px]"
+                            />
                           </div>
-                          <div className="px-5 py-3 w-[40%] bg-white rounded-lg border shadow-lg ml-5">
-                            {selling_point} Percent
+                          <div className="w-full flex justify-between items-center rounded-lg shadow-lg border p-2">
+                            <h1 className="font-bold ml-5 text-xl w-2/3">
+                              Selling
+                            </h1>
+                            <h1 className="font-bold text-xl w-1/3">
+                              {selling_point}%
+                            </h1>
+                            <img
+                              src={sellingCoin}
+                              alt="buyingPointImg"
+                              className="size-[50px]"
+                            />
                           </div>
-                        </div>
-                        <div className="flex">
-                          <div className="p-3 w-[45%] bg-white rounded-lg border shadow-lg">
-                            Stop Loss Point
-                          </div>
-                          <div className="px-5 py-3 w-[40%] bg-white rounded-lg border shadow-lg ml-5">
-                            {stop_loss_point} Percent
+                          <div className="w-full flex justify-between items-center rounded-lg shadow-lg border p-2">
+                            <h1 className="font-bold ml-5 text-xl w-2/3">
+                              Stop Loss
+                            </h1>
+                            <h1 className="font-bold text-xl w-1/3">
+                              {buying_point}%
+                            </h1>
+                            <img
+                              src={stopLossPoint}
+                              alt="buyingPointImg"
+                              className="size-[50px]"
+                            />
                           </div>
                         </div>
                       </div>
-                      <div className="w-[52%] h-full flex flex-col justify-between">
-                        <div className="flex">
-                          <div className="p-3 w-[55%] bg-white rounded-lg border shadow-lg">
-                            First Moving Average
-                          </div>
-                          <div className="px-5 py-3 w-[30%] bg-white rounded-lg border shadow-lg ml-5">
-                            {mdate} DAY
-                          </div>
-                        </div>
-                        <div className="flex">
-                          <div className="p-3 w-[55%] bg-white rounded-lg border shadow-lg">
-                            Second Moving Average
-                          </div>
-                          <div className="px-5 py-3 w-[30%] bg-white rounded-lg border shadow-lg ml-5">
-                            {ndate} DAY
-                          </div>
-                        </div>
-                        <div className="flex">
-                          <div className="p-3 w-[55%] bg-white rounded-lg border shadow-lg">
-                            Buying Split
-                          </div>
-                          <div className="px-5 py-3 w-[30%] bg-white rounded-lg border shadow-lg ml-5">
-                            {trading_unit} Count
-                          </div>
-                        </div>
-                      </div>
+                    ) : (
+                      <textarea
+                        className="w-full h-full border border-slate-300 rounded-md outline-none p-3"
+                        disabled={true}
+                        value={
+                          portfolioTextId === "comment"
+                            ? responsePortfolio.comment
+                            : responsePortfolio.description
+                        }
+                      ></textarea>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="w-full h-[300px] flex justify-between items-center mt-7">
+                <div className="w-[47.5%] h-full border shadow-lg flex justify-center items-center rounded-lg">
+                  <PortfolioProfitChart
+                    positiveTrade={average_positive_trade}
+                    negativeTrade={average_negative_trade}
+                  />
+                </div>
+                <div className="w-[47.5%] h-full border shadow-lg flex justify-center items-cente rounded-lg">
+                  <PortfolioCountChart win={win_rate} />
+                </div>
+              </div>
+              <div className="w-full h-[400px] flex justify-between items-center mt-7">
+                <div className="w-[47.5%] h-full border shadow-lg flex flex-col rounded-lg">
+                  <span className="ml-3 mt-3 font-bold text-xl select-none">
+                    Trading
+                  </span>
+                  <div className="border-2 border-slate-200 border-dashed mt-3 mx-3"></div>
+                  <div className="flex items-center mt-3 px-3 text-sm text-slate-600">
+                    <div className="w-3/5 border bg-slate-100 select-none shadow-lg rounded text-center mr-1">
+                      Content
                     </div>
-                  ) : (
-                    <textarea
-                      className="w-full h-full border border-slate-300 rounded-md outline-none p-3"
-                      disabled={true}
-                      value={
-                        portfolioTextId === "comment"
-                          ? responsePortfolio.comment
-                          : responsePortfolio.description
-                      }
-                    ></textarea>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="w-full h-[300px] flex justify-between items-center mt-7">
-              <div className="w-[47.5%] h-full border shadow-lg flex justify-center items-center rounded-lg">
-                <PortfolioProfitChart
-                  positiveTrade={average_positive_trade}
-                  negativeTrade={average_negative_trade}
-                />
-              </div>
-              <div className="w-[47.5%] h-full border shadow-lg flex justify-center items-cente rounded-lg">
-                <PortfolioCountChart win={win_rate} />
-              </div>
-            </div>
-            <div className="w-full h-[400px] flex justify-between items-center mt-7">
-              <div className="w-[47.5%] h-full border shadow-lg flex flex-col rounded-lg">
-                <span className="ml-3 mt-3 font-bold text-xl">Trading</span>
-                <div className="border-2 border-slate-200 border-dashed mt-3 mx-3"></div>
-                <div className="flex items-center mt-3 px-3 text-sm text-slate-600">
-                  <div className="w-3/5 border bg-slate-100 shadow-lg rounded text-center mr-1">
-                    Content
+                    <div className="w-2/5 border bg-slate-100 select-none shadow-lg rounded text-center ml-1">
+                      Value
+                    </div>
                   </div>
-                  <div className="w-2/5 border bg-slate-100 shadow-lg rounded text-center ml-1">
-                    Value
+                  <div className="w-full h-full p-3 flex">
+                    <div className="w-3/5 mr-1 shadow-lg rounded border flex flex-col justify-evenly items-start font-bold text-sm pl-2">
+                      <div>Initial Capital</div>
+                      <div>Final Capital</div>
+                      <div>Total Trade Count</div>
+                      <div>Positive Trade Count</div>
+                      <div>Negative Trade Count</div>
+                      <div>Average Trade Period</div>
+                      <div>Average Positive Trade</div>
+                      <div>Average Negative Trade</div>
+                    </div>
+                    <div className="w-2/5 ml-1 shadow-lg rounded border flex flex-col justify-evenly items-center font-bold">
+                      <div>{initial_capital}</div>
+                      <div>{final_capital}</div>
+                      <div>{total_trade_count}</div>
+                      <div>{positive_trade_count}</div>
+                      <div>{negative_trade_count}</div>
+                      <div>{average_trade_period}</div>
+                      <div>{average_positive_trade}</div>
+                      <div>{average_negative_trade}</div>
+                    </div>
                   </div>
                 </div>
-                <div className="w-full h-full p-3 flex">
-                  <div className="w-3/5 mr-1 shadow-lg rounded border flex flex-col justify-evenly items-start font-bold text-sm pl-2">
-                    <div>Initial Capital</div>
-                    <div>Final Capital</div>
-                    <div>Total Trade Count</div>
-                    <div>Positive Trade Count</div>
-                    <div>Negative Trade Count</div>
-                    <div>Average Trade Period</div>
-                    <div>Average Positive Trade</div>
-                    <div>Average Negative Trade</div>
+                <div className="w-[47.5%] h-full border shadow-lg flex flex-col rounded-lg">
+                  <span className="ml-3 mt-3 font-bold text-xl select-none">
+                    Performance
+                  </span>
+                  <div className="border-2 border-slate-200 border-dashed mt-3 mx-3"></div>
+                  <div className="flex items-center mt-3 px-3 text-sm text-slate-600">
+                    <div className="w-3/5 border bg-slate-100 shadow-lg select-none rounded text-center mr-1">
+                      Content
+                    </div>
+                    <div className="w-2/5 border bg-slate-100 shadow-lg rounded select-none text-center ml-1">
+                      Value
+                    </div>
                   </div>
-                  <div className="w-2/5 ml-1 shadow-lg rounded border flex flex-col justify-evenly items-center font-bold">
-                    <div>{initial_capital}</div>
-                    <div>{final_capital}</div>
-                    <div>{total_trade_count}</div>
-                    <div>{positive_trade_count}</div>
-                    <div>{negative_trade_count}</div>
-                    <div>{average_trade_period}</div>
-                    <div>{average_positive_trade}</div>
-                    <div>{average_negative_trade}</div>
-                  </div>
-                </div>
-              </div>
-              <div className="w-[47.5%] h-full border shadow-lg flex flex-col rounded-lg">
-                <span className="ml-3 mt-3 font-bold text-xl">Performance</span>
-                <div className="border-2 border-slate-200 border-dashed mt-3 mx-3"></div>
-                <div className="flex items-center mt-3 px-3 text-sm text-slate-600">
-                  <div className="w-3/5 border bg-slate-100 shadow-lg rounded text-center mr-1">
-                    Content
-                  </div>
-                  <div className="w-2/5 border bg-slate-100 shadow-lg rounded text-center ml-1">
-                    Value
-                  </div>
-                </div>
-                <div className="w-full h-full p-3 flex">
-                  <div className="w-3/5 mr-1 shadow-lg rounded border flex flex-col justify-evenly items-start font-bold text-sm pl-2">
-                    <div>Total Rate</div>
-                    <div>Win Rate</div>
-                    <div>Loss Rate</div>
-                    <div>Win Loss Ratio</div>
-                    <div>High Value Strategy</div>
-                    <div>Low Value Strategy</div>
-                    <div>High Loss Value Strategy</div>
-                    {/* <div>Average Negative Trade</div> */}
-                  </div>
-                  <div className="w-2/5 ml-1 shadow-lg rounded border flex flex-col justify-evenly items-center font-bold">
-                    <div>{total_rate}</div>
-                    <div>{win_rate}</div>
-                    <div>{loss_rate}</div>
-                    <div>{win_loss_ratio}</div>
-                    <div>{high_value_strategy}</div>
-                    <div>{low_value_strategy}</div>
-                    <div>{high_loss_value_strategy}</div>
-                    {/* <div>{average_negative_trade}</div> */}
+                  <div className="w-full h-full p-3 flex">
+                    <div className="w-3/5 mr-1 shadow-lg rounded border flex flex-col justify-evenly items-start font-bold text-sm pl-2">
+                      <div>Total Rate</div>
+                      <div>Win Rate</div>
+                      <div>Loss Rate</div>
+                      <div>Win Loss Ratio</div>
+                      <div>High Value Strategy</div>
+                      <div>Low Value Strategy</div>
+                      <div>High Loss Value Strategy</div>
+                      {/* <div>Average Negative Trade</div> */}
+                    </div>
+                    <div className="w-2/5 ml-1 shadow-lg rounded border flex flex-col justify-evenly items-center font-bold">
+                      <div>{total_rate}</div>
+                      <div>{win_rate}</div>
+                      <div>{loss_rate}</div>
+                      <div>{win_loss_ratio}</div>
+                      <div>{high_value_strategy}</div>
+                      <div>{low_value_strategy}</div>
+                      <div>{high_loss_value_strategy}</div>
+                      {/* <div>{average_negative_trade}</div> */}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="w-full h-[300px] border flex justify-between items-center p-5 mt-5">
-              <div className="w-full h-full border shadow-lg flex justify-center items-center">
-                딥러닝 차트
+              <div className="w-full h-[300px] border flex justify-between items-center p-5 mt-5">
+                <div className="w-full h-full border shadow-lg flex justify-center items-center">
+                  딥러닝 차트
+                </div>
+              </div>
+              <div className="w-full h-[320px] border flex justify-center items-center p-5 mt-5 shadow-xl rounded-xl ">
+                <AgreeAutoPurchase />
+              </div>
+              <div className="w-full h-[300px] border flex justify-between items-center p-5 mt-5">
+                <div className="w-full h-full border shadow-lg flex justify-center items-center">
+                  자동구매 로그
+                </div>
               </div>
             </div>
-            <div className="w-full h-[320px] border flex justify-center items-center p-5 mt-5 shadow-xl rounded-xl ">
-              <AgreeAutoPurchase />
-            </div>
-            <div className="w-full h-[300px] border flex justify-between items-center p-5 mt-5">
-              <div className="w-full h-full border shadow-lg flex justify-center items-center">
-                자동구매 로그
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <div className="w-[350px] h-[150px] relative flex flex-col justify-center items-center p-5">
+          <h1 className="font-bold text-xl text-red-500 select-none">
+            Delete Successful
+          </h1>
+          <div className="flex items-center cursor-pointer mt-3 relative">
+            <span className="select-none" onClick={() => setOpen(false)}>
+              Continue
+            </span>
+            <MdOutlineKeyboardDoubleArrowRight className="animate-ping ml-3 text-red-500" />
+          </div>
+          <p className="text-xs absolute bottom-0 right-0 text-slate-400 mt-2">
+            Closes in{" "}
+            <span className="font-bold text-slate-600 select-none">
+              {countdown}
+            </span>{" "}
+            seconds
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };

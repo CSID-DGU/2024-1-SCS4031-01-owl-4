@@ -19,7 +19,7 @@ function formatDate(dateString) {
     const { setResponsePortfolio } = useResponseStore();
     const { token } = useTokenStore();
     const [isChecked, setIsChecked] = useState(item.is_marked); // Initialize with item.is_marked
-
+    const [candleName, setCandleName] = useState("")
     const autoPurchaseToggle = item.trade;
     const autoPurchaseToggleStyle = autoPurchaseToggle ? "bg-lime-400" : "bg-red-400";
 
@@ -65,6 +65,31 @@ function formatDate(dateString) {
             refetchingData(); // Call refetchingData to refresh data
         }
     });
+    useEffect(() => {
+        if(item.candle_name === 'months') {
+            setCandleName('1 Month')
+        } else if(item.candle_name === 'weeks') {
+            setCandleName('1 Week')
+        } else if(item. candle_name === 'days') {
+            setCandleName('1 Day')
+        } else if(item. candle_name === 'minutes240') {
+            setCandleName('4H')
+        } else if(item. candle_name === 'minutes60') {
+            setCandleName('1H')
+        } else if(item. candle_name === 'minutes30') {
+            setCandleName('30M')
+        } else if(item. candle_name === 'minutes15') {
+            setCandleName('15M')
+        } else if(item. candle_name === 'minutes10') {
+            setCandleName('10M')
+        } else if(item. candle_name === 'minutes5') {
+            setCandleName('5M')
+        } else if(item. candle_name === 'minutes3') {
+            setCandleName('3M')
+        } else if(item. candle_name === 'minutes1') {
+            setCandleName('1M')
+        }
+    },[item])
 
     const handleClick = () => {
         if (isCurrentPage !== item.portfolio_id) {
@@ -99,7 +124,7 @@ function formatDate(dateString) {
                 className='w-[25px] h-[25px] z-10 absolute -left-3 top-[50px] custom-checkbox border border-slate-300 bg-white'
                 checked={isChecked}
                 onChange={handleBookmarkChange}
-                onClick={(e) => e.stopPropagation()} // Prevent onClick from firing
+                onClick={(e) => e.stopPropagation()}
             />
             <div
                 className={`w-full h-[80px] bg-white mt-6 rounded-xl border shadow-md relative flex cursor-pointer hover:border-2 hover:border-red-500 ${isSelected ? "border-red-500 border-2" : ""}`}
@@ -113,7 +138,7 @@ function formatDate(dateString) {
                     <span className='w-full h-1/2 flex justify-center items-center font-bold'>{formatDate(item.end_date)}</span>
                 </div>
                 <div className='w-[13%] flex justify-center items-center border-l'>
-                    <span className='font-bold text-sm'>{item.candle_name}</span>
+                    <span className='font-bold text-sm'>{candleName}</span>
                 </div>
                 <div className='w-[17%] flex justify-center items-center text-base border-l'>
                     <div className={`w-3 h-3 rounded-full mr-3 ${autoPurchaseToggleStyle}`}></div>
