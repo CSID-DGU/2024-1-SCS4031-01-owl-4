@@ -34,7 +34,6 @@ public class TradingDto {
                     .currentCapital(fund)
                     .tradingUnitPrice(fund / portfolioOption.getTradingUnit())
                     .tradingCount(portfolioOption.getTradingUnit())
-                    .buyingCount(0)
                     .startDate(startDate)
                     .endDate(endDate)
                     .build();
