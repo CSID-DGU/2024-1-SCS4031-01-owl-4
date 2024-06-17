@@ -9,12 +9,13 @@ import org.dgu.backend.service.UpbitAutoTrader;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/trading")
 @RequiredArgsConstructor
 public class TradingController {
     private final TradingService tradingService;
-    private final UpbitAutoTrader upbitAutoTrader;
 
     // 자동매매 등록 API
     @PostMapping
@@ -37,8 +38,11 @@ public class TradingController {
     }
 
     // 자동매매 수동 테스트 API
-    @GetMapping("/test")
-    public void test() {
-        upbitAutoTrader.performAutoTrading();
+    @GetMapping("/logs")
+    public ResponseEntity<ApiResponse<List<TradingDto.TradingLog>>> getUserTradingLogs(
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        List<TradingDto.TradingLog> tradingLogs = tradingService.getUserTradingLogs(authorizationHeader);
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_TRADING_LOGS, tradingLogs);
     }
 }

@@ -5,8 +5,11 @@ import org.dgu.backend.domain.TradingOption;
 import org.dgu.backend.domain.User;
 import org.dgu.backend.dto.TradingDto;
 
+import java.util.List;
+
 public interface TradingService {
     void registerAutoTrading(String authorizationHeader, TradingDto.AutoTradingRequest autoTradingRequest);
     void removeAutoTrading(String authorizationHeader, String portfolioId);
     void executeTrade(User user, PortfolioOption portfolioOption, TradingOption tradingOption, Double curPrice);
+    List<TradingDto.TradingLog> getUserTradingLogs(String authorizationHeader);
 }
