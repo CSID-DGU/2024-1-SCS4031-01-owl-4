@@ -28,6 +28,7 @@ public class DashBoardController {
             @RequestHeader("Authorization") String authorizationHeader) {
 
         DashBoardDto.UserAccountResponse userBalanceResponse  = dashBoardService.getUserAccount(authorizationHeader);
+
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_USER_BALANCE, userBalanceResponse);
     }
 
@@ -37,6 +38,7 @@ public class DashBoardController {
             @RequestHeader("Authorization") String authorizationHeader) {
 
         List<DashBoardDto.UserCoinResponse> userCoins = dashBoardService.getUserCoins(authorizationHeader);
+
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_USER_COINS, userCoins);
     }
 
@@ -45,6 +47,7 @@ public class DashBoardController {
     public ResponseEntity<ApiResponse<List<DashBoardDto.RepresentativeCoinResponse>>> getRepresentativeCoins() {
 
         List<DashBoardDto.RepresentativeCoinResponse> representativeCoinResponses = dashBoardService.getRepresentativeCoins();
+
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_REPRESENTATIVE_COINS, representativeCoinResponses);
     }
 
@@ -53,15 +56,29 @@ public class DashBoardController {
     public ResponseEntity<ApiResponse<List<ChartDto.OHLCVResponse>>> getBitcoinDayCharts() {
 
         List<ChartDto.OHLCVResponse> ohlcvResponses = chartService.getOHLCVCharts("비트코인", "days", null);
+
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_BITCOIN_DAY_CHARTS, ohlcvResponses);
     }
 
-    // 비트코인 차트 (1분봉) 조회 API
+    // 비트코인 OHLC 차트 (1분봉) 조회 API
     @GetMapping("/bit-charts/minutes1")
-    public ResponseEntity<ApiResponse<List<ChartDto.OHLCVResponse>>> getBitcoinOneMinuteCharts() {
+    public ResponseEntity<ApiResponse<List<ChartDto.OHLCResponse>>> getBitcoinOneMinuteCharts() {
 
         LocalDateTime startDate = dateUtil.calculateDailyStartDate();
         List<ChartDto.OHLCVResponse> ohlcvResponses = chartService.getOHLCVCharts("비트코인", "minutes1", startDate);
-        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_BITCOIN_ONE_MINUTE_CHARTS, ohlcvResponses);
+        List<ChartDto.OHLCResponse> ohlcResponses = ChartDto.OHLCResponse.ofOHLCResponses(ohlcvResponses);
+
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_BITCOIN_ONE_MINUTE_CHARTS, ohlcResponses);
+    }
+
+    // 비트코인 V 차트 (1분봉) 조회 API
+    @GetMapping("/bit-charts/minutes1/volumes")
+    public ResponseEntity<ApiResponse<List<ChartDto.VResponse>>> getBitcoinOneMinuteVolumeCharts() {
+
+        LocalDateTime startDate = dateUtil.calculateDailyStartDate();
+        List<ChartDto.OHLCVResponse> ohlcvResponses = chartService.getOHLCVCharts("비트코인", "minutes1", startDate);
+        List<ChartDto.VResponse> vResponses = ChartDto.VResponse.ofVResponses(ohlcvResponses);
+
+        return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_BITCOIN_ONE_MINUTE_VOLUME_CHARTS, vResponses);
     }
 }
