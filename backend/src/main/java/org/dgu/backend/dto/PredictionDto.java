@@ -7,6 +7,10 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.dgu.backend.domain.Prediction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PredictionDto {
     @Builder
@@ -19,5 +23,16 @@ public class PredictionDto {
         private String date;
         @JsonProperty("close")
         private Long close;
+
+        public static List<PredictionResponse> ofPredictions(List<Prediction> predictions) {
+            List<PredictionResponse> predictionResponses = new ArrayList<>();
+            for (Prediction prediction : predictions) {
+                predictionResponses.add(PredictionResponse.builder()
+                        .date(String.valueOf(prediction.getDate()))
+                        .close(prediction.getClose())
+                        .build());
+            }
+            return predictionResponses;
+        }
     }
 }
