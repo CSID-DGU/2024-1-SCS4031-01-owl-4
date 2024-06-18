@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TradingController {
     private final TradingService tradingService;
+    private final UpbitAutoTrader upbitAutoTrader;
 
     // 자동매매 등록 API
     @PostMapping
@@ -37,12 +38,18 @@ public class TradingController {
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_DELETE_TRADING);
     }
 
-    // 자동매매 수동 테스트 API
+    // 자동매매 거래 로그 조회 API
     @GetMapping("/logs")
     public ResponseEntity<ApiResponse<List<TradingDto.TradingLog>>> getUserTradingLogs(
             @RequestHeader("Authorization") String authorizationHeader) {
 
         List<TradingDto.TradingLog> tradingLogs = tradingService.getUserTradingLogs(authorizationHeader);
         return ApiResponse.onSuccess(SuccessStatus.SUCCESS_GET_TRADING_LOGS, tradingLogs);
+    }
+
+    // 자동매매 수동 테스트 API
+    @GetMapping("/test")
+    public void startTrading() {
+        upbitAutoTrader.performAutoTrading();
     }
 }
