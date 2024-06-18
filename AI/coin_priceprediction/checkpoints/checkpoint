@@ -1,2 +1,0 @@
-model_checkpoint_path: "training_basemodel.ckpt"
-all_model_checkpoint_paths: "training_basemodel.ckpt"
