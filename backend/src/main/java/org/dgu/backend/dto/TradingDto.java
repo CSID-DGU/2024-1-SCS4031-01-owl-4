@@ -3,12 +3,15 @@ package org.dgu.backend.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.dgu.backend.domain.*;
+import org.dgu.backend.util.BigDecimalSerializer;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +52,7 @@ public class TradingDto {
         private String type;
         private LocalDateTime date;
         private Long capital;
+        @JsonSerialize(using = BigDecimalSerializer.class)
         private BigDecimal coin;
         private Long coinPrice;
         private Double rate;
@@ -61,7 +65,7 @@ public class TradingDto {
                         .date(tradingLog.getCreatedAt().minusHours(9))
                         .capital(tradingLog.getCapital())
                         .coinPrice(tradingLog.getCoinPrice().longValue())
-                        .coin(tradingLog.getCoin())
+                        .coin(tradingLog.getCoin().setScale(6, RoundingMode.HALF_UP))
                         .rate(tradingLog.getRate())
                         .build());
             }
