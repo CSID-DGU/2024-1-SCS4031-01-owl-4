@@ -23,11 +23,11 @@ public class Prediction extends BaseEntity {
     @Column(name = "date")
     private LocalDateTime date;
 
-    @Column(name = "close_price")
-    private Long closePrice;
+    @Column(name = "close")
+    private Long close;
 
-    public Prediction(String epochTime, Long closePrice) {
+    public Prediction(String epochTime, Long close) {
         this.date = LocalDateTime.ofInstant(Instant.ofEpochMilli(Long.parseLong(epochTime)), ZoneOffset.UTC);
-        this.closePrice = (long) Math.round(closePrice);
+        this.close = (long) Math.round(close);
     }
 }
