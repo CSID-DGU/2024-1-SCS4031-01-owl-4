@@ -29,7 +29,7 @@ public class UpbitAutoTrader {
     private final PortfolioOptionRepository portfolioOptionRepository;
 
     // 자동매매 진행 메서드
-    @Scheduled(fixedRate = 5000) // 5초마다 실행
+    //@Scheduled(fixedRate = 5000) // 5초마다 실행
     public void performAutoTrading() {
         System.out.println("자동매매 로직 실행 중...");
 
