@@ -3,7 +3,6 @@ package org.dgu.backend.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.dgu.backend.common.ApiResponse;
 import org.dgu.backend.common.code.BaseErrorCode;
-import org.dgu.backend.domain.Market;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingRequestHeaderException;
@@ -85,6 +84,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(TradingException.class)
     public ResponseEntity<ApiResponse<BaseErrorCode>> handleTradingException(TradingException e) {
         TradingErrorResult errorResult = e.getTradingErrorResult();
+        return ApiResponse.onFailure(errorResult);
+    }
+    // Prediction
+    @ExceptionHandler(PredictionException.class)
+    public ResponseEntity<ApiResponse<BaseErrorCode>> handlePredictionException(PredictionException e) {
+        PredictionErrorResult errorResult = e.getPredictionErrorResult();
         return ApiResponse.onFailure(errorResult);
     }
 }

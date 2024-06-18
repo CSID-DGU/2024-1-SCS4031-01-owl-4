@@ -47,7 +47,9 @@ public enum SuccessStatus implements BaseCode {
     // Trading
     SUCCESS_START_TRADING(HttpStatus.CREATED, "201", "자동매매 등록에 성공했습니다."),
     SUCCESS_DELETE_TRADING(HttpStatus.OK, "200", "자동매매 삭제에 성공했습니다."),
-    SUCCESS_GET_TRADING_LOGS(HttpStatus.OK, "200", "자동매매 거래 로그 조회에 성공했습니다.");
+    SUCCESS_GET_TRADING_LOGS(HttpStatus.OK, "200", "자동매매 거래 로그 조회에 성공했습니다."),
+    // Prediction
+    SUCCESS_GET_PREDICTIONS(HttpStatus.OK, "200", "딥러닝 가격 예측 값 조회에 성공했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -93,3 +93,8 @@ upbit:
     candle-minute: ${UPBIT_URL_CANDLE_MINUTE}
     candle-etc: ${UPBIT_URL_CANDLE_ETC}
     order: ${UPBIT_URL_ORDER}
+
+ai:
+  url:
+    train: ${AI_URL_TRAIN}
+    predict: ${AI_URL_PREDICT}
