@@ -8,8 +8,8 @@ import os
 import tensorflow as tf
 
 # API 키 설정 (주의: 실제 코드에서는 보안상 API 키를 노출시키지 않도록 주의해야 합니다)
-access_key = "3rCnY46Xw4Mx9q2tVrWGpzUPBtAjim82ZMn508Bd"
-secret_key = "R1t5gFoPNZNTXaBlWHbdx85hPPvdhvSSZx2Y9uA7"
+access_key = ""
+secret_key = ""
 
 # 데이터 수집 기간 설정
 start_date = datetime.datetime(2018, 1, 1)
