@@ -17,8 +17,10 @@ const FirstSettingForm = () => {
           <h1>Before Starting BackTest</h1>
         </div>
         <div className='w-full h-3/4 text-sm rounded-b-lg px-3 py-2'>
-          <p className=''>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam officia debitis minus rem sint excepturi dolores tempore, reprehenderit dolorem ratione adipisci inventore non, quo magni omnis, assumenda maiores in aperiam.
+          <p className='font-bold text-black leading-6'>
+          가상화폐 포트폴리오 백테스팅 전략 설정에 오신 것을 환영합니다.  
+          백테스팅은 과거 데이터를 통해 전략의 유효성과 리스크를 검증하는 과정입니다. 
+          이는 전략의 신뢰성을 평가하고, 객관적인 투자 결정을 돕는 동시에, 시장 변화에 대한 대응력을 높여줍니다. 
           </p>
         </div>
       </div>

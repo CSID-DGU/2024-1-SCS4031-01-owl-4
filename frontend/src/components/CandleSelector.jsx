@@ -35,7 +35,7 @@ const CandleSelector = ({ setCandle, prevEnd, prevStart, setStart, setEnd }) => 
     >
       <div className="select-none text-white">{currency}</div>
       <IoIosArrowDropup
-        className={`${openCandle ? "rotate-180" : ""} text-white`}
+        className={`${openCandle ? "" : "rotate-180"} text-white`}
       />
       {openCandle && (
         <ul className="absolute w-full top-6 left-0 px-2 py-2 mt-2 rounded-lg bg-white z-20">

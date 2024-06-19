@@ -7,14 +7,17 @@ import { useEffect, useState } from "react";
 import CoinList from "./CoinList";
 import NewLoading from "./NewLoading";
 import CoinCard from "./CoinCard";
+import useResponseStore from "../utils/useResponseStore";
+
 
 const Coins = () => {
   const { token } = useTokenStore();
   const [top5ByBalance, setTop5ByBalance] = useState([]);
   const [top4ByRate, setTop4ByRate] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const {isAPISuccess} = useResponseStore();
 
-  const { data: coins, isLoading } = useQuery({
+  const { data: coins, isLoading, isError, isSuccess, refetch } = useQuery({
     queryKey: ["userCoins"],
     queryFn: async () => {
       const response = await axios.get(
@@ -28,6 +31,9 @@ const Coins = () => {
       return response.data.payload;
     },
     refetchInterval: 1000,
+    refetchOnWindowFocus: false,
+    refetchIntervalInBackground: true,
+    enabled: isAPISuccess
   });
 
   useEffect(() => {
@@ -48,10 +54,6 @@ const Coins = () => {
     }
   }, [coins]);
 
-  if (isLoading) {
-    return <NewLoading />;
-  }
-
   // 이전 슬라이드로 이동
   const prevSlide = () => {
     setCurrentIndex((prevIndex) =>
@@ -65,6 +67,8 @@ const Coins = () => {
       prevIndex === top5ByBalance.length - 1 ? 0 : prevIndex + 1
     );
   };
+
+  if(isLoading || isError) return <NewLoading />
 
   return (
     <div className="w-full h-full flex flex-col bg-white border shadow-lg rounded-xl relative">

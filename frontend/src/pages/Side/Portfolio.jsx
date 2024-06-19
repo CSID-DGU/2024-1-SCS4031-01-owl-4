@@ -24,6 +24,8 @@ import stopLossPoint from "../../assets/images/stopLossPoint.png";
 import MA from "../../assets/images/MA.png";
 import buyingSplit from "../../assets/images/buyingSplit.png";
 import noDataOwl from "../../assets/images/noDataOwl.png";
+import DeepLearningChart from "../../components/DeepLearningChart";
+
 const ITEMS_PER_PAGE = 5;
 
 const Portfolio = () => {
@@ -38,7 +40,7 @@ const Portfolio = () => {
   const { token } = useTokenStore();
   const { setIsCurrentPage } = usePortfolioOpenPageStore();
   const navigate = useNavigate();
-  const { responsePortfolio, setResponsePortfolio } = useResponseStore();
+  const { responsePortfolio, setResponsePortfolio, isAutoTrade } = useResponseStore();
   const [portfolioDetailTradingData, setPortfolioDetailTradingData] = useState(
     {}
   );
@@ -164,7 +166,7 @@ const Portfolio = () => {
     setOpen(true);
     mutation.mutate(
       selectedItems.map((item) => {
-        console.log(item.portfolio_id);
+        // console.log(item.portfolio_id);
         return item.portfolio_id;
       }),
       {
@@ -572,18 +574,19 @@ const Portfolio = () => {
                   </div>
                 </div>
               </div>
-              <div className="w-full h-[300px] border flex justify-between items-center p-5 mt-5">
-                <div className="w-full h-full border shadow-lg flex justify-center items-center">
-                  딥러닝 차트
-                </div>
+              <div className="w-full h-[300px] border flex justify-between items-center rounded-xl shadow-xl mt-5">
+                  <DeepLearningChart />
               </div>
               <div className="w-full h-[320px] border flex justify-center items-center p-5 mt-5 shadow-xl rounded-xl ">
                 <AgreeAutoPurchase />
               </div>
-              <div className="w-full h-[300px] border flex justify-between items-center p-5 mt-5">
-                <div className="w-full h-full border shadow-lg flex justify-center items-center">
-                  자동구매 로그
-                </div>
+              <div className={`w-full h-[40px] border flex items-center shadow-xl mt-5 rounded overflow-hidden font-bold bg-slate-400 ${isAutoTrade ? "opacity-70":"opacity-30"}`}>
+                  <div className="w-[10%] h-full flex justify-center items-center">Type</div>
+                  <div className="w-[20%] h-full flex justify-center items-center">Date</div>
+                  <div className="w-[25%] h-full flex justify-center items-center">Balance</div>
+                  <div className="w-[20%] h-full flex justify-center items-center">Coin</div>
+                  <div className="w-[15%] h-full flex justify-center items-center">Coin Price</div>
+                  <div className="w-[10%] h-full flex justify-center items-center">Rate</div>
               </div>
             </div>
           )}

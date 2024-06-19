@@ -28,15 +28,14 @@ const ThirdSettingForm = () => {
     <>
       <div className="w-full h-[35%] shadow-lg rounded-lg border">
         <div className="w-full h-[19.5%] bg-indigo-500 px-3 text-lg rounded-t-lg font-bold py-1 text-white">
-          <h1>What is Moving Average?</h1>
+          <h1>What is Moving Average (이동평균선) ?</h1>
         </div>
         <div className="w-full h-3/4 text-sm rounded-b-lg px-3 py-2">
-          <p className="">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam officia
-            debitis minus rem sint excepturi dolores tempore, reprehenderit
-            dolorem ratione adipisci inventore non, quo magni omnis, assumenda
-            maiores in aperiam.Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam officia
-            debitis minus rem sint excepturi dolores tempore
+          <p className="font-bold text-black leading-5">
+          이동평균선은 일정 기간 동안의 평균 가격을 산출하여, 현재 가격이 과거 평균과 비교하여 어느 정도 위치에 있는지를 보여줍니다. 
+          이동평균선은 단기 및 장기 추세를 파악하는 데 유용하며, 매수와 매도의 신호로 활용됩니다.
+          <div>Stop Loss Point는 손절매 지점입니다. 
+          이는 손실을 제한하기 위해 설정하는 가격 수준으로, 자산 가격이 이 지점에 도달하면 자동으로 매도하여 손실을 방지합니다.</div>
           </p>
         </div>
       </div>

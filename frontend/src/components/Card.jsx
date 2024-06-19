@@ -6,13 +6,16 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import useTokenStore from "../utils/token";
+import NewLoading from "./NewLoading";
+import useResponseStore from "../utils/useResponseStore";
 
 const Card = () => {
   const [exchangeRate, setExchangeRate] = useState("WON");
   const { token } = useTokenStore();
   const canvasRef = useRef(null);
+  const {isAPISuccess} = useResponseStore();
 
-  const { data: balance } = useQuery({
+  const { data: balance, isLoading, isError, isSuccess, refetch } = useQuery({
     queryKey: ["Balance"],
     queryFn: async () => {
       const response = await axios.get(
@@ -23,31 +26,44 @@ const Card = () => {
           },
         }
       );
+      // console.log('balance', response)
       return response.data.payload.account || [];
     },
     refetchInterval: 1000,
+    refetchOnWindowFocus: false,
+    refetchIntervalInBackground: true,
+    enabled: isAPISuccess
   });
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    if (!isLoading && balance) {
+      const canvas = canvasRef.current;
+      if (canvas) {
+        
+        const ctx = canvas.getContext("2d");
 
-    
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+       
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 2;
+        
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
 
-    
-    ctx.beginPath();
-    ctx.moveTo(50, 150); 
-    ctx.lineTo(150, 100); 
-    ctx.lineTo(250, 120); 
-    ctx.lineTo(350, 80); 
-    ctx.lineTo(450, 130); 
-    ctx.stroke();
-  }, []);
+        
+        ctx.beginPath();
+        ctx.moveTo(50, 150);
+        ctx.lineTo(150, 100);
+        ctx.lineTo(250, 120);
+        ctx.lineTo(350, 80);
+        ctx.lineTo(450, 130);
+        ctx.stroke();
+      }
+    }
+  }, [isLoading, balance]); 
+
+  if (isLoading || isError) {
+    return <NewLoading />;
+  } 
 
   return (
     <div
@@ -104,7 +120,10 @@ const Card = () => {
           <span className="text-sm tracking-[2px] select-none">000,000</span>
         </div>
       </div>
-      <canvas ref={canvasRef} className="w-full h-full absolute top-[-1%] left-[-3%] opacity-30"></canvas>
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full absolute top-[-1%] left-[-3%] opacity-30"
+      ></canvas>
     </div>
   );
 };

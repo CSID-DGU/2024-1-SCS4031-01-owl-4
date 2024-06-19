@@ -22,7 +22,7 @@ const CoinList = ({ coin }) => {
       <img
         src={getImageURL(coin.market_name.split("-")[1])}
         alt="Coin-Logo"
-        className="size-[35px]"
+        className="size-[35px] select-none"
       />
       <div className="w-[70%] flex flex-col mx-2">
         <div className="w-full flex justify-between">

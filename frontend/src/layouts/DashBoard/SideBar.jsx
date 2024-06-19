@@ -15,7 +15,7 @@ const SideBar = () => {
   const location = useLocation().pathname;
   const path = location.split('/')[2];
 
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
 
   const handleOpen = () => {

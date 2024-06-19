@@ -25,6 +25,9 @@ import { FaArrowsSpin } from "react-icons/fa6";
 import NotCloseModal from "./NotCloseModal.jsx";
 import Modal from '../components/Modal.jsx'
 import { MdOutlineKeyboardDoubleArrowRight } from "react-icons/md";
+import usePortfolioOpenPageStore from "../utils/portfolioOpenPageStore.js";
+import useResponseStore from "../utils/useResponseStore.js";
+
 const { RangePicker } = DatePicker;
 function formatNumberWithUnits(num, exchangeRate) {
   const absNum = Math.abs(num);
@@ -65,10 +68,12 @@ function formatNumberWithUnits(num, exchangeRate) {
 }
 
 const schema = z.object({
-  initial_capital: z.preprocess(
-    (value) => parseFloat(value),
-    z.number().positive({ message: "Funds must be a positive number" })
-  ),
+  fund: z
+    .preprocess(
+      (value) => parseFloat(value),
+      z.number().positive({ message: "Funds must be a positive number" })
+    )
+    .refine((value) => value >= 5000, { message: "Fund must be 5000원 or more" }),
   start_date: z
     .string()
     .nonempty({ message: "Start date is required" })
@@ -90,9 +95,10 @@ const keySchema = z.object({
 
 const AgreeAutoPurchase = () => {
   const [open, setOpen] = useState(false);
+  const [deleteOpen, setDelteOpen] = useState(false)
   const [openSuccessModal, setOpenSuccessModal] = useState(false)
   const [countdown, setCountdown] = useState(3);
-  const [fund, setFund] = useState(0);
+  const [fund, setFund] = useState(5000);
   const [exchangeRate, setExchangeRate] = useState("usd");
   const [showAPI, setShowAPI] = useState(false);
   const [showAPISecret, setShowAPISecret] = useState(false);
@@ -102,6 +108,9 @@ const AgreeAutoPurchase = () => {
   const [errIpState, setErrIpState]= useState(false);
   const { token } = useTokenStore();
   const { has_key, setkey } = useKeyStore();
+  const {isCurrentPage} = usePortfolioOpenPageStore();
+  const {setIsAutoTrade} = useResponseStore();
+
   const {
     register,
     handleSubmit,
@@ -112,6 +121,7 @@ const AgreeAutoPurchase = () => {
     resolver: zodResolver(schema),
     mode: "onBlur",
   });
+
   const formKeyMethods = useForm({
     resolver: zodResolver(keySchema),
     mode: "onChange",
@@ -122,6 +132,37 @@ const AgreeAutoPurchase = () => {
     formState: { errors: keyErrors },
     reset
   } = formKeyMethods;
+
+  const mutation = useMutation({
+    mutationFn: async (data) => {
+      console.log(data)
+      const response = await axios.post("http://localhost:8081/api/v1/trading", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response
+    },
+    onSuccess: () => {
+      setOpenSuccessModal(true)
+      setIsAutoTrade(true)
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await axios.delete("http://localhost:8081/api/v1/trading?portfolio_id="+data,{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      return response
+    },
+    onSuccess: () => {
+      setDelteOpen(true)
+      setIsAutoTrade(false)
+    }
+  })
 
   const mutationKey = useMutation({
     mutationFn: async (data) => {
@@ -154,6 +195,22 @@ const AgreeAutoPurchase = () => {
 
   useEffect(() => {
     let timer;
+    if (deleteOpen) {
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [deleteOpen]);
+
+  useEffect(() => {
+    if (countdown === 0) {
+      setDelteOpen(false);
+    }
+  }, [countdown]);
+
+  useEffect(() => {
+    let timer;
     if (openSuccessModal) {
       timer = setInterval(() => {
         setCountdown((prevCountdown) => prevCountdown - 1);
@@ -168,16 +225,21 @@ const AgreeAutoPurchase = () => {
     }
   }, [countdown]);
 
+
   const onSubmit = (data) => {
-    // mutation.mutate(data); 자동구매 submit
+    data.portfolio_id = isCurrentPage;
+    mutation.mutate(data)
   };
 
   const onKeySubmit = (data) => {
-    console.log(data)
     if(access_key.length >= 40 && secret_key.length >= 40) {
       mutationKey.mutate(data)
     }
   };
+
+  const deleteAutoPurchase = () => {
+    deleteMutation.mutate(isCurrentPage)
+  }
 
   return (
     <div className="w-full h-full flex">
@@ -301,38 +363,38 @@ const AgreeAutoPurchase = () => {
                   type="number"
                   className={`peer outline-none mt-2 w-full border-[1.5px] rounded-lg pl-2 py-2 duration-300 
               ${
-                errors["initial_capital"] || String(fund).length
+                errors["fund"] || String(fund).length || fund < 5000
                   ? ""
                   : "border-slate-400 bg-slate-50 hover:border-violet-500 focus:border-violet-500 focus:bg-white"
               } 
               ${
-                !String(fund).length
+                !String(fund).length || fund < 5000
                   ? "border-red-500"
                   : "border-green-500 focus:border-green-500 bg-white focus:bg-white"
               }`}
-                  {...register("initial_capital")}
+                  {...register("fund")}
                   onChange={(e) => setFund(e.target.value)}
                   value={fund}
                 />
-                {String(fund).length ? (
+                {String(fund).length && fund >= 5000 ? (
                   <span className="absolute top-5 right-10 text-xs text-slate-400 font-bold">
                     {formatNumberWithUnits(fund, exchangeRate)}
                   </span>
                 ) : (
                   <span className="absolute top-5 right-[30%] text-red-500 font-bold text-xs">
-                    Please Input Your Cash
+                    Input Cash (more than 5000)
                   </span>
                 )}
                 <MdOutlineErrorOutline
                   className={`absolute top-5 right-3 duration-300 ${
-                    errors["initial_capital"] ? "" : "text-transparent"
+                    errors["fund"] ? "" : "text-transparent"
                   } ${
-                    !String(fund).length ? "text-red-500" : "text-transparent"
+                    !String(fund).length || fund < 5000 ? "text-red-500" : "text-transparent"
                   }`}
                 />
                 <FaRegCheckCircle
                   className={`absolute top-5 right-3 duration-300 ${
-                    String(fund).length ? "text-green-500" : "text-transparent"
+                    String(fund).length && fund >= 5000 ? "text-green-500" : "text-transparent"
                   }`}
                 />
               </div>
@@ -387,7 +449,7 @@ const AgreeAutoPurchase = () => {
             />
           </form>
           <div className="flex items-center mt-10 justify-between">
-            <button className="rounded-lg relative w-[63%] h-10 cursor-pointer flex items-center border border-green-500 bg-green-500 group hover:bg-green-500 active:bg-green-500 active:border-green-500">
+            <button onClick={handleSubmit(onSubmit)} className="rounded-lg relative w-[63%] h-10 cursor-pointer flex items-center border border-green-500 bg-green-500 group hover:bg-green-500 active:bg-green-500 active:border-green-500">
               <span className="text-white select-none font-semibold ml-8 transform group-hover:translate-x-20 transition-all duration-300 group-hover:text-transparent">
                 Auto Purchase Run
               </span>
@@ -397,7 +459,7 @@ const AgreeAutoPurchase = () => {
             </button>
             <button
               type="button"
-              onClick={() => console.log()}
+              onClick={deleteAutoPurchase}
               className="group flex items-center justify-start w-10 h-10 bg-red-500 rounded-full cursor-pointer relative overflow-hidden transition-all duration-200 shadow-lg hover:w-32 hover:rounded-lg active:translate-x-1 active:translate-y-1"
             >
               <div className="flex items-center justify-center w-full transition-all duration-300 group-hover:justify-start group-hover:px-3">
@@ -622,9 +684,30 @@ const AgreeAutoPurchase = () => {
           </p>
         </div>
       </Modal>
+      <Modal open={deleteOpen} onClose={() => setDelteOpen(false)}>
+        <div className="w-[350px] h-[150px] relative flex flex-col justify-center items-center p-5">
+          <h1 className="font-bold text-xl text-red-500 select-none">
+            Delete Successful
+          </h1>
+          <div className="flex items-center cursor-pointer mt-3 relative">
+            <span className="select-none" onClick={() => setDelteOpen(false)}>
+              Continue
+            </span>
+            <MdOutlineKeyboardDoubleArrowRight className="animate-ping ml-3 text-red-500" />
+          </div>
+          <p className="text-xs absolute bottom-0 right-0 text-slate-400 mt-2">
+            Closes in{" "}
+            <span className="font-bold text-slate-600 select-none">
+              {countdown}
+            </span>{" "}
+            seconds
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };
 
 export default AgreeAutoPurchase;
+
 

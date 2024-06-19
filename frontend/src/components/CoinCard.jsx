@@ -74,7 +74,7 @@ const CoinCard = ({ coin }) => {
           {choose === "coin" ? coin.coin_count :""}
           {choose === "price" ? formattedPrice :""}
           {choose === "rate" ? coin.rate :""}
-          {choose === "balance" ? formattedBalance :""}
+          {choose === "balance" ? "₩"+formattedBalance :""}
         </h1>
       </div>
     </div>

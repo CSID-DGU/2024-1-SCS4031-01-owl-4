@@ -28,6 +28,7 @@ const Account = () => {
   const navigate = useNavigate();
   const { token } = useTokenStore();
   const [open, setOpen] = useState(false);
+  // const [openSuccess, setOpenSuccess] = useState(false);
   const [countdown, setCountdown] = useState(3);
 
   const methods = useForm({
@@ -172,7 +173,7 @@ const Account = () => {
                   )}
                   <button
                     disabled={isSubmitting}
-                    type="button"
+                    type="submit"
                     onClick={isLastStep ?() => {
                       if(isChecked) methods.handleSubmit(onSubmit)
                         else {
@@ -214,10 +215,25 @@ const Account = () => {
           </p>
         </div>
       </Modal>
+      {/* <Modal open={open} onClose={() => setOpen(false)}>
+        <div className="w-[350px] h-[150px] relative flex flex-col justify-center items-center p-5">
+          <h1 className="font-bold text-xl text-green-500 select-none">
+            Submit Successful
+          </h1>
+          <div className="flex items-center cursor-pointer mt-3 relative">
+            <span className="select-none" onClick={() => setOpen(false)}>Continue</span>
+            <MdOutlineKeyboardDoubleArrowRight className="animate-ping ml-3 text-green-500" />
+          </div>
+          <p className="text-xs absolute bottom-0 right-0 text-slate-400 mt-2">
+            Closes in <span className="font-bold text-slate-600 select-none">{countdown}</span> seconds
+          </p>
+        </div>
+      </Modal> */}
     </div>
   );
 };
 
 export default Account;
+
 
 

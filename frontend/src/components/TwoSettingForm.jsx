@@ -66,14 +66,13 @@ const TwoSettingForm = () => {
     <>
       <div className="w-full h-[25%] shadow-lg rounded-lg border">
         <div className="w-full h-1/4 bg-indigo-500 px-3 text-lg rounded-t-lg font-bold py-1 text-white">
-          <h1>What is Average Down?</h1>
+          <h1>What is Average Down (물타기) ?</h1>
         </div>
         <div className="w-full h-3/4 text-sm rounded-b-lg px-3 py-2">
-          <p className="">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Nam officia
-            debitis minus rem sint excepturi dolores tempore, reprehenderit
-            dolorem ratione adipisci inventore non, quo magni omnis, assumenda
-            maiores in aperiam.
+          <p className="font-bold text-black leading-6">
+          물타기 매매법은 손실을 줄이고 평균 매입 단가를 낮추기 위한 전략입니다. 
+          이는 가격이 하락할 때 추가 매수를 통해 평균 매입가를 낮추는 방식입니다. 
+          이를 통해 손실 상황에서 회복할 수 있도록 돕고 단기적인 가격 변동성에 대비하여 심리적 안정감을 제공합니다.
           </p>
         </div>
       </div>

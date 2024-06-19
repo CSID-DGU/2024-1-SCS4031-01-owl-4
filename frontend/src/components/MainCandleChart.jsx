@@ -312,7 +312,7 @@ const MainCandleChart = ({ ohlcvData, volumeData, start, end, dateData, prevStar
             data: volumeData,
             itemStyle: {
               color: function (params) {
-                return params.data[2] === 1 ? "#ff0000" : "#0800ff";
+                return params.data[2] === 1 ? plusColor : minusColor;
               },
             },
             xAxisIndex: 1,

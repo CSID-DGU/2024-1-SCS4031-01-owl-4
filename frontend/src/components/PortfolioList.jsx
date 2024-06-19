@@ -16,7 +16,7 @@ function formatDate(dateString) {
 
   const PortfolioList = ({ item, onClick, isSelected, refetchingData }) => {
     const { isCurrentPage, setIsCurrentPage } = usePortfolioOpenPageStore();
-    const { setResponsePortfolio } = useResponseStore();
+    const { setResponsePortfolio, isAutoTrade } = useResponseStore();
     const { token } = useTokenStore();
     const [isChecked, setIsChecked] = useState(item.is_marked); // Initialize with item.is_marked
     const [candleName, setCandleName] = useState("")

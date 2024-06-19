@@ -215,3 +215,4 @@ const BackTestChart = ({
 };
 
 export default BackTestChart;
+
