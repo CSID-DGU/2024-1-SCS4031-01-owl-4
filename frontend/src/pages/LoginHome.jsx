@@ -7,6 +7,7 @@ import { Navigate } from "react-router-dom";
 import useKeyStore from '../utils/useKeyStore';
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import useResponseStore from '../utils/useResponseStore';
 
 const LoginHome = () => {
     const [searchParams] = useSearchParams();
@@ -14,18 +15,21 @@ const LoginHome = () => {
     const { setToken } = useTokenStore();
     const { setKey } = useKeyStore();
     const [agree, setAgree] = useState(false);
+    const {setUsername} = useResponseStore()
 
     useEffect(() => {
         const token = searchParams.get("access_token");
         const key = searchParams.get("has_key");
+        const username = searchParams.get("name")
         setToken(token);
         setKey(key);
+        setUsername(username)
         if (token) {
             loginAuth();
         } else {
             logoutCheck();
         }
-    }, [searchParams, loginAuth, logoutCheck, setToken, setKey]);
+    }, [searchParams, loginAuth, logoutCheck, setToken, setKey, setUsername]);
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ['agrees'],

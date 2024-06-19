@@ -1,8 +1,12 @@
 import { Link } from "react-router-dom"
 import png from '/src/assets/logo.svg';
 import {LogoutButton, Profile, Switch, Search} from '../../components/index.js'
+import useResponseStore from "../../utils/useResponseStore.js";
 
 const NavBar = () => {
+  
+  const {username} = useResponseStore()
+  
   return (
     <nav className="bg-white flex py-2 justify-center items-center">
         <div className="grow-[1] content-center ml-3">
@@ -12,9 +16,6 @@ const NavBar = () => {
         </Link>
         </div>
         <div className="flex grow-[2] items-center justify-between text-lg font-semibold">
-            <div className="text-center">Tab</div>
-            <div className="text-center">Tab</div>
-            <div className="text-center">Tab</div>
         </div>
         <div className="grow-[15] content-center px-5 ml-4">
             <Search />
@@ -23,7 +24,7 @@ const NavBar = () => {
           <LogoutButton/>
         </div>
         <div className="text-left ml-5 mr-4 font-bold">
-            <div>Hello User.</div>
+            <div>Hello {username}.</div>
             <div>Good Trading!!</div>
         </div>
         <div className="grow-[4] flex justify-center items-center">

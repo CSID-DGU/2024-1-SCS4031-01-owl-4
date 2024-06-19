@@ -38,6 +38,8 @@ const useResponseStore = create(
         coinData: [],
         autoInfo: [],
         isAutoTrade: false,
+        username: '',
+        setUsername: username => set({username}),
         setIsAutoTrade: isAutoTrade => set({isAutoTrade}),
         setAutoInfo: autoInfo => set({autoInfo}),
         setCoinData: coinData => set({coinData}),
@@ -78,4 +80,5 @@ const useResponseStore = create(
 )
 
 export default useResponseStore
+
 
