@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Custom CSS */
+.cssbuttons-io-button:hover .icon {
+  width: calc(100% - 0.6em);
+}
+
+.cssbuttons-io-button:hover .icon svg {
+  transform: translateX(0.1em);
+}
+
+.cssbuttons-io-button:active .icon {
+  transform: scale(0.95);
+}
+
+
+
+@layer base {
+    body {
+        height: 100vh;
+        background-color: black;
+        box-sizing: border-box;
+        scroll-behavior: smooth;
+    }
+}
+
+@layer components {
+  .custom-checkbox {
+      @apply appearance-none rounded cursor-pointer px-3;
+  }
+
+  .custom-checkbox:checked {
+      @apply bg-rose-500 border-rose-500;
+  }
+
+  .custom-checkbox:checked::after {
+      content: '⭐';
+      @apply text-white text-lg absolute inset-0 flex items-center justify-center;
+  }
+}
+
+/* Tailwind CSS 사용자 정의 설정 */
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .rotateY-0 {
+    transform: rotateY(0deg);
+  }
+  .rotateY-45 {
+    transform: rotateY(45deg);
+  }
+  .rotateY--45 {
+    transform: rotateY(-45deg);
+  }
+}

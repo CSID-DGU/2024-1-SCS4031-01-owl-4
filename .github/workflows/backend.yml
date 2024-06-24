@@ -1,0 +1,58 @@
+name: owl CI/CD with Gradle
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [ "main", "develop" ]
+    paths:
+      - 'backend/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🦉 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🦉 Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 🦉 Gradle Caching - 빌드 시간 향상
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: 🦉 gradle build를 위한 권한을 부여합니다.
+        run: chmod +x backend/gradlew
+
+      - name: 🦉 gradle build 중입니다.
+        run: |
+          cd backend
+          ./gradlew build -x test --stacktrace
+
+      - name: 🦉 Docker Hub에 로그인 후, docker image build 후 Docker Hub에 push합니다.
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          DOCKERHUB_REPOSITORY: ${{ secrets.DOCKERHUB_REPOSITORY }}
+        run: |
+          cd backend
+          sudo docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+          sudo docker build -t $DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY:latest .
+          sudo docker push $DOCKERHUB_USERNAME/$DOCKERHUB_REPOSITORY:latest
