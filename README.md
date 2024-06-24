@@ -1,3 +1,5 @@
+![header](https://capsule-render.vercel.app/api?type=waving&color=auto&section=header&text=🏆%202024년%20여름%20ICPC,%20캡스톤디자인%20원장상(우수상)&fontSize=30&customColorList=2&height=170)
+
 # 📑 Project
 
 - 프로젝트명 : 가상화폐 가격 예측 AI 기술을 접목한 백테스팅 & 자동매매 서비스 - "BAMOWL"
