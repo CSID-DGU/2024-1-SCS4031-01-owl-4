@@ -84,7 +84,7 @@
 
 # 🎬 시연 영상
 
-https://www.youtube.com/watch?v=dwAIKu13QEw
+https://github.com/CSID-DGU/2024-1-SCS4031-01-owl-4/assets/113084292/f9e58f76-f224-4e09-8832-699d73e15137
 
 <br>
 
